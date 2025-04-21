@@ -1,0 +1,1 @@
+# be14-4th-Ideality-MyLocalDiary-front
