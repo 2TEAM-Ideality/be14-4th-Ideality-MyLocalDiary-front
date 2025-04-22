@@ -1,22 +1,12 @@
 <template>
-  <h1>Health Check</h1>
-  <button @click="healthCheck">건강하니?</button>
-  <h3>{{ health }}</h3>
+  <Sidebar />
+  <router-view />
 </template>
 
 <script setup>
-  import { ref} from 'vue';
-
-  const health=ref("chcking....");
-
-  const healthCheck=async()=>{
-    const response=await fetch('http://localhost:8080/');
-    const text=await response.text();
-    health.value=text;
-  }
-  
+import Sidebar from './components/common/Sidebar.vue'
 </script>
 
-
 <style scoped>
+/* 필요하면 스타일 추가 가능 */
 </style>
