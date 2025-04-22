@@ -1,7 +1,11 @@
 <template>
-  <Sidebar />
-  <router-view />
+  <VApp>
+    <VMain>
+      <RouterView />
+    </VMain>
+  </VApp>
 </template>
+
 
 <script setup>
 import Sidebar from './components/common/Sidebar.vue'
