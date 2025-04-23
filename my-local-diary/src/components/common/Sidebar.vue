@@ -107,6 +107,7 @@ const goToMypage = () => {
 :deep(.v-navigation-drawer) {
   transition: width 0.3s ease;
   overflow: hidden;
+  z-index: 1000;
 }
 
 .menu-item {
