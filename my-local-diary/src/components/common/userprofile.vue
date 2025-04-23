@@ -16,12 +16,12 @@
       </div>
   
       <p class="mt-4 text-sm">
-        세미 매국노, 패션 애국인 
+        맛집 탐방 에디터!
       </p>
   
       <div class="mt-4 text-sm flex items-center">
         <span class="mr-2">🎵</span>
-        <span>요아소비 - IDOL</span>
+        <span> freestyle - y</span>
       </div>
   
       <!-- 자동재생 버튼 (visible하지 않음) -->
@@ -41,7 +41,7 @@
     name: 'UserProfile',
     data() {
       return {
-        profileImage: '/src/assets/profile/idol_profile.png',
+        profileImage: '/src/assets/profile/profile.png',
         posts: 10,
         followers: 600,
         following: 600,

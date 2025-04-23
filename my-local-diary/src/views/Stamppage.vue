@@ -125,21 +125,21 @@ export default {
 .container {
   display: flex;
   height: 100vh;
-  margin-left: 240px;
+  max-width: 1440px;/* 전체 컨테이너 고정 너비 설정 */
+  margin: 0 auto;     /* 중앙 정렬 */
 }
 
 .left-side {
-  width: 400px;
+  width: 550px; /* 원하는 고정 너비 */
   display: flex;
   justify-content: center;
   align-items: start;
   padding-top: 40px;
-  background-color: #f0f0f0;
   box-sizing: border-box;
 }
 
 .right-side {
-  flex: 1;
+  width: calc(100% - 550px); /* 남은 영역 자동으로 채우기 */
   background-color: #fff5f7;
   padding: 20px;
   overflow-y: auto;
