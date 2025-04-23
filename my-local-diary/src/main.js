@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import vuetify from './plugins/vuetify'
-
+import '@mdi/font/css/materialdesignicons.css'  // 아이콘
 
 
 // ⭐ Naver Maps API 스크립트 동적 로딩
