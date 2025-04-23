@@ -6,8 +6,11 @@
           <img :src="profileImage" />
         </v-avatar>
         <div class="user-info">
-          <div class="name">{{ username }}</div>
-          <v-btn class="follow-btn" size="small" color="primary">팔로우</v-btn>
+            <div class="name-section">
+                <div class="name">{{ username }}</div>
+                <button class="follow-btn" size="small">팔로우</button>
+            </div>
+          
           <div class="stats">
             게시글 <b>{{ posts }}</b> · 팔로워 <b>{{ followers }}</b> · 팔로우 <b>{{ followings }}</b>
           </div>
@@ -19,27 +22,29 @@
       <!-- 오늘의 기록 -->
       <v-card-text class="section">
         <div class="section-header d-flex justify-space-between">
-          <span>오늘의 기록</span>
-          <span class="see-all">전체 기록 보기 →</span>
+            <div class="section-title">오늘의 기록</div>
+            <router-link to="/mypage" class="see-all">전체 기록 보기 →</router-link>
         </div>
   
-        <v-row dense v-for="(post, i) in todaysPosts" :key="i" class="post-item">
-          <v-col cols="auto">
-            <v-img :src="post.icon" class="marker-icon" width="32" height="32" contain></v-img>
-          </v-col>
-          <v-col>
-            <div class="post-title">{{ post.title }}</div>
-            <div class="post-location">
-              {{ post.location }}
-            </div>
-          </v-col>
-          <v-col cols="auto">
-            <div class="time">{{ post.time }}</div>
-          </v-col>
-        </v-row>
+        <div>
+            <v-row dense v-for="(post, i) in todaysPosts" :key="i" class="post-item">
+            <v-col cols="auto">
+                <v-img :src="post.icon" class="marker-icon" width="32" height="32" contain></v-img>
+            </v-col>
+            <v-col>
+                <div class="post-title">{{ post.title }}</div>
+                <div class="post-location">
+                {{ post.location }}
+                </div>
+            </v-col>
+            <v-col cols="auto">
+                <div class="time">{{ post.time }}</div>
+            </v-col>
+            </v-row>
+        </div>
       </v-card-text>
   
-      <!-- 뱃지 -->
+      <!-- 스탬프 -->
       <v-card-text class="section">
         <div class="section-title">발자국을 남긴 곳</div>
         <div class="badge-row d-flex gap-3">
@@ -64,6 +69,7 @@
   
   <script setup>
   import profileImage from '@/assets/profile/profile.png'
+  import stampDummy from '@/assets/stamp_pic/독서냥.png'
   
   const username = 'Madara Uchiha'
   const posts = 10
@@ -72,13 +78,13 @@
   
   const todaysPosts = [
     {
-      icon: '/src/assets/markers/food.png',
+      icon: stampDummy,
       title: '신대방동 돈까스 투어',
       location: '신대방동 294',
       time: '6시간 전'
     },
     {
-      icon: '/src/assets/markers/food.png',
+      icon: stampDummy,
       title: '신대방동 돈까스 투어',
       location: '신대방동 294',
       time: '6시간 전'
@@ -86,8 +92,7 @@
   ]
   
   const badges = [
-    '/src/assets/badges/paw.png',
-    '/src/assets/badges/cat.png'
+  stampDummy, stampDummy
   ]
   
   const neighborhoods = ['신대방동 294', '보라매로 73']
@@ -95,7 +100,8 @@
   
   <style scoped>
   .user-card {
-    width: 320px;
+    width: 350px;
+    padding: 20px 10px; 
     background: white;
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -104,8 +110,25 @@
   }
   .user-header {
     display: flex;
+    flex-direction: row;
+    width: 100%;
+    /* background-color: yellow; */
+    /* align-items: center; */
+    /* justify-content: space-between; */
+    gap: 20px;
+    padding-bottom: 15px;
+  }
+  .name-section{
+    display: flex;
+    flex-direction:row;
+    /* background-color: green; */
+    width: 100%;
+    justify-content: space-between;
     align-items: center;
-    gap: 16px;
+    padding-bottom: 8px;
+  }
+  .user-info {
+    width: 100%;
   }
   .user-info .name {
     font-size: 18px;
@@ -113,7 +136,12 @@
   }
   .follow-btn {
     margin-top: 6px;
+    padding: 5px 15px;
     font-size: 12px;
+    background-color: #2C2C2C;
+    border-radius:8px;
+    color: white;
+
   }
   .stats {
     font-size: 12px;
@@ -145,5 +173,21 @@
   .muted {
     color: #777;
   }
+  .see-all {
+    font-size: 12px;
+    color: #2C2C2C;
+    text-decoration: none;
+    cursor: pointer;
+    }
+    .see-all:hover {
+    text-decoration: underline;
+    }
+
+    .badge-row img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    }
   </style>
   
