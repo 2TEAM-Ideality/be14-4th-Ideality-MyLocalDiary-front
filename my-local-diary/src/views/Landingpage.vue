@@ -6,14 +6,14 @@
             
             <!-- 왼쪽: 로고 영역 -->
             <v-col class="d-flex flex-column align-center justify-center pa-8" style="margin-right: 70px;">
-              <v-img src="/src/assets/My_Local_Diary_Black.png" contain width="500" height="300" />
+              <v-img src="/src/assets/logo/My_Local_Diary_Black.png" contain width="500" height="300" />
               <h1 class="white--text text-h4 font-weight-bold mt-4 text-center">My Local Diary</h1>
             </v-col>
   
             <!-- 오른쪽: 로그인 폼 -->
             <v-col class="pa-8" style="background-color: #111; border-radius: 12px;">
               <div class="d-flex justify-center mb-6">
-                <v-img src="/src/assets/cursor_ 10.svg" max-width="80" />
+                <v-img src="/src/assets/cursor/cursor_ 10.svg" max-width="80" />
               </div>
   
 
@@ -50,7 +50,7 @@
 
   
               <v-btn block color="yellow" class="text-black font-weight-bold" height="48">
-                <v-img src="/src/assets/kakao_logo.png" width="40" class="mr-2" />
+                <v-img src="/src/assets/logo/kakao_logo.png" width="40" class="mr-2" />
                 카카오로 로그인
               </v-btn>
   
