@@ -2,11 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Mypage from '@/views/Mypage.vue'
 import Landingpage from '@/views/Landingpage.vue';
 import MapHome from '@/views/MapHome.vue'; 
-
 import Stamppage from '@/views/Stamppage.vue';
-
 import CreateDiary from '@/views/CreateDiary.vue';
-import Stamppage from '@/views/Stamppage.vue';
 import UserMapView from '@/views/UserMapView.vue';
 
 const routes = [
@@ -36,7 +33,7 @@ const routes = [
       path: '/stamppage',
       name: 'Stamppage',
       component : Stamppage
-    }
+    },
       {
         path: '/home',
         name: 'MapHome',
