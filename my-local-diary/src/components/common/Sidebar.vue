@@ -3,8 +3,10 @@
       v-model="drawer"
       app
       :width="isHover ? 200 : 80"
-      permanent
-      class="pa-2"
+      rail
+      expand-on-hover
+      floating
+      class="pa-2 container"
       @mouseenter="isHover = true"
       @mouseleave="isHover = false"
     >
@@ -109,6 +111,15 @@
   </script>
   
   <style scoped>
+  .container {
+    z-index: 1000;
+  }
+
+  .v-navigation-drawer {
+  position: fixed !important;
+  z-index: 1100; /* AppBar보다 앞이면 됨 */
+}
+
   .menu-item {
     display: flex;
     align-items: center;

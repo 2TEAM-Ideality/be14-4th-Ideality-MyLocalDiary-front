@@ -15,7 +15,7 @@ const loadNaverMapsScript = () => {
 
     const script = document.createElement('script');
     script.id = 'naver-maps-script';
-    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${import.meta.env.VITE_NAVER_MAP_CLIENT_ID}`;
+    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${import.meta.env.VITE_NAVER_MAP_CLIENT_ID}&style=ae8bf51c-899d-4773-9851-1f670d719a19`;
     script.async = true;
     script.onload = resolve;
     script.onerror = reject;

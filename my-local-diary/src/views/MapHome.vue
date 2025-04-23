@@ -13,6 +13,9 @@ onMounted(() => {
     const map = new naver.maps.Map('map', {
       center: new naver.maps.LatLng(37.3595704, 127.105399), // 초기값 (판교 네이버 본사)
       zoom: 10,
+      // 커스텀한 스타일 적용
+      customStyleId: 'ae8bf51c-899d-4773-9851-1f670d719a19',
+
       mapTypeControl : true, // 지도 타입(일반/위성) 변경 버튼 추가
       scaleControl: true,   // 지도 스케일 표시
 	    zoomControl: true,    // 확대/축소 버튼 표시
