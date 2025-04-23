@@ -4,6 +4,7 @@ import Landingpage from '@/views/Landingpage.vue';
 import MapHome from '@/views/MapHome.vue'; 
 import CreateDiary from '@/views/CreateDiary.vue';
 import Stamppage from '@/views/Stamppage.vue';
+import UserMapView from '@/views/UserMapView.vue';
 
 const routes = [
     {
@@ -37,6 +38,11 @@ const routes = [
         path: '/stamp',
         name: 'Stamp',
         component: Stamppage,
+      },
+      {
+        path: '/user-map-home',
+        name: 'UserMapHome',
+        component: UserMapView,
       },
     
 ]
