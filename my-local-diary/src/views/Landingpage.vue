@@ -18,13 +18,13 @@
   
 
               <v-text-field
-                label="아이디 / 이메일"
+                label="아이디"
                 variant="filled"
                 color="white"
                 class="mb-4"
                 hide-details
                 density="comfortable"
-                style="background-color: #333;"
+                style="background-color: #333; color:white;"
               ></v-text-field>
   
               <v-text-field
@@ -35,7 +35,7 @@
                 class="mb-4"
                 hide-details
                 density="comfortable"
-                style="background-color: #333;"
+                style="background-color: #333; color:white;"
               ></v-text-field>
   
               <v-btn block color="white" class="text-black font-weight-bold mb-6" height="48">
