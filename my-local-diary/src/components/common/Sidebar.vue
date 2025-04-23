@@ -15,7 +15,6 @@
             v-if="!isHover"
             src="/src/assets/cursor/슈크림붕어빵1.png"
             alt="cursor"
-            
           ></v-img>
           <v-img
             v-else
