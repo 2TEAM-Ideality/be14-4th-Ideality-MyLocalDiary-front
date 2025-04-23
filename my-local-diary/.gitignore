@@ -1,5 +1,8 @@
 ##### custom start #####
 
+# 환경변수
+.env
+
 # 시스템/IDE 캐시 추가
 Thumbs.db
 ehthumbs.db
