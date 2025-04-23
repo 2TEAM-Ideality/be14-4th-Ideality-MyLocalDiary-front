@@ -1,9 +1,8 @@
 <template>
-      <div>
-    <Sidebar />
-    <!-- 다른 컴포넌트나 요소들 -->
+  <div>
+    마이페이지
   </div>
-  </template>
+</template>
   
   <script setup>
   import Sidebar from '@/components/common/Sidebar.vue'

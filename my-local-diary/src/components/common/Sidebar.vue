@@ -13,13 +13,13 @@
         <v-list-item>
           <v-img
             v-if="!isHover"
-            src="/src/assets/cursor_ 10.svg"
+            src="/src/assets/login/cursor_ 10.svg"
             alt="cursor"
             
           ></v-img>
           <v-img
             v-else
-            src="/src/assets/My_Local_Diary.png"
+            src="/src/assets/logo/My_Local_Diary.png"
             alt="diary"
             width="150"
           ></v-img>
@@ -28,7 +28,7 @@
         <v-list-item>
   <div class="menu-item">
     <v-img
-      src="/src/assets/Map.png"
+      src="/src/assets/sidebar/Map.png"
       alt="map"
       class="menu-icon"
     />
@@ -39,7 +39,7 @@
 <v-list-item @click="goToMypage" class="clickable">
   <div class="menu-item">
     <v-img
-      src="/src/assets/person.png"
+      src="/src/assets/sidebar/person.png"
       alt="마이페이지"
       class="menu-icon"
     />
@@ -50,7 +50,7 @@
 <v-list-item>
   <div class="menu-item">
     <v-img
-      src="/src/assets/Pen.png"
+      src="/src/assets/sidebar/Pen.png"
       alt="pen"
       class="menu-icon"
     />
@@ -61,7 +61,7 @@
 <v-list-item>
   <div class="menu-item">
     <v-img
-      src="/src/assets/Search.png"
+      src="/src/assets/sidebar/Search.png"
       alt="search"
       class="menu-icon"
     />
@@ -72,7 +72,7 @@
 <v-list-item>
   <div class="menu-item">
     <v-img
-      src="/src/assets/stamp.png"
+      src="/src/assets/sidebar/stamp.png"
       alt="stamp"
       class="stamp-icon ml-n1"
     />
@@ -83,7 +83,7 @@
 <v-list-item>
   <div class="menu-item">
     <v-img
-      src="/src/assets/notifications.png"
+      src="/src/assets/sidebar/notifications.png"
       alt="notifications"
       class="menu-icon"
     />
