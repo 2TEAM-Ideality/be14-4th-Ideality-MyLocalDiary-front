@@ -6,7 +6,7 @@
             
             <!-- 왼쪽: 로고 영역 -->
             <v-col class="d-flex flex-column align-center justify-center pa-8" style="margin-right: 70px;">
-              <v-img src="/src/assets/My_Local_Diary_Black.png" contain width="500" height="300" />
+              <v-img src="/src/assets/logo/My_Local_Diary_Black.png" contain width="500" height="300" />
               <h1 class="white--text text-h4 font-weight-bold mt-4 text-center">My Local Diary</h1>
             </v-col>
   
