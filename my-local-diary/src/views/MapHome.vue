@@ -1,7 +1,5 @@
 <template>
-    <div>
-        지도 홈 페이지 
-    </div>
+    <div></div>
     <div id="map" style="width:100%;height:100%;"></div>
 </template>
 
@@ -13,7 +11,7 @@ onMounted(() => {
     const map = new naver.maps.Map('map', {
       center: new naver.maps.LatLng(37.3595704, 127.105399), // 초기값 (판교 네이버 본사)
       zoom: 10,
-      // 커스텀한 스타일 적용
+      // 커스텀한 스타일 적용 (아직 안되고 있음)
       customStyleId: 'ae8bf51c-899d-4773-9851-1f670d719a19',
 
       mapTypeControl : true, // 지도 타입(일반/위성) 변경 버튼 추가

@@ -3,6 +3,7 @@ import Mypage from '@/views/Mypage.vue'
 import Landingpage from '@/views/Landingpage.vue';
 import MapHome from '@/views/MapHome.vue'; 
 import CreateDiary from '@/views/CreateDiary.vue';
+import Stamppage from '@/views/Stamppage.vue';
 
 const routes = [
     {
@@ -31,6 +32,11 @@ const routes = [
         path: '/mypage',
         name: 'Mypage',
         component: Mypage,
+      },
+      {
+        path: '/stamp',
+        name: 'Stamp',
+        component: Stamppage,
       },
     
 ]

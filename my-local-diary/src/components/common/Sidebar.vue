@@ -29,7 +29,7 @@
       </v-list-item>
 
       <!-- 메뉴 항목 -->
-      <v-list-item>
+      <v-list-item  @click="goToHome">
         <div class="menu-item">
           <v-img src="/src/assets/sidebar/Map.png" alt="map" class="menu-icon" />
           <span v-if="showText">지도 홈</span>
@@ -38,33 +38,33 @@
 
       <v-list-item @click="goToMypage" class="clickable">
         <div class="menu-item">
-          <v-img src="/src/assets/sidebar/person.png" alt="마이페이지" class="menu-icon" />
+          <v-img src="/src/assets/sidebar/person.png" alt="mypage" class="menu-icon" />
           <span v-if="showText">마이페이지</span>
         </div>
       </v-list-item>
 
-      <v-list-item>
+      <v-list-item  @click="goToCreateDiary">
         <div class="menu-item">
           <v-img src="/src/assets/sidebar/Pen.png" alt="pen" class="menu-icon" />
           <span v-if="showText">글쓰기</span>
         </div>
       </v-list-item>
 
-      <v-list-item>
+      <v-list-item  @click="openUserSearch">
         <div class="menu-item">
           <v-img src="/src/assets/sidebar/Search.png" alt="search" class="menu-icon" />
           <span v-if="showText">검색</span>
         </div>
       </v-list-item>
 
-      <v-list-item>
+      <v-list-item  @click="goToStamp">
         <div class="menu-item">
           <v-img src="/src/assets/sidebar/stamp.png" alt="stamp" class="stamp-icon ml-n1" />
           <span v-if="showText">스탬프 목록</span>
         </div>
       </v-list-item>
 
-      <v-list-item>
+      <v-list-item  @click="openAlarm">
         <div class="menu-item">
           <v-img src="/src/assets/sidebar/notifications.png" alt="notifications" class="menu-icon" />
           <span v-if="showText">알림</span>
@@ -98,8 +98,23 @@ const handleMouseLeave = () => {
   showImage.value = false
 }
 
+const goToHome = () => {
+  router.push('/home')
+}
 const goToMypage = () => {
   router.push('/mypage')
+}
+const goToCreateDiary = () => {
+  router.push('/create-diary')
+}
+const goToStamp = () => {
+  router.push('/stamp')
+}
+const openUserSearch = () => {
+  console.log("유저 검색 창 뜨기")
+}
+const openAlarm = () => {
+  console.log("알림 창 뜨기")
 }
 </script>
 
