@@ -25,8 +25,9 @@
 </script>
   
   
-  <style scoped>
+<style scoped>
   .chip-container {
+    cursor: pointer;
     background-color: #F5F5F5 !important;
     border: 1px solid #EDEDED;
     color: #2C2C2C;
@@ -35,5 +36,5 @@
   ::v-deep(.v-icon) {
     color: #8E8E8E !important;
   }
-  </style>
+</style>
   

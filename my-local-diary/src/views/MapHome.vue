@@ -14,7 +14,7 @@ onMounted(() => {
       // 커스텀한 스타일 적용 (아직 안되고 있음)
       customStyleId: "ae8bf51c-899d-4773-9851-1f670d719a19",
       gl: true, // 벡터 지도 활성화
- 
+
       mapTypeControl : true, // 지도 타입(일반/위성) 변경 버튼 추가
       scaleControl: true,   // 지도 스케일 표시
 	    zoomControl: true,    // 확대/축소 버튼 표시

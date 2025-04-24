@@ -1,13 +1,13 @@
 <template>
     <v-card class="user-card">
       <!-- 상단 유저 정보 -->
-      <v-card-title class="user-header">
-        <v-avatar size="60">
+      <v-card-title class="user-header" >
+        <v-avatar size="60"   @click="goToMypage">
           <img :src="profileImage" />
         </v-avatar>
         <div class="user-info">
             <div class="name-section">
-                <div class="name">{{ username }}</div>
+                <div class="name" @click="goToMypage">{{ username }}</div>
                 <button class="follow-btn" size="small">팔로우</button>
             </div>
           
@@ -47,15 +47,24 @@
       <!-- 스탬프 -->
       <v-card-text class="section">
         <div class="section-header d-flex justify-space-between">
-            <div class="section-title">발자국을 남긴 곳</div>
-            <router-link to="/mypage" class="see-all">스탬프 컬렉션 →</router-link>
+          <div class="section-title">발자국을 남긴 곳</div>
+          <router-link to="/mypage" class="see-all">스탬프 컬렉션 →</router-link>
         </div>
         <div class="badge-row d-flex gap-3">
-          <v-avatar v-for="(badge, i) in badges" :key="i" size="48" @click="goToStamp">
+          <v-avatar
+            v-for="(badge, i) in displayedBadges"
+            :key="i"
+            size="48"
+            @click="goToStamp"
+          >
             <img :src="badge" />
           </v-avatar>
+          <v-chip v-if="hiddenBadgeCount > 0" size="small" class="muted" color="grey">
+            +{{ hiddenBadgeCount }}
+          </v-chip>
         </div>
       </v-card-text>
+
   
       <!-- 동네 -->
       <v-card-text class="section">
@@ -86,6 +95,9 @@
   const posts = 10
   const followers = 600
   const followings = 600
+
+  const maxBadgesToShow = 5
+  
   
   const todaysPosts = [
     {
@@ -101,11 +113,14 @@
       time: '6시간 전'
     }
   ]
-  
+  // 뱃지 전체 목록 
   const badges = [
-  stampDummy, stampDummy
+    stampDummy, stampDummy, stampDummy, stampDummy, stampDummy, stampDummy, stampDummy
   ]
+  const displayedBadges = badges.slice(0, maxBadgesToShow)    // 최대 5개만 보이도록 
+  const hiddenBadgeCount = badges.length - maxBadgesToShow   
   
+  // 발견한 동네 목록 
   const neighborhoods = [
     { name: '신대방동 294', latitude: 37.4854, longitude: 126.9016 },
     { name: '보라매로 73', latitude: 37.4923, longitude: 126.9248 }
@@ -115,12 +130,15 @@
   const goToStamp = () => {
     router.push('/stamp')
   }
+  const goToMypage = () => {
+    router.push('/mypage')
+  }
   </script>
   
   <style scoped>
 /* 전체 카드 컨테이너 */
 .user-card {
-  width: 400px;
+  width: 370px;
   padding: 20px 10px;
   background: white;
   border-radius: 16px;
@@ -216,6 +234,7 @@
 /* ───── 스탬프 / 아바타 ───── */
 .badge-row {
   gap: 8px;
+  align-items: center;
 }
 .badge-row img {
   width: 100%;
