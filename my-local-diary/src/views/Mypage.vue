@@ -3,7 +3,6 @@
     <v-main>
       <div style="display: flex; height: 100vh;">
         <!-- 왼쪽 영역 -->
-         
         <div
           class="d-flex justify-center"
           style="flex: 4.5; border-right: 1px solid #E5E7EB; box-shadow: 4px 0 12px -4px rgba(0, 0, 0, 0.1);"
@@ -11,6 +10,8 @@
           <div class="left-side">
             <div style="font-size: 20px;">마이 페이지 유저 정보</div>
 
+            <!-- 추후 장소 검색 추가용 컴포넌트 -->
+            <!--
             <SearchLoactaion :onPlaceSelect="(place) => {
               console.log('🧭 선택된 장소:', place)
               new naver.maps.Marker({
@@ -19,14 +20,17 @@
                 title: place.name
               })
             }" />
+            -->
 
+            <!-- 오늘의 다이어리 카드 -->
             <TodayDiaryCard
-              date="2025.03.24.WED"
+              :date="date"
               title="오늘 신대방동 돈까스 투어 했는데...."
               :places="neighborhoods"
               thumbnail="/images/profile-thumbnail.png"
             />
 
+            <!-- 미니 지도 -->
             <div class="mini-map">
               <router-link to="/user-map-home" class="link-to">지도에서 보기 →</router-link>
               <MiniMap />
@@ -44,11 +48,17 @@
 </template>
 
 <script setup>
-import SearchLoactaion from '@/components/map/SearchLoactaion.vue';
+import { format } from 'date-fns'
+import { ko } from 'date-fns/locale'
+
+import SearchLoactaion from '@/components/map/SearchLoactaion.vue'
 import MiniMap from '@/components/mypage/MiniMap.vue'
 import TodayDiaryCard from '@/components/mypage/TodayDiary.vue'
 
-// 발견한 동네 목록
+// ✅ 오늘 날짜: "2025.04.24.THU" 형태로 포맷팅
+const date = format(new Date(), 'yyyy.MM.dd.EEE', { locale: ko }).toUpperCase()
+
+// 🏠 발견한 동네 목록 (props용)
 const neighborhoods = [
   { name: '신대방동 294', latitude: 37.4854, longitude: 126.9016 },
   { name: '보라매로 73', latitude: 37.4923, longitude: 126.9248 },
@@ -65,8 +75,8 @@ const neighborhoods = [
 .left-side {
   display: flex;
   flex-direction: column;
-  width: 90%;          /* 왼쪽 영역의 90%만 사용 */
-  padding-right: 15px; /* 오른쪽 여백 */
+  width: 90%;
+  padding-right: 15px;
 }
 
 .mini-map {
