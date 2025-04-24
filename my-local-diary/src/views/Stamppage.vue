@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <!-- 안내만 (버튼 없음) -->
+    <!-- 안내 -->
     <div v-if="showAudioNotice" class="audio-notice">
       🎧 음악이 자동 재생 중입니다. 브라우저 설정에 따라 소리가 들리지 않을 수 있어요.
     </div>
@@ -33,10 +33,18 @@
     <div id="player" class="hidden-player"></div>
   </div>
 </template>
-
 <script>
 import CatStampBar from '/src/components/stamp/stamp.vue';
 import UserProfile from '/src/components/common/UserProfile.vue';
+
+const BASE_STAMPS = [
+  { title: '카페냥', stampImage: '/src/assets/stamp_pic/카페냥.png' },
+  { title: '산책냥', stampImage: '/src/assets/stamp_pic/산책냥.png' },
+  { title: '꽐라냥', stampImage: '/src/assets/stamp_pic/꽐라냥.png' },
+  { title: '독서냥', stampImage: '/src/assets/stamp_pic/독서냥.png' },
+  { title: '맛집냥', stampImage: '/src/assets/stamp_pic/맛집냥.png' },
+  { title: '영화냥', stampImage: '/src/assets/stamp_pic/영화냥.png' },
+];
 
 export default {
   name: 'Stamppage',
@@ -49,14 +57,7 @@ export default {
       player: null,
       ytReady: false,
       showAudioNotice: true,
-      stamps: [
-        { title: '카페냥', stampImage: '/src/assets/stamp_pic/카페냥.png', count: 5 },
-        { title: '산책냥', stampImage: '/src/assets/stamp_pic/산책냥.png', count: 5 },
-        { title: '꽐라냥', stampImage: '/src/assets/stamp_pic/꽐라냥.png', count: 5 },
-        { title: '독서냥', stampImage: '/src/assets/stamp_pic/독서냥.png', count: 5 },
-        { title: '맛집냥', stampImage: '/src/assets/stamp_pic/맛집냥.png', count: 5 },
-        { title: '영화냥', stampImage: '/src/assets/stamp_pic/영화냥.png', count: 5 },
-      ]
+      stamps: [],
     };
   },
   computed: {
@@ -70,6 +71,7 @@ export default {
   },
   mounted() {
     this.setupYouTube();
+    this.fetchStampCounts();
 
     this.$nextTick(() => {
       setTimeout(() => {
@@ -78,10 +80,25 @@ export default {
     });
   },
   methods: {
+    async fetchStampCounts() {
+      try {
+        const res = await fetch('http://localhost:3000/stampCounts');
+        const stampCounts = await res.json();
+
+        this.stamps = BASE_STAMPS.map((stamp) => ({
+          ...stamp,
+          count: stampCounts[stamp.title] ?? 0,
+        }));
+      } catch (err) {
+        console.error('❌ 스탬프 count 불러오기 실패:', err);
+      }
+    },
+
     setVideoId(id) {
       this.videoId = id;
-      if (this.ytReady) this.initPlayer();
+      this.tryInitPlayer(); // ▶ 무조건 시도
     },
+
     setupYouTube() {
       if (!window.YT) {
         const tag = document.createElement('script');
@@ -94,15 +111,19 @@ export default {
 
       window.onYouTubeIframeAPIReady = () => {
         this.ytReady = true;
-        if (this.videoId) this.initPlayer();
+        this.tryInitPlayer(); // ▶ 무조건 시도
       };
     },
+
+    tryInitPlayer() {
+      if (this.videoId && this.ytReady) {
+        this.initPlayer();
+      }
+    },
+
     initPlayer() {
       if (!this.videoId) return;
-
-      if (this.player && this.player.destroy) {
-        this.player.destroy();
-      }
+      if (this.player && this.player.destroy) this.player.destroy();
 
       this.player = new YT.Player('player', {
         height: '0',
@@ -123,21 +144,23 @@ export default {
         }
       });
     },
+
     tryUnMuteViaRouting() {
       if (this.player && this.ytReady) {
         try {
           this.player.unMute();
           this.showAudioNotice = false;
-          console.log('🎯 라우팅 기반 자동 unMute 성공!');
+          console.log('🎯 자동 unMute 성공');
         } catch (e) {
-          console.warn('❌ 자동 unMute 차단됨');
-          // 안내는 계속 보여줌
+          console.warn('❌ 자동 unMute 실패');
         }
       }
     },
+
     nextPage() {
       if (this.currentPage < this.totalPages - 1) this.currentPage++;
     },
+
     previousPage() {
       if (this.currentPage > 0) this.currentPage--;
     }
@@ -149,12 +172,13 @@ export default {
 .container {
   display: flex;
   height: 100vh;
-  max-width: 1440px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
 }
 
 .left-side {
-  width: 550px;
+  width: 50%;
   display: flex;
   justify-content: center;
   align-items: start;
@@ -163,7 +187,7 @@ export default {
 }
 
 .right-side {
-  width: calc(100% - 550px);
+  width: 50%;
   background-color: #fff5f7;
   padding: 20px;
   overflow-y: auto;
