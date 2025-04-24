@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <!-- 왼쪽 비워둔 영역 -->
+    <!-- 왼쪽 유저 프로필 -->
     <div class="left-side">
-      <userprofile />
+      <UserProfile @video-id-loaded="setVideoId" />
     </div>
 
     <!-- 오른쪽 스탬프 영역 -->
@@ -15,53 +15,48 @@
           :stampImage="stamp.stampImage"
           :count="stamp.count"
         />
-        
-        <!-- 버튼들: 이전/다음 페이지 버튼 -->
+
+        <!-- 페이지 버튼 -->
         <div class="button-row">
-          <button
-            v-if="currentPage > 0"
-            @click="previousPage"
-            class="prev-button"
-          >
-            이전장으로
-          </button>
-          <button
-            v-if="currentPage < totalPages - 1"
-            @click="nextPage"
-            class="next-button"
-          >
-            다음장으로 넘기기
-          </button>
+          <button v-if="currentPage > 0" @click="previousPage" class="prev-button">이전장으로</button>
+          <button v-if="currentPage < totalPages - 1" @click="nextPage" class="next-button">다음장으로 넘기기</button>
         </div>
       </div>
-      
     </div>
+
+    <!-- 안내만 (버튼 없음) -->
+    <div v-if="showAudioNotice" class="audio-notice">
+      🎧 음악이 자동 재생 중입니다. 브라우저 설정에 따라 소리가 들리지 않을 수 있어요.
+    </div>
+
+    <!-- 유튜브 플레이어 -->
+    <div id="player" class="hidden-player"></div>
   </div>
 </template>
 
 <script>
 import CatStampBar from '/src/components/stamp/stamp.vue';
-import userprofile from '@/components/common/userprofile.vue';
+import UserProfile from '/src/components/common/UserProfile.vue';
 
 export default {
   name: 'Stamppage',
-  components: { CatStampBar, userprofile },
+  components: { CatStampBar, UserProfile },
   data() {
     return {
       currentPage: 0,
       stampsPerPage: 4,
+      videoId: '',
+      player: null,
+      ytReady: false,
+      showAudioNotice: true,
       stamps: [
         { title: '카페냥', stampImage: '/src/assets/stamp_pic/카페냥.png', count: 5 },
         { title: '산책냥', stampImage: '/src/assets/stamp_pic/산책냥.png', count: 5 },
-        // 추가 스탬프
         { title: '꽐라냥', stampImage: '/src/assets/stamp_pic/꽐라냥.png', count: 5 },
         { title: '독서냥', stampImage: '/src/assets/stamp_pic/독서냥.png', count: 5 },
         { title: '맛집냥', stampImage: '/src/assets/stamp_pic/맛집냥.png', count: 5 },
         { title: '영화냥', stampImage: '/src/assets/stamp_pic/영화냥.png', count: 5 },
-      ],
-      player: null,
-      videoId: 'ZRtdQ81jPUQ', // 자동재생할 기본 영상 ID
-      ytReady: false,
+      ]
     };
   },
   computed: {
@@ -71,53 +66,82 @@ export default {
     paginatedStamps() {
       const start = this.currentPage * this.stampsPerPage;
       return this.stamps.slice(start, start + this.stampsPerPage);
-    },
+    }
   },
   mounted() {
-    if (!window.YT) {
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    } else {
-      this.initPlayer();
-    }
+    this.setupYouTube();
 
-    window.onYouTubeIframeAPIReady = () => {
-      this.initPlayer();
-    };
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this.tryUnMuteViaRouting();
+      }, 500);
+    });
   },
   methods: {
+    setVideoId(id) {
+      this.videoId = id;
+      if (this.ytReady) this.initPlayer();
+    },
+    setupYouTube() {
+      if (!window.YT) {
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      } else {
+        this.ytReady = true;
+      }
+
+      window.onYouTubeIframeAPIReady = () => {
+        this.ytReady = true;
+        if (this.videoId) this.initPlayer();
+      };
+    },
     initPlayer() {
+      if (!this.videoId) return;
+
+      if (this.player && this.player.destroy) {
+        this.player.destroy();
+      }
+
       this.player = new YT.Player('player', {
         height: '0',
         width: '0',
         videoId: this.videoId,
+        playerVars: {
+          autoplay: 1,
+          mute: 1,
+          controls: 0,
+          modestbranding: 1,
+          rel: 0,
+        },
         events: {
           onReady: (event) => {
+            event.target.playVideo();
             event.target.setVolume(50);
-            this.ytReady = true;
-            this.playMusic(); // 플레이어 준비되면 자동으로 재생
-          },
-        },
+          }
+        }
       });
     },
-    playMusic() {
+    tryUnMuteViaRouting() {
       if (this.player && this.ytReady) {
-        this.player.playVideo(); // 영상 자동 재생
+        try {
+          this.player.unMute();
+          this.showAudioNotice = false;
+          console.log('🎯 라우팅 기반 자동 unMute 성공!');
+        } catch (e) {
+          console.warn('❌ 자동 unMute 차단됨');
+          // 안내는 계속 보여줌
+        }
       }
     },
     nextPage() {
-      if (this.currentPage < this.totalPages - 1) {
-        this.currentPage++;
-      }
+      if (this.currentPage < this.totalPages - 1) this.currentPage++;
     },
     previousPage() {
-      if (this.currentPage > 0) {
-        this.currentPage--;
-      }
-    },
-  },
+      if (this.currentPage > 0) this.currentPage--;
+    }
+  }
 };
 </script>
 
@@ -125,12 +149,12 @@ export default {
 .container {
   display: flex;
   height: 100vh;
-  max-width: 1440px;/* 전체 컨테이너 고정 너비 설정 */
-  margin: 0 auto;     /* 중앙 정렬 */
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
 .left-side {
-  width: 550px; /* 원하는 고정 너비 */
+  width: 550px;
   display: flex;
   justify-content: center;
   align-items: start;
@@ -139,7 +163,7 @@ export default {
 }
 
 .right-side {
-  width: calc(100% - 550px); /* 남은 영역 자동으로 채우기 */
+  width: calc(100% - 550px);
   background-color: #fff5f7;
   padding: 20px;
   overflow-y: auto;
@@ -177,5 +201,26 @@ export default {
 
 .prev-button {
   margin-right: 10px;
+}
+
+.hidden-player {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.audio-notice {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  z-index: 999;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 </style>
