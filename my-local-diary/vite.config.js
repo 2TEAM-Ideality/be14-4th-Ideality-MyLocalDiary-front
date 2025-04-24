@@ -15,4 +15,15 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  // 한석현
+  server: {
+    proxy: {
+      '/geocode': {
+        target: 'https://naveropenapi.apigw.ntruss.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/geocode/, '')
+      }
+    }
+  }
 })
+

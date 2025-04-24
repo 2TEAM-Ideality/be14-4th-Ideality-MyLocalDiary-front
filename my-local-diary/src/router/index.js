@@ -5,6 +5,7 @@ import MapHome from '@/views/MapHome.vue';
 import Stamppage from '@/views/Stamppage.vue';
 import CreateDiary from '@/views/CreateDiary.vue';
 import UserMapView from '@/views/UserMapView.vue';
+import PostCreate from '@/components/post/PostCreate.vue'
 
 const routes = [
     {
@@ -39,11 +40,11 @@ const routes = [
         name: 'MapHome',
         component : MapHome
       },
-      {
-        path: '/create-diary',
-        name: 'CreateDiary',
-        component : CreateDiary
-      },
+      // {
+      //   path: '/create-diary',
+      //   name: 'CreateDiary',
+      //   component : CreateDiary
+      // },
       {
         path: '/mypage',
         name: 'Mypage',
@@ -59,6 +60,11 @@ const routes = [
         name: 'UserMapHome',
         component: UserMapView,
       },
+      {
+        path: '/post/create',
+        name: 'PostCreate',
+        component: PostCreate
+      }
 ]
 
 const router = createRouter({

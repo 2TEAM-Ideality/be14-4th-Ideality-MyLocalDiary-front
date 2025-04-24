@@ -43,7 +43,7 @@
         </div>
       </v-list-item>
 
-      <v-list-item  @click="goToCreateDiary">
+      <v-list-item  @click="goToPostCreate">
         <div class="menu-item">
           <v-img src="/src/assets/sidebar/Pen.png" alt="pen" class="menu-icon" />
           <span v-if="showText">글쓰기</span>
@@ -104,8 +104,8 @@ const goToHome = () => {
 const goToMypage = () => {
   router.push('/mypage')
 }
-const goToCreateDiary = () => {
-  router.push('/create-diary')
+const goToPostCreate = () => {
+  router.push('/post/create')
 }
 const goToStamp = () => {
   router.push('/stamp')
