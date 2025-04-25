@@ -5,6 +5,7 @@ import MapHome from '@/views/MapHome.vue';
 import CreateDiary from '@/views/CreateDiary.vue';
 import Stamppage from '@/views/Stamppage.vue';
 import UserMapView from '@/views/UserMapView.vue';
+import PostCard from '@/components/post/PostCard.vue';
 
 const routes = [
     {
@@ -43,6 +44,11 @@ const routes = [
         path: '/user-map-home',
         name: 'UserMapHome',
         component: UserMapView,
+      },
+      {
+        path: '/post-card',
+        name: 'PostCard',
+        component: PostCard,
       },
     
 ]
