@@ -91,8 +91,20 @@ export default {
     }
 
     onMounted(() => {
-      userStore.restoreUser()
-    })
+  userStore.restoreUser()
+
+  if (audioPlayer.value) {
+    audioPlayer.value.play()
+      .then(() => {
+        isPlaying.value = true
+      })
+      .catch((err) => {
+        console.warn('🎵 자동 재생 실패 (User Gesture 없음):', err)
+        // 유저가 아직 터치 안했으면 여기는 그냥 실패하는 게 정상!
+      })
+  }
+})
+
 
     return {
       userStore,
