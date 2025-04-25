@@ -11,7 +11,7 @@
             <div style="font-size: 20px;">마이 페이지 유저 정보</div>
 
             <!-- 추후 장소 검색 추가용 컴포넌트 -->
-            <!--
+            
             <SearchLoactaion :onPlaceSelect="(place) => {
               console.log('🧭 선택된 장소:', place)
               new naver.maps.Marker({
@@ -20,7 +20,7 @@
                 title: place.name
               })
             }" />
-            -->
+           
 
             <!-- 오늘의 다이어리 카드 -->
             <TodayDiaryCard
