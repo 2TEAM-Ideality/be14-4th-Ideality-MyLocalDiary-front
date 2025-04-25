@@ -2,7 +2,13 @@
   <div class="container">
     <!-- 유저 프로필 -->
     <div class="left-side">
-      <UserProfile @video-id-loaded="playVideoFromId" />
+      <UserProfile
+        :isPlaying="isPlaying"
+        :togglePlayback="togglePlayback"
+        :musicTitle="musicTitle"
+        :currentTime="currentTime"
+        :duration="duration"
+      />
     </div>
 
     <!-- 스탬프 영역 -->
@@ -22,13 +28,20 @@
       </div>
     </div>
 
-    <!-- 안내 문구 (하단 고정) -->
-    <div v-if="showPlayGuide" class="play-guide" @click="guideClicked">
+    <!-- 유도 문구 (처음에만 뜨고 클릭 가능) -->
+    <div v-if="showPlayGuide && musicUrl && !isPlaying" class="play-guide" @click="handleUserPlayClick">
       🎧 지금 기분을 담은 음악, 한 번 들어볼래요?
     </div>
 
-    <!-- 유튜브 플레이어 (숨김) -->
-    <div id="yt-player" class="hidden-player"></div>
+    <!-- 오디오 -->
+    <audio
+      ref="audioPlayer"
+      :src="musicUrl"
+      preload="auto"
+      class="hidden"
+      @timeupdate="onTimeUpdate"
+      @ended="isPlaying = false"
+    />
   </div>
 </template>
 
@@ -53,11 +66,12 @@ export default {
       currentPage: 0,
       stampsPerPage: 4,
       stamps: [],
-      player: null,
-      ytReady: false,
-      showPlayGuide: true,
-      lastVideoId: null,
-      waitingToPlay: false
+      musicUrl: '',
+      musicTitle: '',
+      isPlaying: false,
+      currentTime: 0,
+      duration: 0,
+      showPlayGuide: false
     };
   },
   computed: {
@@ -71,11 +85,7 @@ export default {
   },
   mounted() {
     this.fetchStampCounts();
-    this.loadYTScript();
-
-    setTimeout(() => {
-      this.showPlayGuide = false;
-    }, 4000);
+    this.fetchUserMusic();
   },
   methods: {
     async fetchStampCounts() {
@@ -90,67 +100,59 @@ export default {
         console.error('❌ 스탬프 count 불러오기 실패:', err);
       }
     },
-    loadYTScript() {
-      if (!window.YT) {
-        const tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-      } else {
-        this.ytReady = true;
-      }
+    async fetchUserMusic() {
+      try {
+        const res = await fetch('http://localhost:3000/user');
+        const data = await res.json();
+        this.musicUrl = data.musicUrl || '';
+        this.musicTitle = data.musicTitle || '';
 
-      window.onYouTubeIframeAPIReady = () => {
-        this.ytReady = true;
-
-        // videoId와 클릭이 이미 있었다면 자동 재생
-        if (this.waitingToPlay && this.lastVideoId) {
-          this.waitingToPlay = false;
-          this.showPlayGuide = false;
-          this.playVideoFromId(this.lastVideoId);
-        }
-      };
-    },
-    playVideoFromId(videoId) {
-      this.lastVideoId = videoId;
-
-      if (this.waitingToPlay && this.ytReady) {
-        this.waitingToPlay = false;
-        this.showPlayGuide = false;
-      }
-
-      if (!this.ytReady) return;
-
-      if (this.player) {
-        this.player.loadVideoById(videoId);
-        this.player.playVideo();
-      } else {
-        this.player = new YT.Player('yt-player', {
-          height: '0',
-          width: '0',
-          videoId,
-          playerVars: {
-            autoplay: 1,
-            mute: 0,
-            controls: 0,
-            modestbranding: 1,
-            rel: 0
-          },
-          events: {
-            onReady: (event) => event.target.playVideo()
+        this.$nextTick(() => {
+          const player = this.$refs.audioPlayer;
+          if (player) {
+            // 자동 재생 시도 (실패해도 OK)
+            player.play().then(() => {
+              this.isPlaying = true;
+            }).catch(() => {
+              // 실패 시 유도 문구 표시
+              this.showPlayGuide = true;
+              // 자동 숨기기는 선택 사항 (3초 후 사라짐)
+              setTimeout(() => {
+                this.showPlayGuide = false;
+              }, 4000);
+            });
           }
+        });
+      } catch (err) {
+        console.error('❌ 음악 정보 불러오기 실패:', err);
+      }
+    },
+    togglePlayback() {
+      const player = this.$refs.audioPlayer;
+      if (!player) return;
+
+      if (this.isPlaying) {
+        player.pause();
+        this.isPlaying = false;
+      } else {
+        player.play().then(() => {
+          this.isPlaying = true;
+        }).catch((err) => {
+          console.warn('🎵 재생 실패:', err);
         });
       }
     },
-    guideClicked() {
-      this.waitingToPlay = true;
+    handleUserPlayClick() {
       this.showPlayGuide = false;
-
-      if (this.lastVideoId && this.ytReady) {
-        this.waitingToPlay = false;
-        this.playVideoFromId(this.lastVideoId);
-      }
+      this.togglePlayback(); // 유저 클릭 후 재생
     },
+    onTimeUpdate() {
+  const player = this.$refs.audioPlayer;
+  if (!player) return; // 💥 player가 없으면 아무 것도 하지 않음
+
+  this.currentTime = player.currentTime;
+  this.duration = player.duration;
+},
     nextPage() {
       if (this.currentPage < this.totalPages - 1) this.currentPage++;
     },
@@ -174,7 +176,6 @@ export default {
   justify-content: center;
   align-items: start;
   padding-top: 40px;
-  box-sizing: border-box;
 }
 .right-side {
   width: 50%;
@@ -207,15 +208,10 @@ export default {
   border-radius: 10px;
   cursor: pointer;
 }
-.prev-button {
-  margin-right: 10px;
+.hidden {
+  display: none;
 }
-.hidden-player {
-  position: absolute;
-  width: 0;
-  height: 0;
-  overflow: hidden;
-}
+
 .play-guide {
   position: fixed;
   bottom: 30px;
@@ -227,14 +223,26 @@ export default {
   border-radius: 16px;
   font-size: 14px;
   z-index: 999;
-  animation: fadeInOut 4s ease-in-out forwards;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
   cursor: pointer;
+  animation: fadeInOut 4s ease-in-out forwards;
 }
+
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
-  10% { opacity: 1; transform: translateX(-50%) translateY(0); }
-  90% { opacity: 1; }
-  100% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
 }
 </style>

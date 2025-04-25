@@ -1,7 +1,15 @@
 <template>
-  <div v-if="userInfo" class="w-full max-w-md mx-auto p-6 rounded-2xl shadow-lg bg-white text-gray-900">
+  <div
+    v-if="userInfo"
+    class="w-full max-w-md mx-auto p-6 rounded-2xl shadow-lg bg-white text-gray-900"
+  >
+    <!-- 프로필 -->
     <div class="flex items-center gap-4">
-      <img :src="userInfo.profileImage" alt="profile" class="w-20 h-20 rounded-full object-cover border-2 border-black" />
+      <img
+        :src="userInfo.profileImage"
+        alt="profile"
+        class="w-20 h-20 rounded-full object-cover border-2 border-black"
+      />
       <div>
         <h1 class="text-2xl font-bold">{{ userInfo.name }}</h1>
         <div class="flex gap-4 mt-1 text-sm text-gray-600">
@@ -12,24 +20,61 @@
       </div>
     </div>
 
+    <!-- 소개 -->
     <p class="mt-4 text-sm">{{ userInfo.bio }}</p>
 
-    <!-- 🎵 동영상 제목 표시 -->
-    <p class="music-title mt-4 text-sm">🎵 {{ videoTitle }}</p>
+    <!-- 🎵 제목 + 시간 한 줄 -->
+    <div
+  class="music-row mt-4 text-sm flex items-center justify-between cursor-pointer"
+  @click="togglePlayback"
+>
+  <span class="truncate hover:underline flex-1">
+    🎵 {{ musicTitle }}
+  </span>
+  <span class="text-xs text-gray-500 text-right min-w-[72px] pl-3 text-nowrap">
+    {{ formattedTime }} / {{ formattedDuration }}
+  </span>
+</div>
+
+
+    <!-- 진행바 -->
+    <div class="w-full h-2 bg-gray-200 rounded mt-2 overflow-hidden">
+      <div
+        class="h-2 bg-pink-400 transition-all duration-300"
+        :style="{ width: progress + '%' }"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: 'UserProfile',
+  props: {
+    isPlaying: Boolean,
+    togglePlayback: Function,
+    musicTitle: String,
+    currentTime: Number,
+    duration: Number
+  },
   data() {
     return {
-      userInfo: null,
-      videoTitle: ''
+      userInfo: null
     };
   },
   mounted() {
     this.fetchUserInfo();
+  },
+  computed: {
+    progress() {
+      return this.duration ? (this.currentTime / this.duration) * 100 : 0;
+    },
+    formattedTime() {
+      return this.formatTime(this.currentTime);
+    },
+    formattedDuration() {
+      return this.formatTime(this.duration);
+    }
   },
   methods: {
     async fetchUserInfo() {
@@ -37,48 +82,29 @@ export default {
         const response = await fetch('http://localhost:3000/user');
         const data = await response.json();
         this.userInfo = data;
-
-        // YouTube URL에서 videoId 추출
-        const match = data.youtubeUrl?.match(/v=([a-zA-Z0-9_-]+)/);
-        const videoId = match ? match[1] : null;
-
-        if (videoId) {
-          this.$emit('video-id-loaded', videoId);
-          this.fetchVideoTitle(videoId);
-        }
       } catch (error) {
         console.error('유저 정보 불러오기 실패:', error);
       }
     },
-    async fetchVideoTitle(videoId) {
-      const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
-      try {
-        const response = await fetch(
-          `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${API_KEY}`
-        );
-        const data = await response.json();
-        if (data.items && data.items.length > 0) {
-          this.videoTitle = data.items[0].snippet.title;
-        } else {
-          this.videoTitle = '제목을 가져올 수 없습니다.';
-        }
-      } catch (error) {
-        console.error('동영상 제목을 가져오는 데 실패했습니다:', error);
-        this.videoTitle = '제목을 가져올 수 없습니다.';
-      }
+    formatTime(seconds) {
+      if (!seconds || isNaN(seconds)) return '00:00';
+      const min = Math.floor(seconds / 60);
+      const sec = Math.floor(seconds % 60);
+      return `${min.toString().padStart(2, '0')}:${sec
+        .toString()
+        .padStart(2, '0')}`;
     }
   }
 };
 </script>
 
 <style scoped>
-.music-title {
-  font-weight: 400;
+.music-row {
   color: #4b5563;
-  transition: color 0.3s ease;
   user-select: none;
+  transition: color 0.3s ease;
 }
-.music-title:hover {
+.music-row:hover {
   color: #374151;
 }
 </style>
