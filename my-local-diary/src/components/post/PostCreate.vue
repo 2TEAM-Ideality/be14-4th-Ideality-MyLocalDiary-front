@@ -23,7 +23,9 @@
               <img :src="image" class="uploaded-image" />
             </swiper-slide>
           </swiper>
-          <div class="thumbnail-bar">
+        </template>
+      </div>
+      <div class="thumbnail-bar">
             <div v-for="(image, index) in uploadedImages" :key="index" class="thumbnail">
               <img :src="image" />
               <v-btn icon size="x-small" class="delete-thumb" @click="removeImage(index)">
@@ -31,8 +33,6 @@
               </v-btn>
             </div>
           </div>
-        </template>
-      </div>
     </v-col>
 
     <!-- 오른쪽 장소 등록 + 다이어리 작성 -->
@@ -66,6 +66,18 @@
         <v-btn class="pink-small" @click="fixMarker">장소 등록</v-btn>
       </div>
 
+      <v-list v-if="searchResults.length" class="result-list mb-3">
+        <v-list-item
+          v-for="(item, index) in searchResults"
+          :key="index"
+          @click="selectResult(item)"
+          class="result-item"
+        >
+          <v-list-item-title v-html="item.title" />
+          <v-list-item-subtitle>{{ item.roadAddress || item.address }}</v-list-item-subtitle>
+        </v-list-item>
+      </v-list>
+
       <div ref="mapRef" class="map-container mb-4" style="height: 300px;"></div>
 
       <div class="mb-4">
@@ -95,12 +107,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, h, render, nextTick } from 'vue'
 import axios from 'axios'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
+import CustomMarker from '@/components/common/CustomMarker.vue'
 
 const fileInput = ref(null)
 const uploadedImages = ref([])
@@ -111,6 +124,7 @@ const isPublic = ref(true)
 const currentStep = ref('photo')
 const searchMode = ref('도로명')
 const query = ref('')
+const searchResults = ref([])
 
 const today = (() => {
   const date = new Date()
@@ -125,6 +139,43 @@ const today = (() => {
 let map
 const mapRef = ref(null)
 let previewMarker = null
+
+class CustomOverlay extends naver.maps.OverlayView {
+  constructor(position, content) {
+    super()
+    this._position = position
+    this._content = content
+    this.setMap(map)
+  }
+
+  onAdd() {
+    const pane = this.getPanes().overlayLayer
+    pane.appendChild(this._content)
+  }
+
+  draw() {
+    const projection = this.getProjection()
+    const el = this._content
+    if (!el) return
+
+    // 지연 로딩 고려
+    if (el.offsetWidth === 0 || el.offsetHeight === 0) {
+      setTimeout(() => this.draw(), 0)
+      return
+    }
+
+    const pixel = projection.fromCoordToOffset(this._position)
+    el.style.position = 'absolute'
+    el.style.left = `${pixel.x - el.offsetWidth / 2}px`
+    el.style.top = `${pixel.y - el.offsetHeight / 2}px`
+  }
+
+  onRemove() {
+    if (this._content?.parentNode) {
+      this._content.parentNode.removeChild(this._content)
+    }
+  }
+}
 
 onMounted(() => {
   const clientId = import.meta.env.VITE_NAVER_MAP_CLIENT_ID
@@ -151,10 +202,9 @@ function searchPlace() {
   if (!query.value) return
 
   if (searchMode.value === '도로명') {
-    // Geocode API (도로명 주소 검색)
     naver.maps.Service.geocode({ query: query.value }, (status, response) => {
       if (status !== naver.maps.Service.Status.OK || response.v2.meta.totalCount === 0) {
-        alert('주소를 찾을 수 없습니다.');
+        alert('주소를 찾을 수 없습니다.')
         return
       }
 
@@ -168,9 +218,9 @@ function searchPlace() {
         title: result.roadAddress || result.jibunAddress
       })
       map.setCenter(latlng)
+      searchResults.value = []
     })
   } else {
-    // Local Search API (장소 이름 검색)
     axios.get('/naver/v1/search/local.json', {
       params: { query: query.value, display: 5 },
       headers: {
@@ -178,35 +228,123 @@ function searchPlace() {
         'X-Naver-Client-Secret': import.meta.env.VITE_NAVER_SEARCH_CLIENT_SECRET
       }
     }).then(res => {
-      const item = res.data.items?.[0]
-      if (!item) return
-
-      const lat = Number(item.mapy) / 1e7
-      const lng = Number(item.mapx) / 1e7
-      const latlng = new naver.maps.LatLng(lat, lng)
-
-      if (previewMarker) previewMarker.setMap(null)
-
-      previewMarker = new naver.maps.Marker({
-        map,
-        position: latlng,
-        title: item.title.replace(/<[^>]*>/g, '')
-      })
-      map.setCenter(latlng)
+      searchResults.value = res.data.items || []
+    }).catch(err => {
+      console.error('장소 검색 오류:', err)
+      searchResults.value = []
     })
   }
+}
+
+function selectResult(item) {
+  const lat = Number(item.mapy) / 1e7
+  const lng = Number(item.mapx) / 1e7
+  const latlng = new naver.maps.LatLng(lat, lng)
+
+  if (previewMarker) previewMarker.setMap(null)
+  previewMarker = new naver.maps.Marker({
+    map,
+    position: latlng,
+    title: item.title.replace(/<[^>]*>/g, '')
+  })
+  map.setCenter(latlng)
 }
 
 function fixMarker() {
   if (!previewMarker) return
 
   const position = previewMarker.getPosition()
+  const lat = position.lat()
+  const lng = position.lng()
+  const label = previewMarker.getTitle()
+
+  const markerIndex = markers.value.length
+  const markerImage = ''
+
   markers.value.push({
-    lat: position.lat(),
-    lng: position.lng(),
-    label: previewMarker.getTitle(),
-    image: 'https://via.placeholder.com/100x100.png?text=+'
+    lat,
+    lng,
+    label,
+    image: markerImage,
+    overlay: null
   })
+
+  const container = document.createElement('div')
+  const vnode = h(CustomMarker, {
+    image: markerImage || 'https://placehold.co/100x100?text=+',
+    post_id: markerIndex,
+    name: label,
+    onClick: (id) => {
+      console.log('커스텀 마커 클릭됨:', id)
+    }
+  })
+  render(vnode, container)
+
+  const el = container.firstElementChild // ✅ 필수!
+  const img = el.querySelector('img')
+
+  const mountOverlay = () => {
+    const overlay = new CustomOverlay(new naver.maps.LatLng(lat, lng), el)
+    markers.value[markerIndex].overlay = overlay
+    console.log('✅ 마커 생성 완료:', lat, lng)
+  }
+
+  if (img && !img.complete) {
+    img.onload = () => setTimeout(mountOverlay, 0)
+  } else {
+    setTimeout(mountOverlay, 0)
+  }
+}
+
+function onThumbnailChange(event, index) {
+  const file = event.target.files[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = () => {
+    const newImage = reader.result
+    markers.value[index].image = newImage
+
+    // 📌 기존 마커 정보 재사용
+    const { lat, lng, label } = markers.value[index]
+
+    const container = document.createElement('div')
+    const vnode = h(CustomMarker, {
+      image: newImage,
+      post_id: index,
+      name: label
+    })
+    render(vnode, container)
+
+    const el = container.firstElementChild
+    const img = el.querySelector('img')
+
+    // 기존 오버레이 제거
+    if (markers.value[index].overlay) {
+      markers.value[index].overlay.setMap(null)
+    }
+
+    const mountOverlay = () => {
+      const overlay = new CustomOverlay(new naver.maps.LatLng(lat, lng), el)
+      markers.value[index].overlay = overlay
+    }
+
+    if (img && !img.complete) {
+      img.onload = () => setTimeout(mountOverlay, 0)
+    } else {
+      setTimeout(mountOverlay, 0)
+    }
+  }
+
+  reader.readAsDataURL(file)
+}
+
+function removeMarker(index) {
+  const marker = markers.value[index]
+  if (marker.overlay) {
+    marker.overlay.setMap(null)
+  }
+  markers.value.splice(index, 1)
 }
 
 function openFileDialog() {
@@ -231,18 +369,6 @@ function readAndAddImage(file) {
 }
 function removeImage(index) {
   uploadedImages.value.splice(index, 1)
-}
-function onThumbnailChange(event, index) {
-  const file = event.target.files[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = () => {
-    markers.value[index].image = reader.result
-  }
-  reader.readAsDataURL(file)
-}
-function removeMarker(index) {
-  markers.value.splice(index, 1)
 }
 function submitPost() {
   const postData = {
@@ -466,5 +592,18 @@ function submitPost() {
 .search-select:focus {
   outline: none;
   border-color: #f08caa;
+}
+.result-list {
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+.result-item {
+  cursor: pointer;
+}
+.result-item:hover {
+  background-color: #f0f0f0;
 }
 </style>
