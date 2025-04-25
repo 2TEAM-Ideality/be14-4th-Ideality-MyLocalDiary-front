@@ -56,6 +56,22 @@ onMounted(() => {
     return
   }
 
+  const testMemberData = async () => {
+  try {
+    const response = await fetch('http://localhost:3001/members');
+    if (!response.ok) {
+      throw new Error(`HTTP 오류! 상태: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log('📦 전체 members 데이터:', data);
+  } catch (error) {
+    console.error('🚨 members 데이터 가져오기 실패:', error);
+  }
+};
+
+// 호출 예시
+testMemberData();
+
   const map = new naver.maps.Map('map', {
     center: new naver.maps.LatLng(postLocations[0].lat, postLocations[0].lng),
     zoom: 15,
