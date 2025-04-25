@@ -23,19 +23,18 @@
     <!-- 소개 -->
     <p class="mt-4 text-sm">{{ userInfo.bio }}</p>
 
-    <!-- 🎵 제목 + 시간 한 줄 -->
+    <!-- 🎵 제목 + 시간 -->
     <div
-  class="music-row mt-4 text-sm flex items-center justify-between cursor-pointer"
-  @click="togglePlayback"
->
-  <span class="truncate hover:underline flex-1">
-    🎵 {{ musicTitle }}
-  </span>
-  <span class="text-xs text-gray-500 text-right min-w-[72px] pl-3 text-nowrap">
-    {{ formattedTime }} / {{ formattedDuration }}
-  </span>
-</div>
-
+      class="music-row mt-4 text-sm flex items-center justify-between cursor-pointer"
+      @click="togglePlayback"
+    >
+      <span class="truncate hover:underline flex-1">
+        🎵 {{ userInfo.musicTitle }}
+      </span>
+      <span class="text-xs text-gray-500 text-right min-w-[72px] pl-3 text-nowrap">
+        {{ formattedTime }} / {{ formattedDuration }}
+      </span>
+    </div>
 
     <!-- 진행바 -->
     <div class="w-full h-2 bg-gray-200 rounded mt-2 overflow-hidden">
@@ -44,22 +43,28 @@
         :style="{ width: progress + '%' }"
       />
     </div>
+
+    <!-- 오디오 -->
+    <audio
+      ref="audioPlayer"
+      :src="userInfo.musicUrl"
+      preload="auto"
+      class="hidden"
+      @timeupdate="onTimeUpdate"
+      @ended="isPlaying = false"
+    />
   </div>
 </template>
 
 <script>
 export default {
   name: 'UserProfile',
-  props: {
-    isPlaying: Boolean,
-    togglePlayback: Function,
-    musicTitle: String,
-    currentTime: Number,
-    duration: Number
-  },
   data() {
     return {
-      userInfo: null
+      userInfo: null,
+      isPlaying: false,
+      currentTime: 0,
+      duration: 0
     };
   },
   mounted() {
@@ -82,9 +87,42 @@ export default {
         const response = await fetch('http://localhost:3000/user');
         const data = await response.json();
         this.userInfo = data;
+
+        // 음악 자동 재생 시도
+        this.$nextTick(() => {
+          const player = this.$refs.audioPlayer;
+          if (player) {
+            player.play().then(() => {
+              this.isPlaying = true;
+            }).catch(() => {
+              console.warn('🔇 자동 재생 차단됨');
+            });
+          }
+        });
       } catch (error) {
         console.error('유저 정보 불러오기 실패:', error);
       }
+    },
+    togglePlayback() {
+      const player = this.$refs.audioPlayer;
+      if (!player) return;
+
+      if (this.isPlaying) {
+        player.pause();
+        this.isPlaying = false;
+      } else {
+        player.play().then(() => {
+          this.isPlaying = true;
+        }).catch((err) => {
+          console.warn('🎵 재생 실패:', err);
+        });
+      }
+    },
+    onTimeUpdate() {
+      const player = this.$refs.audioPlayer;
+      if (!player) return;
+      this.currentTime = player.currentTime;
+      this.duration = player.duration;
     },
     formatTime(seconds) {
       if (!seconds || isNaN(seconds)) return '00:00';
@@ -106,5 +144,8 @@ export default {
 }
 .music-row:hover {
   color: #374151;
+}
+.hidden {
+  display: none;
 }
 </style>

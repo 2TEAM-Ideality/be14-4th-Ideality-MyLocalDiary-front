@@ -2,13 +2,7 @@
   <div class="container">
     <!-- 유저 프로필 -->
     <div class="left-side">
-      <UserProfile
-        :isPlaying="isPlaying"
-        :togglePlayback="togglePlayback"
-        :musicTitle="musicTitle"
-        :currentTime="currentTime"
-        :duration="duration"
-      />
+      <UserProfile />
     </div>
 
     <!-- 스탬프 영역 -->
@@ -27,21 +21,6 @@
         </div>
       </div>
     </div>
-
-    <!-- 유도 문구 (처음에만 뜨고 클릭 가능) -->
-    <div v-if="showPlayGuide && musicUrl && !isPlaying" class="play-guide" @click="handleUserPlayClick">
-      🎧 지금 기분을 담은 음악, 한 번 들어볼래요?
-    </div>
-
-    <!-- 오디오 -->
-    <audio
-      ref="audioPlayer"
-      :src="musicUrl"
-      preload="auto"
-      class="hidden"
-      @timeupdate="onTimeUpdate"
-      @ended="isPlaying = false"
-    />
   </div>
 </template>
 
@@ -65,13 +44,7 @@ export default {
     return {
       currentPage: 0,
       stampsPerPage: 4,
-      stamps: [],
-      musicUrl: '',
-      musicTitle: '',
-      isPlaying: false,
-      currentTime: 0,
-      duration: 0,
-      showPlayGuide: false
+      stamps: []
     };
   },
   computed: {
@@ -85,7 +58,6 @@ export default {
   },
   mounted() {
     this.fetchStampCounts();
-    this.fetchUserMusic();
   },
   methods: {
     async fetchStampCounts() {
@@ -100,59 +72,6 @@ export default {
         console.error('❌ 스탬프 count 불러오기 실패:', err);
       }
     },
-    async fetchUserMusic() {
-      try {
-        const res = await fetch('http://localhost:3000/user');
-        const data = await res.json();
-        this.musicUrl = data.musicUrl || '';
-        this.musicTitle = data.musicTitle || '';
-
-        this.$nextTick(() => {
-          const player = this.$refs.audioPlayer;
-          if (player) {
-            // 자동 재생 시도 (실패해도 OK)
-            player.play().then(() => {
-              this.isPlaying = true;
-            }).catch(() => {
-              // 실패 시 유도 문구 표시
-              this.showPlayGuide = true;
-              // 자동 숨기기는 선택 사항 (3초 후 사라짐)
-              setTimeout(() => {
-                this.showPlayGuide = false;
-              }, 4000);
-            });
-          }
-        });
-      } catch (err) {
-        console.error('❌ 음악 정보 불러오기 실패:', err);
-      }
-    },
-    togglePlayback() {
-      const player = this.$refs.audioPlayer;
-      if (!player) return;
-
-      if (this.isPlaying) {
-        player.pause();
-        this.isPlaying = false;
-      } else {
-        player.play().then(() => {
-          this.isPlaying = true;
-        }).catch((err) => {
-          console.warn('🎵 재생 실패:', err);
-        });
-      }
-    },
-    handleUserPlayClick() {
-      this.showPlayGuide = false;
-      this.togglePlayback(); // 유저 클릭 후 재생
-    },
-    onTimeUpdate() {
-  const player = this.$refs.audioPlayer;
-  if (!player) return; // 💥 player가 없으면 아무 것도 하지 않음
-
-  this.currentTime = player.currentTime;
-  this.duration = player.duration;
-},
     nextPage() {
       if (this.currentPage < this.totalPages - 1) this.currentPage++;
     },
@@ -191,7 +110,7 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center; /* ✅ 가로 방향 중앙 정렬 */
+  align-items: center;
   gap: 16px;
   flex-grow: 1;
 }
@@ -210,42 +129,5 @@ export default {
   padding: 10px 20px;
   border-radius: 10px;
   cursor: pointer;
-}
-.hidden {
-  display: none;
-}
-
-.play-guide {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #222;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 16px;
-  font-size: 14px;
-  z-index: 999;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-  animation: fadeInOut 4s ease-in-out forwards;
-}
-
-@keyframes fadeInOut {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(10px);
-  }
-  10% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(10px);
-  }
 }
 </style>
