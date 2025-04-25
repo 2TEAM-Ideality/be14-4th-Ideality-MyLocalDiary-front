@@ -10,16 +10,6 @@
           <div class="left-side">
             <div style="font-size: 20px;">마이 페이지 유저 정보</div>
 
-            <!-- 추후 장소 검색 추가용 컴포넌트 -->
-            
-            <SearchLoactaion :onPlaceSelect="(place) => {
-              console.log('🧭 선택된 장소:', place)
-              new naver.maps.Marker({
-                map,
-                position: new naver.maps.LatLng(place.y, place.x),
-                title: place.name
-              })
-            }" />
            
 
             <!-- 오늘의 다이어리 카드 -->
@@ -39,8 +29,11 @@
         </div>
 
         <!-- 오른쪽 영역 -->
-        <div style="flex: 4.4; display: flex; justify-content: center; align-items: center;">
-          오른쪽 영역
+        <div style="flex: 4.4; display: flex; justify-content: center; align-items: center;" class="right-side">
+          <!-- 💡 지도 크기를 확보하려면 이 div에 고정 크기 부여 -->
+          <div style="width: 100%; height: 100%; padding: 24px; box-sizing: border-box;">
+            <SearchLoactaion />
+          </div>
         </div>
       </div>
     </v-main>
@@ -77,6 +70,9 @@ const neighborhoods = [
   flex-direction: column;
   width: 90%;
   padding-right: 15px;
+}
+.right-side {
+  width:100%;
 }
 
 .mini-map {

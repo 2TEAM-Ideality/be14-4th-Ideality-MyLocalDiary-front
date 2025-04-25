@@ -10,6 +10,20 @@
       density="comfortable"
       variant="outlined"
     />
+
+    <!-- 검색 결과 리스트 -->
+    <v-list v-if="searchResults.length" class="result-list">
+      <v-list-item
+        v-for="(item, index) in searchResults"
+        :key="index"
+        @click="selectPlace(item)"
+        class="result-item"
+      >
+        <v-list-item-title v-html="item.title" />
+        <v-list-item-subtitle>{{ item.roadAddress || item.address }}</v-list-item-subtitle>
+      </v-list-item>
+    </v-list>
+
     <!-- 지도 -->
     <div ref="mapRef" class="map-container" />
   </div>
@@ -21,9 +35,10 @@ import axios from 'axios'
 
 const query = ref('정자동 178-1')
 const mapRef = ref(null)
+const searchResults = ref([]) // ✅ 검색 결과 배열
 let map
 let infoWindow
-let currentMarker = null // ⭐ 현재 마커 저장
+let currentMarker = null
 
 function initMap() {
   map = new naver.maps.Map(mapRef.value, {
@@ -43,56 +58,60 @@ function initMap() {
   searchAddressToCoordinate()
 }
 
-// 📍 장소명 → 실패 시 주소 fallback 검색
+// 📍 검색 API
 async function searchAddressToCoordinate() {
   infoWindow.close()
   clearMarker()
+  searchResults.value = []
 
   try {
-    // 1️⃣ 장소명 검색 API
     const res = await axios.get('/naver/v1/search/local.json', {
-      params: { query: query.value, display: 1 },
+      params: { query: query.value, display: 5 },
       headers: {
         'X-Naver-Client-Id': import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID,
         'X-Naver-Client-Secret': import.meta.env.VITE_NAVER_SEARCH_CLIENT_SECRET,
       },
     })
-    console.log('🧭 응답 전체:', res)
-    console.log('🧭 res.data:', res.data)
-    const item = res.data.items[0]
 
-    if (item) {
-      const lng = Number(item.mapx) / 1e7  // 경도
-      const lat = Number(item.mapy) / 1e7  // 위도
-      const latlng = new naver.maps.LatLng(lat, lng)
-
-      console.log('🗺️ 최종 변환 좌표:', latlng)
-
-      renderResult(latlng, item.title, item.roadAddress || item.address)
-      placeMarker(latlng, item.title)
-      return
+    if (res.data.items?.length) {
+      searchResults.value = res.data.items
+    } else {
+      // 주소 fallback
+      fallbackToAddress()
     }
-
-    // 2️⃣ 장소 검색 실패 시 → 주소 검색
-    naver.maps.Service.geocode({ query: query.value }, (status, response) => {
-      if (status !== naver.maps.Service.Status.OK || response.v2.meta.totalCount === 0) {
-        alert('장소 또는 주소를 찾을 수 없습니다.')
-        return
-      }
-
-      const addr = response.v2.addresses[0]
-      const latlng = new naver.maps.LatLng(addr.y, addr.x)
-
-      renderResult(latlng, query.value, addr.roadAddress || addr.jibunAddress)
-      placeMarker(latlng, query.value)
-    })
   } catch (err) {
     console.error(err)
     alert('장소 검색 중 오류가 발생했습니다.')
   }
 }
 
-// 결과 표시 (지도 이동 + 말풍선)
+// 📍 주소 fallback
+function fallbackToAddress() {
+  naver.maps.Service.geocode({ query: query.value }, (status, response) => {
+    if (status !== naver.maps.Service.Status.OK || response.v2.meta.totalCount === 0) {
+      alert('장소 또는 주소를 찾을 수 없습니다.')
+      return
+    }
+
+    const addr = response.v2.addresses[0]
+    const latlng = new naver.maps.LatLng(addr.y, addr.x)
+
+    renderResult(latlng, query.value, addr.roadAddress || addr.jibunAddress)
+    placeMarker(latlng, query.value)
+  })
+}
+
+// 📍 결과 선택 시 마커 표시
+function selectPlace(item) {
+  const lat = Number(item.mapy) / 1e7
+  const lng = Number(item.mapx) / 1e7
+  const latlng = new naver.maps.LatLng(lat, lng)
+
+  renderResult(latlng, item.title, item.roadAddress || item.address)
+  placeMarker(latlng, item.title)
+}
+
+// 🗺 infoWindow 표시
 function renderResult(latlng, title, address) {
   map.setCenter(latlng)
 
@@ -105,7 +124,7 @@ function renderResult(latlng, title, address) {
   infoWindow.open(map, latlng)
 }
 
-// 📌 마커 생성
+// 📌 마커 표시
 function placeMarker(latlng, name) {
   if (currentMarker) currentMarker.setMap(null)
 
@@ -116,7 +135,7 @@ function placeMarker(latlng, name) {
   })
 }
 
-// 📌 기존 마커 제거
+// 📌 마커 제거
 function clearMarker() {
   if (currentMarker) {
     currentMarker.setMap(null)
@@ -124,7 +143,7 @@ function clearMarker() {
   }
 }
 
-// 지도 클릭 시 → 주소 정보
+// 📍 클릭 → 좌표 → 주소
 function searchCoordinateToAddress(latlng) {
   infoWindow.close()
 
@@ -158,10 +177,9 @@ function searchCoordinateToAddress(latlng) {
   )
 }
 
-// 주소 객체 → 문자열
+// 📍 주소 문자열 포맷
 function makeAddress(item) {
   if (!item) return ''
-
   const { name, region, land } = item
   let [sido, sigugun, dongmyun, ri, rest] = ['', '', '', '', '']
 
@@ -199,5 +217,20 @@ onMounted(() => {
   width: 100%;
   height: 500px;
   margin-top: 16px;
+}
+
+.result-list {
+  max-height: 300px;
+  overflow-y: auto;
+  background: #f8f8f8;
+  margin-bottom: 12px;
+}
+
+.result-item {
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+.result-item:hover {
+  background: #eee;
 }
 </style>
