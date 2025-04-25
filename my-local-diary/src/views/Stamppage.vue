@@ -1,11 +1,11 @@
 <template>
   <div class="container">
-    <!-- 왼쪽 유저 프로필 -->
+    <!-- 유저 프로필 -->
     <div class="left-side">
-      <UserProfile @video-id-loaded="setVideoId" />
+      <UserProfile @video-id-loaded="playVideoFromId" />
     </div>
 
-    <!-- 오른쪽 스탬프 영역 -->
+    <!-- 스탬프 영역 -->
     <div class="right-side">
       <div class="stamps">
         <CatStampBar
@@ -15,8 +15,6 @@
           :stampImage="stamp.stampImage"
           :count="stamp.count"
         />
-
-        <!-- 페이지 버튼 -->
         <div class="button-row">
           <button v-if="currentPage > 0" @click="previousPage" class="prev-button">이전장으로</button>
           <button v-if="currentPage < totalPages - 1" @click="nextPage" class="next-button">다음장으로 넘기기</button>
@@ -24,15 +22,16 @@
       </div>
     </div>
 
-    <!-- 안내 -->
-    <div v-if="showAudioNotice" class="audio-notice">
-      🎧 음악이 자동 재생 중입니다. 브라우저 설정에 따라 소리가 들리지 않을 수 있어요.
+    <!-- 안내 문구 (하단 고정) -->
+    <div v-if="showPlayGuide" class="play-guide" @click="guideClicked">
+      🎧 지금 기분을 담은 음악, 한 번 들어볼래요?
     </div>
 
-    <!-- 유튜브 플레이어 -->
-    <div id="player" class="hidden-player"></div>
+    <!-- 유튜브 플레이어 (숨김) -->
+    <div id="yt-player" class="hidden-player"></div>
   </div>
 </template>
+
 <script>
 import CatStampBar from '/src/components/stamp/stamp.vue';
 import UserProfile from '/src/components/common/UserProfile.vue';
@@ -43,7 +42,7 @@ const BASE_STAMPS = [
   { title: '꽐라냥', stampImage: '/src/assets/stamp_pic/꽐라냥.png' },
   { title: '독서냥', stampImage: '/src/assets/stamp_pic/독서냥.png' },
   { title: '맛집냥', stampImage: '/src/assets/stamp_pic/맛집냥.png' },
-  { title: '영화냥', stampImage: '/src/assets/stamp_pic/영화냥.png' },
+  { title: '영화냥', stampImage: '/src/assets/stamp_pic/영화냥.png' }
 ];
 
 export default {
@@ -53,11 +52,12 @@ export default {
     return {
       currentPage: 0,
       stampsPerPage: 4,
-      videoId: '',
+      stamps: [],
       player: null,
       ytReady: false,
-      showAudioNotice: true,
-      stamps: [],
+      showPlayGuide: true,
+      lastVideoId: null,
+      waitingToPlay: false
     };
   },
   computed: {
@@ -70,36 +70,27 @@ export default {
     }
   },
   mounted() {
-    this.setupYouTube();
     this.fetchStampCounts();
+    this.loadYTScript();
 
-    this.$nextTick(() => {
-      setTimeout(() => {
-        this.tryUnMuteViaRouting();
-      }, 500);
-    });
+    setTimeout(() => {
+      this.showPlayGuide = false;
+    }, 4000);
   },
   methods: {
     async fetchStampCounts() {
       try {
         const res = await fetch('http://localhost:3000/stampCounts');
         const stampCounts = await res.json();
-
         this.stamps = BASE_STAMPS.map((stamp) => ({
           ...stamp,
-          count: stampCounts[stamp.title] ?? 0,
+          count: stampCounts[stamp.title] ?? 0
         }));
       } catch (err) {
         console.error('❌ 스탬프 count 불러오기 실패:', err);
       }
     },
-
-    setVideoId(id) {
-      this.videoId = id;
-      this.tryInitPlayer(); // ▶ 무조건 시도
-    },
-
-    setupYouTube() {
+    loadYTScript() {
       if (!window.YT) {
         const tag = document.createElement('script');
         tag.src = 'https://www.youtube.com/iframe_api';
@@ -111,56 +102,58 @@ export default {
 
       window.onYouTubeIframeAPIReady = () => {
         this.ytReady = true;
-        this.tryInitPlayer(); // ▶ 무조건 시도
+
+        // videoId와 클릭이 이미 있었다면 자동 재생
+        if (this.waitingToPlay && this.lastVideoId) {
+          this.waitingToPlay = false;
+          this.showPlayGuide = false;
+          this.playVideoFromId(this.lastVideoId);
+        }
       };
     },
+    playVideoFromId(videoId) {
+      this.lastVideoId = videoId;
 
-    tryInitPlayer() {
-      if (this.videoId && this.ytReady) {
-        this.initPlayer();
+      if (this.waitingToPlay && this.ytReady) {
+        this.waitingToPlay = false;
+        this.showPlayGuide = false;
       }
-    },
 
-    initPlayer() {
-      if (!this.videoId) return;
-      if (this.player && this.player.destroy) this.player.destroy();
+      if (!this.ytReady) return;
 
-      this.player = new YT.Player('player', {
-        height: '0',
-        width: '0',
-        videoId: this.videoId,
-        playerVars: {
-          autoplay: 1,
-          mute: 1,
-          controls: 0,
-          modestbranding: 1,
-          rel: 0,
-        },
-        events: {
-          onReady: (event) => {
-            event.target.playVideo();
-            event.target.setVolume(50);
+      if (this.player) {
+        this.player.loadVideoById(videoId);
+        this.player.playVideo();
+      } else {
+        this.player = new YT.Player('yt-player', {
+          height: '0',
+          width: '0',
+          videoId,
+          playerVars: {
+            autoplay: 1,
+            mute: 0,
+            controls: 0,
+            modestbranding: 1,
+            rel: 0
+          },
+          events: {
+            onReady: (event) => event.target.playVideo()
           }
-        }
-      });
-    },
-
-    tryUnMuteViaRouting() {
-      if (this.player && this.ytReady) {
-        try {
-          this.player.unMute();
-          this.showAudioNotice = false;
-          console.log('🎯 자동 unMute 성공');
-        } catch (e) {
-          console.warn('❌ 자동 unMute 실패');
-        }
+        });
       }
     },
+    guideClicked() {
+      this.waitingToPlay = true;
+      this.showPlayGuide = false;
 
+      if (this.lastVideoId && this.ytReady) {
+        this.waitingToPlay = false;
+        this.playVideoFromId(this.lastVideoId);
+      }
+    },
     nextPage() {
       if (this.currentPage < this.totalPages - 1) this.currentPage++;
     },
-
     previousPage() {
       if (this.currentPage > 0) this.currentPage--;
     }
@@ -173,10 +166,8 @@ export default {
   display: flex;
   height: 100vh;
   width: 100%;
-  max-width: 100%;
   margin: 0;
 }
-
 .left-side {
   width: 50%;
   display: flex;
@@ -185,7 +176,6 @@ export default {
   padding-top: 40px;
   box-sizing: border-box;
 }
-
 .right-side {
   width: 50%;
   background-color: #fff5f7;
@@ -195,24 +185,19 @@ export default {
   flex-direction: column;
   align-items: center;
 }
-
 .stamps {
-  justify-content: center;
-  align-items: center;
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 16px;
   flex-grow: 1;
 }
-
 .button-row {
   display: flex;
   justify-content: flex-end;
   width: 100%;
   margin-top: auto;
 }
-
 .next-button,
 .prev-button {
   background-color: #ff88a0;
@@ -222,29 +207,34 @@ export default {
   border-radius: 10px;
   cursor: pointer;
 }
-
 .prev-button {
   margin-right: 10px;
 }
-
 .hidden-player {
   position: absolute;
   width: 0;
   height: 0;
   overflow: hidden;
 }
-
-.audio-notice {
+.play-guide {
   position: fixed;
-  bottom: 20px;
+  bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #333;
-  color: white;
-  padding: 12px 20px;
-  border-radius: 20px;
+  background-color: #222;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 16px;
   font-size: 14px;
   z-index: 999;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  animation: fadeInOut 4s ease-in-out forwards;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(10px); }
 }
 </style>

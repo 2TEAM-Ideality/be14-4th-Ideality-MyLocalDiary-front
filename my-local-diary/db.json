@@ -1,22 +1,19 @@
 {
-    "user": {
-      "name": "Madara Uchiha",
-      "profileImage": "/src/assets/profile/profile.png",
-      "posts": 10,
-      "followers": 600,
-      "following": 600,
-      "bio": "맛집 탐방 에디터!",
-      "musicTitle": "freestyle - y",
-      "videoId": "DC13_hnbzCA"
-    },
-      "stampCounts": {
-        "카페냥": 4,
-        "산책냥": 2,
-        "꽐라냥": 5,
-        "독서냥": 1,
-        "맛집냥": 3,
-        "영화냥": 0
-      }
-    }
-    
-  
+  "user": {
+    "name": "Madara Uchiha",
+    "profileImage": "/src/assets/profile/profile.png",
+    "posts": 10,
+    "followers": 600,
+    "following": 600,
+    "bio": "음악과 여행을 즐기는 맛집 에디터!",
+    "youtubeUrl": "https://www.youtube.com/watch?v=2Vv-BfVoq4g"
+  },
+  "stampCounts": {
+    "카페냥": 4,
+    "산책냥": 2,
+    "꽐라냥": 5,
+    "독서냥": 1,
+    "맛집냥": 3,
+    "영화냥": 0
+  }
+}

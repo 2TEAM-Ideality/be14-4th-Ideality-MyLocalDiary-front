@@ -14,20 +14,18 @@
 
     <p class="mt-4 text-sm">{{ userInfo.bio }}</p>
 
-    <!-- 🎵 음악 제목 (버튼 대신 텍스트처럼 보이는 요소) -->
-    <p @click="onUnMute" class="music-title mt-4 text-sm">
-      🎵 {{ userInfo.musicTitle }}
-    </p>
+    <!-- 🎵 동영상 제목 표시 -->
+    <p class="music-title mt-4 text-sm">🎵 {{ videoTitle }}</p>
   </div>
 </template>
 
 <script>
 export default {
   name: 'UserProfile',
-  emits: ['video-id-loaded', 'request-unmute'],
   data() {
     return {
       userInfo: null,
+      videoTitle: ''
     };
   },
   mounted() {
@@ -39,14 +37,36 @@ export default {
         const response = await fetch('http://localhost:3000/user');
         const data = await response.json();
         this.userInfo = data;
-        this.$emit('video-id-loaded', data.videoId);
+
+        // YouTube URL에서 videoId 추출
+        const match = data.youtubeUrl?.match(/v=([a-zA-Z0-9_-]+)/);
+        const videoId = match ? match[1] : null;
+
+        if (videoId) {
+          this.$emit('video-id-loaded', videoId);
+          this.fetchVideoTitle(videoId);
+        }
       } catch (error) {
         console.error('유저 정보 불러오기 실패:', error);
       }
     },
-    onUnMute() {
-      this.$emit('request-unmute'); // 부모에게 소리 켜기 요청
-    },
+    async fetchVideoTitle(videoId) {
+      const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
+      try {
+        const response = await fetch(
+          `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${API_KEY}`
+        );
+        const data = await response.json();
+        if (data.items && data.items.length > 0) {
+          this.videoTitle = data.items[0].snippet.title;
+        } else {
+          this.videoTitle = '제목을 가져올 수 없습니다.';
+        }
+      } catch (error) {
+        console.error('동영상 제목을 가져오는 데 실패했습니다:', error);
+        this.videoTitle = '제목을 가져올 수 없습니다.';
+      }
+    }
   }
 };
 </script>
@@ -54,14 +74,11 @@ export default {
 <style scoped>
 .music-title {
   font-weight: 400;
-  color: #4b5563; /* Tailwind의 text-gray-600 */
+  color: #4b5563;
   transition: color 0.3s ease;
   user-select: none;
 }
-
 .music-title:hover {
-  color: #374151; /* 약간 더 진한 회색 */
-  text-decoration: none;
+  color: #374151;
 }
-
 </style>
