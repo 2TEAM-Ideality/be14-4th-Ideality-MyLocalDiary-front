@@ -186,7 +186,7 @@ function initMap() {
 function searchAddressToCoordinate() {
   if (!placeSearch.value || markers.value.length >= 5) return
 
-  axios.get('https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode', {
+  axios.get('/geocode/map-geocode/v2/geocode', {
     params: { query: placeSearch.value },
     headers: {
       'X-NCP-APIGW-API-KEY-ID': import.meta.env.VITE_NAVER_CLIENT_ID,
