@@ -8,7 +8,7 @@
         :ref="el => markerRefs[index] = el"
         :image="place.thumbnail_image"
         :post_id="place.post_id"
-        :name="name"
+        :name="place.name"
         @click="handleMarkerClick"
     />
 
