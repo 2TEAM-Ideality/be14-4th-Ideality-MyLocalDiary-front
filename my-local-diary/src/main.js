@@ -6,7 +6,7 @@ import vuetify from './plugins/vuetify'
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-import '@mdi/font/css/materialdesig2nicons.css'  // 아이콘
+import '@mdi/font/css/materialdesignicons.css'  // 아이콘
 
 
 // ⭐ Naver Maps API 스크립트 동적 로딩

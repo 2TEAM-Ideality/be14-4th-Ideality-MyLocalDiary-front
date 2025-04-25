@@ -45,14 +45,21 @@
       <p class="text-caption mb-2">장소는 최대 5곳까지 등록할 수 있습니다.</p>
 
       <v-text-field
-        v-model="placeSearch"
-        label="장소 검색"
-        append-inner-icon="mdi-magnify"
-        outlined
-        dense
-        class="mb-2"
-        @focus="currentStep = 'place'"
-      />
+  v-model="placeSearch"
+  label="장소 검색"
+  outlined
+  dense
+  class="mb-2"
+  @focus="currentStep = 'place'"
+  @keyup.enter="searchAddressToCoordinate"
+>
+<template #append-inner>
+  <v-btn icon variant="text" @click="searchAddressToCoordinate">
+    <v-icon>mdi-magnify</v-icon>
+  </v-btn>
+</template>
+</v-text-field>
+
       <p class="text-caption mb-4">업로드한 이미지를 드래그 앤 드롭해서 썸네일로 등록해주세요!</p>
 
       <v-row class="mb-4">
@@ -68,7 +75,7 @@
         </v-col>
       </v-row>
 
-      <div id="map" class="map-container mb-6"></div>
+      <div id="map" class="map-container mb-6" style="height: 300px;"></div>
 
       <h2 class="text-h6 font-weight-bold mb-2">Diary</h2>
       <v-text-field v-model="title" label="제목" outlined dense class="mb-2" />
@@ -81,9 +88,8 @@
   </v-container>
 </template>
 
-
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination } from 'swiper/modules'
@@ -177,23 +183,21 @@ function initMap() {
   }
 }
 
-watch(placeSearch, async (query) => {
-  if (!query || query.length < 2 || markers.value.length >= 5) return;
+function searchAddressToCoordinate() {
+  if (!placeSearch.value || markers.value.length >= 5) return
 
-  try {
-    const res = await axios.get('/geocode/map-geocode/v2/geocode', {
-      params: { query },
-      headers: {
-        'X-NCP-APIGW-API-KEY-ID': import.meta.env.VITE_NAVER_CLIENT_ID,
-        'X-NCP-APIGW-API-KEY': import.meta.env.VITE_NAVER_CLIENT_SECRET
-      }
-    });
+  axios.get('https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode', {
+    params: { query: placeSearch.value },
+    headers: {
+      'X-NCP-APIGW-API-KEY-ID': import.meta.env.VITE_NAVER_CLIENT_ID,
+      'X-NCP-APIGW-API-KEY': import.meta.env.VITE_NAVER_CLIENT_SECRET
+    }
+  }).then(res => {
+    const result = res.data.addresses[0]
+    if (!result) return
 
-    const result = res.data.addresses[0];
-    if (!result) return;
-
-    const latlng = new naver.maps.LatLng(result.y, result.x);
-    map.setCenter(latlng);
+    const latlng = new naver.maps.LatLng(result.y, result.x)
+    map.setCenter(latlng)
 
     new naver.maps.Marker({
       position: latlng,
@@ -203,20 +207,21 @@ watch(placeSearch, async (query) => {
         size: new naver.maps.Size(60, 80),
         anchor: new naver.maps.Point(30, 80)
       }
-    });
+    })
 
     markers.value.push({
       lat: result.y,
       lng: result.x,
-      label: query,
+      label: placeSearch.value,
       image: 'https://via.placeholder.com/100x100.png?text=+'
-    });
+    })
 
     placeSearch.value = ''
-  } catch (error) {
-    console.error('❌ 장소 검색 실패:', error);
-  }
-})
+  }).catch(err => {
+    console.error('❌ 장소 검색 실패:', err)
+    alert('장소 검색에 실패했습니다. 인증 정보를 확인해주세요.')
+  })
+}
 
 function onThumbnailChange(event, index) {
   const file = event.target.files[0]
@@ -248,6 +253,7 @@ function submitPost() {
     .catch((err) => {
       console.error('등록 실패:', err)
     })
+
 }
 </script>
 
@@ -303,11 +309,12 @@ function submitPost() {
 }
 .map-container {
   width: 100%;
-  height: 240px;
+  height: 300px; /* 변경됨 */
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid #f5c1cd;
   box-shadow: 0 1px 5px rgba(210, 110, 130, 0.1);
+  margin-top: 16px;
 }
 
 .upload-area {
