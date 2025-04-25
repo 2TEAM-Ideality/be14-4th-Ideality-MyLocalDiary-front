@@ -17,14 +17,12 @@
 
       <div class="upload-area mb-4" @dragover.prevent="currentStep = 'photo'" @drop.prevent="handleDrop">
         <input type="file" multiple accept="image/*" ref="fileInput" @change="handleFileSelect" hidden />
-
         <template v-if="uploadedImages.length > 0">
           <swiper :modules="[Pagination]" :pagination="{ clickable: true }" class="image-swiper">
             <swiper-slide v-for="(image, index) in uploadedImages" :key="index">
               <img :src="image" class="uploaded-image" />
             </swiper-slide>
           </swiper>
-
           <div class="thumbnail-bar">
             <div v-for="(image, index) in uploadedImages" :key="index" class="thumbnail">
               <img :src="image" />
@@ -42,26 +40,48 @@
       <h2 class="text-h6 font-weight-bold mb-3">장소 및 썸네일 등록</h2>
       <p class="text-caption mb-2">장소는 최대 5곳까지 등록할 수 있습니다.</p>
 
-      <!-- 공통 장소 검색 컴포넌트 -->
-      <SearchLocation @place-selected="addMarkerFromChild" class="mb-4" />
-      <SearchLocation2 @place-selected="addMarkerFromChild" class="mb-6" />
+      <div class="d-flex align-center mb-2">
+        <v-select
+          v-model="searchMode"
+          :items="['도로명', '장소']"
+          dense outlined hide-details
+          class="me-2"
+          style="width: 40px; height: 55px;"
+        />
 
-      <p class="text-caption mb-4">업로드한 이미지를 드래그 앤 드롭해서 썸네일로 등록해주세요!</p>
+        <v-text-field
+          v-model="query"
+          label="장소 검색"
+          outlined dense
+          class="flex-grow-1 me-2"
+          @keyup.enter="searchPlace"
+          style="width: 100px; height: 55px;"
+        >
+          <template #append-inner>
+            <v-btn icon variant="text" @click="searchPlace">
+              <v-icon>mdi-magnify</v-icon>
+            </v-btn>
+          </template>
+        </v-text-field>
+        <v-btn class="pink-small" @click="fixMarker">장소 등록</v-btn>
+      </div>
 
-      <v-row class="mb-4">
-        <v-col v-for="(marker, i) in markers" :key="i" cols="4" class="text-center">
-          <div class="marker-wrapper">
-            <label class="upload-label">
-              <input type="file" accept="image/*" @change="onThumbnailChange($event, i)" hidden />
-              <img :src="marker.image" class="marker-img" />
-            </label>
-          </div>
-          <p class="text-caption mt-1">{{ marker.label }}</p>
-          <v-btn size="x-small" icon @click="removeMarker(i)"><v-icon>mdi-close</v-icon></v-btn>
-        </v-col>
-      </v-row>
+      <div ref="mapRef" class="map-container mb-4" style="height: 300px;"></div>
 
-      <div id="map" class="map-container mb-6" style="height: 300px;"></div>
+      <div class="mb-4">
+        <v-row>
+          <v-col v-for="(marker, i) in markers" :key="i" cols="4" class="text-center">
+            <div class="marker-wrapper">
+              <label class="upload-label">
+                <input type="file" accept="image/*" @change="onThumbnailChange($event, i)" hidden />
+                <img :src="marker.image" class="marker-img" />
+              </label>
+            </div>
+            <p class="text-caption mt-1">{{ marker.label }}</p>
+            <v-btn size="x-small" icon @click="removeMarker(i)"><v-icon>mdi-close</v-icon></v-btn>
+          </v-col>
+        </v-row>
+      </div>
 
       <h2 class="text-h6 font-weight-bold mb-2">Diary</h2>
       <v-text-field v-model="title" label="제목" outlined dense class="mb-2" />
@@ -79,8 +99,6 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination } from 'swiper/modules'
-import SearchLocation from '@/components/map/SearchLocation.vue'
-import SearchLocation2 from '@/components/map/SearchLocation2.vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
 
@@ -91,100 +109,22 @@ const title = ref('')
 const content = ref('')
 const isPublic = ref(true)
 const currentStep = ref('photo')
+const searchMode = ref('도로명')
+const query = ref('')
+
 const today = (() => {
-  const d = new Date()
-  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} (${['일','월','화','수','목','금','토'][d.getDay()]})`
+  const date = new Date()
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const weekdays = ['일', '월', '화', '수', '목', '금', '토']
+  const weekday = weekdays[date.getDay()]
+  return `${year}.${month}.${day} (${weekday})`
 })()
 
 let map
-
-function openFileDialog() {
-  fileInput.value?.click()
-}
-function handleFileSelect(e) {
-  Array.from(e.target.files).forEach(readAndAddImage)
-  currentStep.value = 'photo'
-}
-function handleDrop(e) {
-  Array.from(e.dataTransfer.files).forEach(readAndAddImage)
-  currentStep.value = 'photo'
-}
-function readAndAddImage(file) {
-  const reader = new FileReader()
-  reader.onload = () => uploadedImages.value.push(reader.result)
-  reader.readAsDataURL(file)
-}
-function removeImage(i) {
-  uploadedImages.value.splice(i, 1)
-}
-
-function createMarkerHTML(imageUrl) {
-  return `<div style="width: 60px; height: 80px; display: flex; flex-direction: column; align-items: center;">
-    <div style="width: 56px; height: 56px; background: white; border: 4px solid black; border-radius: 50%; overflow: hidden;">
-      <img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" />
-    </div>
-    <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 12px solid black; margin-top: -4px;"></div>
-  </div>`
-}
-
-function initMap() {
-  map = new naver.maps.Map('map', {
-    center: new naver.maps.LatLng(37.3595704, 127.105399),
-    zoom: 10,
-    zoomControl: true,
-    zoomControlOptions: { position: naver.maps.Position.RIGHT_CENTER }
-  })
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      const loc = new naver.maps.LatLng(pos.coords.latitude, pos.coords.longitude)
-      map.setCenter(loc)
-      map.setZoom(15)
-    })
-  }
-}
-
-function addMarkerFromChild({ lat, lng, label }) {
-  if (markers.value.length >= 5) return
-
-  const latlng = new naver.maps.LatLng(lat, lng)
-  new naver.maps.Marker({
-    position: latlng,
-    map,
-    icon: {
-      content: createMarkerHTML('https://via.placeholder.com/100x100.png?text=+'),
-      size: new naver.maps.Size(60, 80),
-      anchor: new naver.maps.Point(30, 80)
-    }
-  })
-
-  markers.value.push({ lat, lng, label, image: 'https://via.placeholder.com/100x100.png?text=+' })
-}
-
-function onThumbnailChange(e, i) {
-  const file = e.target.files[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = () => { markers.value[i].image = reader.result }
-  reader.readAsDataURL(file)
-}
-
-function removeMarker(i) {
-  markers.value.splice(i, 1)
-}
-
-function submitPost() {
-  axios.post('/api/posts', {
-    title: title.value,
-    content: content.value,
-    images: uploadedImages.value,
-    markers: markers.value,
-    isPublic: isPublic.value
-  }).then(() => {
-    alert('게시글이 등록되었습니다!')
-  }).catch(err => {
-    console.error('등록 실패:', err)
-  })
-}
+const mapRef = ref(null)
+let previewMarker = null
 
 onMounted(() => {
   const clientId = import.meta.env.VITE_NAVER_MAP_CLIENT_ID
@@ -194,6 +134,128 @@ onMounted(() => {
   script.onload = initMap
   document.head.appendChild(script)
 })
+
+function initMap() {
+  map = new naver.maps.Map(mapRef.value, {
+    center: new naver.maps.LatLng(37.3595704, 127.105399),
+    zoom: 13,
+    mapTypeControl: true,
+    zoomControl: true,
+    zoomControlOptions: {
+      position: naver.maps.Position.RIGHT_CENTER
+    }
+  })
+}
+
+function searchPlace() {
+  if (!query.value) return
+
+  if (searchMode.value === '도로명') {
+    // Geocode API (도로명 주소 검색)
+    naver.maps.Service.geocode({ query: query.value }, (status, response) => {
+      if (status !== naver.maps.Service.Status.OK || response.v2.meta.totalCount === 0) {
+        alert('주소를 찾을 수 없습니다.');
+        return
+      }
+
+      const result = response.v2.addresses[0]
+      const latlng = new naver.maps.LatLng(result.y, result.x)
+
+      if (previewMarker) previewMarker.setMap(null)
+      previewMarker = new naver.maps.Marker({
+        map,
+        position: latlng,
+        title: result.roadAddress || result.jibunAddress
+      })
+      map.setCenter(latlng)
+    })
+  } else {
+    // Local Search API (장소 이름 검색)
+    axios.get('/naver/v1/search/local.json', {
+      params: { query: query.value, display: 5 },
+      headers: {
+        'X-Naver-Client-Id': import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID,
+        'X-Naver-Client-Secret': import.meta.env.VITE_NAVER_SEARCH_CLIENT_SECRET
+      }
+    }).then(res => {
+      const item = res.data.items?.[0]
+      if (!item) return
+
+      const lat = Number(item.mapy) / 1e7
+      const lng = Number(item.mapx) / 1e7
+      const latlng = new naver.maps.LatLng(lat, lng)
+
+      if (previewMarker) previewMarker.setMap(null)
+
+      previewMarker = new naver.maps.Marker({
+        map,
+        position: latlng,
+        title: item.title.replace(/<[^>]*>/g, '')
+      })
+      map.setCenter(latlng)
+    })
+  }
+}
+
+function fixMarker() {
+  if (!previewMarker) return
+
+  const position = previewMarker.getPosition()
+  markers.value.push({
+    lat: position.lat(),
+    lng: position.lng(),
+    label: previewMarker.getTitle(),
+    image: 'https://via.placeholder.com/100x100.png?text=+'
+  })
+}
+
+function openFileDialog() {
+  fileInput.value?.click()
+}
+function handleFileSelect(event) {
+  const files = Array.from(event.target.files)
+  files.forEach(readAndAddImage)
+  currentStep.value = 'photo'
+}
+function handleDrop(event) {
+  const files = Array.from(event.dataTransfer.files)
+  files.forEach(readAndAddImage)
+  currentStep.value = 'photo'
+}
+function readAndAddImage(file) {
+  const reader = new FileReader()
+  reader.onload = () => {
+    uploadedImages.value.push(reader.result)
+  }
+  reader.readAsDataURL(file)
+}
+function removeImage(index) {
+  uploadedImages.value.splice(index, 1)
+}
+function onThumbnailChange(event, index) {
+  const file = event.target.files[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => {
+    markers.value[index].image = reader.result
+  }
+  reader.readAsDataURL(file)
+}
+function removeMarker(index) {
+  markers.value.splice(index, 1)
+}
+function submitPost() {
+  const postData = {
+    title: title.value,
+    content: content.value,
+    images: uploadedImages.value,
+    markers: markers.value,
+    isPublic: isPublic.value
+  }
+  axios.post('/api/posts', postData)
+    .then(() => alert('게시글이 등록되었습니다!'))
+    .catch(err => console.error('등록 실패:', err))
+}
 </script>
 
 
@@ -383,5 +445,26 @@ onMounted(() => {
   border-radius: 50%;
   object-fit: cover;
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.search-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.search-select {
+  min-width: 120px;
+  height: 40px;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  background-color: #fff5f7;
+  border: 1px solid #f4c7d2;
+  padding: 4px 8px;
+  color: #c26b85;
+}
+.search-select:focus {
+  outline: none;
+  border-color: #f08caa;
 }
 </style>

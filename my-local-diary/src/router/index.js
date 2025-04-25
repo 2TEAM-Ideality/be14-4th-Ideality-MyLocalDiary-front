@@ -6,6 +6,7 @@ import Stamppage from '@/views/Stamppage.vue';
 import CreateDiary from '@/views/CreateDiary.vue';
 import UserMapView from '@/views/UserMapView.vue';
 import PostCreate from '@/components/post/PostCreate.vue'
+import TempLoadingModalParent from '@/components/common/TempLoadingModalParent.vue';
 
 const routes = [
     {
@@ -64,6 +65,11 @@ const routes = [
         path: '/post/create',
         name: 'PostCreate',
         component: PostCreate
+      },
+      {
+        path: '/loadingmodal',
+        name: 'LoadingModal',
+        component: TempLoadingModalParent
       }
 ]
 
