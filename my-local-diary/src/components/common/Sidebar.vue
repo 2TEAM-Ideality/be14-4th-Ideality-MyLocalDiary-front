@@ -72,60 +72,22 @@
 
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+  import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
 
-import { useUIStore } from '@/stores/uiStore'
+  import { useUIStore } from '@/stores/uiStore'
 
-const drawer = ref(true)
-const router = useRouter()
-const ui = useUIStore()
+  const drawer = ref(true)
+  const router = useRouter()
+  const ui = useUIStore()
 
-const goToHome = () => router.push('/home')
-const goToMypage = () => router.push('/mypage')
-const goToCreateDiary = () => router.push('/create-diary')
-const goToStamp = () => router.push('/stamp')
-const openUserSearch = () => console.log('유저 검색 창 뜨기')
-const openAlarm = () => console.log('알림 창 뜨기')
+  const goToHome = () => router.push('/home')
+  const goToMypage = () => router.push('/mypage')
+  const goToCreateDiary = () => router.push('/create-diary')
+  const goToStamp = () => router.push('/stamp')
+  const openUserSearch = () => console.log('유저 검색 창 뜨기')
+  const openAlarm = () => console.log('알림 창 뜨기')
 
-// const isHover = ref(false)
-// const showText = ref(false)
-// const showImage = ref(false)
-// const drawer = ref(true)
-// const router = useRouter()
-
-// const handleMouseEnter = () => {
-//   isHover.value = true
-//   setTimeout(() => {
-//     showText.value = true
-//     showImage.value = true
-//   }, 250) // 딜레이 후 로고 표시
-// }
-
-// const handleMouseLeave = () => {
-//   isHover.value = false
-//   showText.value = false
-//   showImage.value = false
-// }
-
-// const goToHome = () => {
-//   router.push('/home')
-// }
-// const goToMypage = () => {
-//   router.push('/mypage')
-// }
-// const goToCreateDiary = () => {
-//   router.push('/create-diary')
-// }
-// const goToStamp = () => {
-//   router.push('/stamp')
-// }
-// const openUserSearch = () => {
-//   console.log("유저 검색 창 뜨기")
-// }
-// const openAlarm = () => {
-//   console.log("알림 창 뜨기")
-// }
 </script>
 
 <style scoped>

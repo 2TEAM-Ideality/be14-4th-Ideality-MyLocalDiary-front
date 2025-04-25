@@ -42,8 +42,8 @@
   </template>
   
 <script setup>
-import {useRouter} from 'vue-router';
-import LocationChip from '@/components/common/LocationChip.vue'
+  import {useRouter} from 'vue-router';
+  import LocationChip from '@/components/common/LocationChip.vue'
   
   const props = defineProps({
     date: String,
@@ -89,12 +89,12 @@ import LocationChip from '@/components/common/LocationChip.vue'
     font-size: 18px;
     font-weight: bold;
     color: #ff6e7f;
-    }
+  }
 
-    .today-date {
+  .today-date {
     color: #FECCCC;
     margin-left: 4px; /* 너무 붙지 않도록 살짝만 띄움 */
-    }
+  }
   .text-content {
     display: flex;
     flex-direction: column;
@@ -108,17 +108,17 @@ import LocationChip from '@/components/common/LocationChip.vue'
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    }
+  }
   .place-chips {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 4px;
     margin-top: 4px;
-    }
+  }
     
   .muted {
     color: #777;
   }
-  </style>
+</style>
   
