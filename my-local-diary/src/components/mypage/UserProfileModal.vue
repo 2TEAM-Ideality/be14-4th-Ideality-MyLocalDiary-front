@@ -2,7 +2,7 @@
     <v-card class="user-card">
       <!-- 상단 유저 정보 -->
       <v-card-title class="user-header" >
-        <v-avatar size="60"   @click="goToMypage">
+        <v-avatar size="60"   @click="goToMypage" class="profile-image">
           <img :src="profileImage" />
         </v-avatar>
         <div class="user-info">
@@ -161,7 +161,9 @@
   align-items: center;
   padding-bottom: 8px;
 }
-
+.profile-image {
+  cursor: pointer;
+}
 .user-info {
   width: 100%;
 }

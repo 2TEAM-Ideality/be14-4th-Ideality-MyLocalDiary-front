@@ -13,10 +13,10 @@ const loadNaverMapsScript = () => {
       resolve();
       return;
     }
-
+    // initGeocoder();
     const script = document.createElement('script');
     script.id = 'naver-maps-script';
-    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${import.meta.env.VITE_NAVER_MAP_CLIENT_ID}`;
+    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${import.meta.env.VITE_NAVER_MAP_CLIENT_ID}&submodules=geocoder`;
     script.async = true;
     script.onload = resolve;
     script.onerror = reject;
@@ -24,10 +24,10 @@ const loadNaverMapsScript = () => {
   });
 };
 
-
 loadNaverMapsScript()
   .then(() => {
     console.log('✅ Naver Maps script loaded!')
+    
     const pinia = createPinia()
     const app = createApp(App)
     
@@ -40,6 +40,7 @@ loadNaverMapsScript()
   .catch((err) => {
     console.error('❌ Failed to load Naver Maps script', err)
   })
+
 
 
   
