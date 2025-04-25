@@ -2,7 +2,7 @@
   <div class="container">
     <!-- 유저 프로필 -->
     <div class="left-side">
-      <UserProfile />
+      <UserProfile :userData="userStore" />
     </div>
 
     <!-- 스탬프 영역 -->
@@ -27,6 +27,7 @@
 <script>
 import CatStampBar from '/src/components/stamp/stamp.vue';
 import UserProfile from '/src/components/common/UserProfile.vue';
+import { useUserStore } from '/src/stores/userStore.js';
 
 const BASE_STAMPS = [
   { title: '카페냥', stampImage: '/src/assets/stamp_pic/카페냥.png' },
@@ -48,6 +49,9 @@ export default {
     };
   },
   computed: {
+    userStore() { // <-- 이거 추가
+      return useUserStore();
+    },
     totalPages() {
       return Math.ceil(this.stamps.length / this.stampsPerPage);
     },
@@ -57,8 +61,10 @@ export default {
     }
   },
   mounted() {
-    this.fetchStampCounts();
-  },
+  this.userStore.restoreUser();
+  this.fetchStampCounts();
+},
+
   methods: {
     async fetchStampCounts() {
       try {
