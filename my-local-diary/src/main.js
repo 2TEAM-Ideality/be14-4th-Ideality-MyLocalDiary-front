@@ -1,8 +1,9 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import vuetify from './plugins/vuetify'
-
+import '@mdi/font/css/materialdesignicons.css'  // 아이콘
 
 
 // ⭐ Naver Maps API 스크립트 동적 로딩
@@ -12,10 +13,10 @@ const loadNaverMapsScript = () => {
       resolve();
       return;
     }
-
+    // initGeocoder();
     const script = document.createElement('script');
     script.id = 'naver-maps-script';
-    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${import.meta.env.VITE_NAVER_MAP_CLIENT_ID}`;
+    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${import.meta.env.VITE_NAVER_MAP_CLIENT_ID}&submodules=geocoder`;
     script.async = true;
     script.onload = resolve;
     script.onerror = reject;
@@ -23,15 +24,23 @@ const loadNaverMapsScript = () => {
   });
 };
 
-
 loadNaverMapsScript()
   .then(() => {
     console.log('✅ Naver Maps script loaded!')
+    
+    const pinia = createPinia()
     const app = createApp(App)
+    
     app.use(router)
     app.use(vuetify)
+    app.use(pinia)
+
     app.mount('#app')
   })
   .catch((err) => {
     console.error('❌ Failed to load Naver Maps script', err)
   })
+
+
+
+  

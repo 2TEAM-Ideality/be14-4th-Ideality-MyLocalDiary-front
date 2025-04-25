@@ -6,6 +6,8 @@ import Stamppage from '@/views/Stamppage.vue';
 import CreateDiary from '@/views/CreateDiary.vue';
 import UserMapView from '@/views/UserMapView.vue';
 
+import TempLoadingModalParent from '@/components/common/TempLoadingModalParent.vue';
+
 const routes = [
     {
         path: '/',
@@ -53,6 +55,11 @@ const routes = [
         path: '/user-map-home',
         name: 'UserMapHome',
         component: UserMapView,
+      },
+      {
+        path: '/loadingmodal',
+        name: 'LoadingModal',
+        component: TempLoadingModalParent,
       },
 ]
 
