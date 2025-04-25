@@ -19,14 +19,12 @@
         <input type="file" multiple accept="image/*" ref="fileInput" @change="handleFileSelect" hidden />
 
         <template v-if="uploadedImages.length > 0">
-          <!-- Swiper 이미지 슬라이드 -->
           <swiper :modules="[Pagination]" :pagination="{ clickable: true }" class="image-swiper">
             <swiper-slide v-for="(image, index) in uploadedImages" :key="index">
               <img :src="image" class="uploaded-image" />
             </swiper-slide>
           </swiper>
 
-          <!-- 썸네일 리스트 -->
           <div class="thumbnail-bar">
             <div v-for="(image, index) in uploadedImages" :key="index" class="thumbnail">
               <img :src="image" />
@@ -44,21 +42,9 @@
       <h2 class="text-h6 font-weight-bold mb-3">장소 및 썸네일 등록</h2>
       <p class="text-caption mb-2">장소는 최대 5곳까지 등록할 수 있습니다.</p>
 
-      <v-text-field
-  v-model="placeSearch"
-  label="장소 검색"
-  outlined
-  dense
-  class="mb-2"
-  @focus="currentStep = 'place'"
-  @keyup.enter="searchAddressToCoordinate"
->
-<template #append-inner>
-  <v-btn icon variant="text" @click="searchAddressToCoordinate">
-    <v-icon>mdi-magnify</v-icon>
-  </v-btn>
-</template>
-</v-text-field>
+      <!-- 공통 장소 검색 컴포넌트 -->
+      <SearchLocation @place-selected="addMarkerFromChild" class="mb-4" />
+      <SearchLocation2 @place-selected="addMarkerFromChild" class="mb-6" />
 
       <p class="text-caption mb-4">업로드한 이미지를 드래그 앤 드롭해서 썸네일로 등록해주세요!</p>
 
@@ -93,26 +79,21 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination } from 'swiper/modules'
+import SearchLocation from '@/components/map/SearchLocation.vue'
+import SearchLocation2 from '@/components/map/SearchLocation2.vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
 
 const fileInput = ref(null)
 const uploadedImages = ref([])
-const placeSearch = ref('')
 const markers = ref([])
 const title = ref('')
 const content = ref('')
 const isPublic = ref(true)
 const currentStep = ref('photo')
-
 const today = (() => {
-  const date = new Date()
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  const weekdays = ['일', '월', '화', '수', '목', '금', '토']
-  const weekday = weekdays[date.getDay()]
-  return `${year}.${month}.${day} (${weekday})`
+  const d = new Date()
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} (${['일','월','화','수','목','금','토'][d.getDay()]})`
 })()
 
 let map
@@ -120,39 +101,90 @@ let map
 function openFileDialog() {
   fileInput.value?.click()
 }
-
-function handleFileSelect(event) {
-  const files = Array.from(event.target.files)
-  files.forEach(readAndAddImage)
+function handleFileSelect(e) {
+  Array.from(e.target.files).forEach(readAndAddImage)
   currentStep.value = 'photo'
 }
-
-function handleDrop(event) {
-  const files = Array.from(event.dataTransfer.files)
-  files.forEach(readAndAddImage)
+function handleDrop(e) {
+  Array.from(e.dataTransfer.files).forEach(readAndAddImage)
   currentStep.value = 'photo'
 }
-
 function readAndAddImage(file) {
   const reader = new FileReader()
-  reader.onload = () => {
-    uploadedImages.value.push(reader.result)
-  }
+  reader.onload = () => uploadedImages.value.push(reader.result)
   reader.readAsDataURL(file)
 }
-
-function removeImage(index) {
-  uploadedImages.value.splice(index, 1)
+function removeImage(i) {
+  uploadedImages.value.splice(i, 1)
 }
 
-const createMarkerHTML = (imageUrl) => `
-  <div style="width: 60px; height: 80px; position: relative; display: flex; flex-direction: column; align-items: center;">
+function createMarkerHTML(imageUrl) {
+  return `<div style="width: 60px; height: 80px; display: flex; flex-direction: column; align-items: center;">
     <div style="width: 56px; height: 56px; background: white; border: 4px solid black; border-radius: 50%; overflow: hidden;">
       <img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" />
     </div>
     <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 12px solid black; margin-top: -4px;"></div>
-  </div>
-`
+  </div>`
+}
+
+function initMap() {
+  map = new naver.maps.Map('map', {
+    center: new naver.maps.LatLng(37.3595704, 127.105399),
+    zoom: 10,
+    zoomControl: true,
+    zoomControlOptions: { position: naver.maps.Position.RIGHT_CENTER }
+  })
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const loc = new naver.maps.LatLng(pos.coords.latitude, pos.coords.longitude)
+      map.setCenter(loc)
+      map.setZoom(15)
+    })
+  }
+}
+
+function addMarkerFromChild({ lat, lng, label }) {
+  if (markers.value.length >= 5) return
+
+  const latlng = new naver.maps.LatLng(lat, lng)
+  new naver.maps.Marker({
+    position: latlng,
+    map,
+    icon: {
+      content: createMarkerHTML('https://via.placeholder.com/100x100.png?text=+'),
+      size: new naver.maps.Size(60, 80),
+      anchor: new naver.maps.Point(30, 80)
+    }
+  })
+
+  markers.value.push({ lat, lng, label, image: 'https://via.placeholder.com/100x100.png?text=+' })
+}
+
+function onThumbnailChange(e, i) {
+  const file = e.target.files[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => { markers.value[i].image = reader.result }
+  reader.readAsDataURL(file)
+}
+
+function removeMarker(i) {
+  markers.value.splice(i, 1)
+}
+
+function submitPost() {
+  axios.post('/api/posts', {
+    title: title.value,
+    content: content.value,
+    images: uploadedImages.value,
+    markers: markers.value,
+    isPublic: isPublic.value
+  }).then(() => {
+    alert('게시글이 등록되었습니다!')
+  }).catch(err => {
+    console.error('등록 실패:', err)
+  })
+}
 
 onMounted(() => {
   const clientId = import.meta.env.VITE_NAVER_MAP_CLIENT_ID
@@ -162,100 +194,8 @@ onMounted(() => {
   script.onload = initMap
   document.head.appendChild(script)
 })
-
-function initMap() {
-  map = new naver.maps.Map('map', {
-    center: new naver.maps.LatLng(37.3595704, 127.105399),
-    zoom: 10,
-    mapTypeControl: true,
-    zoomControl: true,
-    zoomControlOptions: {
-      position: naver.maps.Position.RIGHT_CENTER
-    }
-  })
-
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((position) => {
-      const currentLocation = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude)
-      map.setCenter(currentLocation)
-      map.setZoom(15)
-    })
-  }
-}
-
-function searchAddressToCoordinate() {
-  if (!placeSearch.value || markers.value.length >= 5) return
-
-  axios.get('/geocode/map-geocode/v2/geocode', {
-    params: { query: placeSearch.value },
-    headers: {
-      'X-NCP-APIGW-API-KEY-ID': import.meta.env.VITE_NAVER_CLIENT_ID,
-      'X-NCP-APIGW-API-KEY': import.meta.env.VITE_NAVER_CLIENT_SECRET
-    }
-  }).then(res => {
-    const result = res.data.addresses[0]
-    if (!result) return
-
-    const latlng = new naver.maps.LatLng(result.y, result.x)
-    map.setCenter(latlng)
-
-    new naver.maps.Marker({
-      position: latlng,
-      map,
-      icon: {
-        content: createMarkerHTML('https://via.placeholder.com/100x100.png?text=+'),
-        size: new naver.maps.Size(60, 80),
-        anchor: new naver.maps.Point(30, 80)
-      }
-    })
-
-    markers.value.push({
-      lat: result.y,
-      lng: result.x,
-      label: placeSearch.value,
-      image: 'https://via.placeholder.com/100x100.png?text=+'
-    })
-
-    placeSearch.value = ''
-  }).catch(err => {
-    console.error('❌ 장소 검색 실패:', err)
-    alert('장소 검색에 실패했습니다. 인증 정보를 확인해주세요.')
-  })
-}
-
-function onThumbnailChange(event, index) {
-  const file = event.target.files[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = () => {
-    markers.value[index].image = reader.result
-  }
-  reader.readAsDataURL(file)
-}
-
-function removeMarker(index) {
-  markers.value.splice(index, 1)
-}
-
-function submitPost() {
-  const postData = {
-    title: title.value,
-    content: content.value,
-    images: uploadedImages.value,
-    markers: markers.value,
-    isPublic: isPublic.value
-  }
-
-  axios.post('/api/posts', postData)
-    .then(() => {
-      alert('게시글이 등록되었습니다!')
-    })
-    .catch((err) => {
-      console.error('등록 실패:', err)
-    })
-
-}
 </script>
+
 
 <style scoped>
 .border-r {
