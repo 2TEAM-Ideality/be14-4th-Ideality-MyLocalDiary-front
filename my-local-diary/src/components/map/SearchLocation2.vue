@@ -2,16 +2,19 @@
     <div class="search-overlay" :style="{ marginLeft: ui.isHover ? '200px' : '80px' }">
       <v-text-field
         v-model="localQuery"
-        label="장소 검색"
         append-inner-icon="mdi-magnify"
+        placeholder="장소명 또는 주소를 입력해주세요."
         @keydown="onKeyDown"
         @click:append-inner="handleSearch"
         density="comfortable"
         variant="outlined"
         hide-details
         class="search-bar"
+        rounded="xl"
         ref="searchInput"
       />
+      <!-- label="장소 검색" -->
+
   
       <v-list v-if="searchResults.length" class="result-list">
         <v-list-item
@@ -78,12 +81,13 @@
   
   function onKeyDown(e) {
     const total = searchResults.value.length
+
+    // ⛔ Enter 키 눌렀을 때, 검색하지 않도록 검색 로직 제거
     if (e.key === 'Enter') {
       if (selectedIndex.value >= 0 && selectedIndex.value < total) {
         selectItem(searchResults.value[selectedIndex.value])
-      } else {
-        handleSearch()
       }
+      // else 문 제거됨
     } else if (e.key === 'ArrowDown') {
       selectedIndex.value = (selectedIndex.value + 1) % total
       e.preventDefault()
@@ -92,6 +96,7 @@
       e.preventDefault()
     }
   }
+
   </script>
   
   <style scoped>
@@ -101,9 +106,11 @@
     left: 24px;
     width: 360px;
     z-index: 10;
+    border-radius: 50px;
   }
   .search-bar {
     background-color: white;
+    border-radius: 50px !important;
   }
   .result-list {
     max-height: 260px;

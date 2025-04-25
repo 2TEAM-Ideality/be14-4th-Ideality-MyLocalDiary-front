@@ -7,13 +7,20 @@
 
     <!-- 지도 -->
     <div id="map" class="map"></div>
+    <!-- 검색창 -->
+    <SearchLocation2
+      :query="query"
+      @update:query="query = $event"
+      @place-selected="selectPlace"
+    />
   </div>
 </template>
 
 <script setup>
 import { onMounted, h, render } from 'vue'
 import UserProfileModal from '@/components/mypage/UserProfileModal.vue'
-import CustomMarker from '@/components/common/CustomMarker.vue' // 실제 경로에 맞게 수정
+import CustomMarker from '@/components/common/CustomMarker.vue' 
+import SearchLocation2 from '@/components/map/SearchLocation2.vue'
 
 // 더미 마커들 (CustomMarker로 표시될 데이터)
 const postLocations = [
