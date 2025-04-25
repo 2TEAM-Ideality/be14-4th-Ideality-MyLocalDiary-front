@@ -6,6 +6,7 @@ import Stamppage from '@/views/Stamppage.vue';
 import CreateDiary from '@/views/CreateDiary.vue';
 import UserMapView from '@/views/UserMapView.vue';
 import PostCard from '@/components/post/PostCard.vue';
+import TestMarker from '@/views/TestMarker.vue';
 
 import TempLoadingModalParent from '@/components/common/TempLoadingModalParent.vue';
 
@@ -41,6 +42,11 @@ const routes = [
         path: '/home',
         name: 'MapHome',
         component : MapHome
+      },
+      {
+        path: '/marker',
+        name: 'TestMarker',
+        component : TestMarker
       },
       {
         path: '/create-diary',
