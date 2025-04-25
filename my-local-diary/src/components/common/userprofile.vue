@@ -1,47 +1,36 @@
 <template>
-  <div
-    v-if="userInfo"
-    class="w-full max-w-md mx-auto p-6 rounded-2xl shadow-lg bg-white text-gray-900"
-  >
-    <!-- 프로필 -->
-    <div class="flex items-center gap-4">
-      <img
-        :src="userInfo.profileImage"
-        alt="profile"
-        class="w-20 h-20 rounded-full object-cover border-2 border-black"
-      />
-      <div>
-        <h1 class="text-2xl font-bold">{{ userInfo.name }}</h1>
-        <div class="flex gap-4 mt-1 text-sm text-gray-600">
-          <div>게시글 <strong>{{ userInfo.posts }}</strong>개</div>
-          <div>팔로워 <strong>{{ userInfo.followers }}</strong></div>
-          <div>팔로우 <strong>{{ userInfo.following }}</strong></div>
-        </div>
+  <div v-if="userInfo" class="user-profile">
+    <!-- 프로필 이미지 -->
+    <div class="profile-img">
+      <img :src="userInfo.profileImage" alt="profile" />
+    </div>
+
+    <!-- 텍스트 정보 -->
+    <div class="user-info">
+      <!-- 이름 -->
+      <h1 class="user-name">{{ userInfo.name }}</h1>
+
+      <!-- 게시글 / 팔로워 / 팔로우 -->
+      <div class="user-stats">
+        <span>게시글 <strong>{{ userInfo.posts }}</strong>개</span>
+        <span>팔로워 <strong>{{ userInfo.followers }}</strong></span>
+        <span>팔로우 <strong>{{ userInfo.following }}</strong></span>
       </div>
-    </div>
 
-    <!-- 소개 -->
-    <p class="mt-4 text-sm">{{ userInfo.bio }}</p>
+      <!-- 소개 -->
+      <p class="user-bio">{{ userInfo.bio }}</p>
 
-    <!-- 🎵 제목 + 시간 -->
-    <div
-      class="music-row mt-4 text-sm flex items-center justify-between cursor-pointer"
-      @click="togglePlayback"
-    >
-      <span class="truncate hover:underline flex-1">
-        🎵 {{ userInfo.musicTitle }}
-      </span>
-      <span class="text-xs text-gray-500 text-right min-w-[72px] pl-3 text-nowrap">
-        {{ formattedTime }} / {{ formattedDuration }}
-      </span>
-    </div>
+      <!-- 음악 -->
+      <div class="music-info" @click="togglePlayback">
+        <span>🎵 {{ userInfo.musicTitle }}</span>
+        <span class="time-info">{{ formattedTime }} / {{ formattedDuration }}</span>
+      </div>
 
-    <!-- 진행바 -->
-    <div class="w-full h-2 bg-gray-200 rounded mt-2 overflow-hidden">
-      <div
-        class="h-2 bg-pink-400 transition-all duration-300"
-        :style="{ width: progress + '%' }"
-      />
+      <!-- 버튼 -->
+      <div class="button-group">
+        <button>프로필 편집</button>
+        <button>개인 정보 설정</button>
+      </div>
     </div>
 
     <!-- 오디오 -->
@@ -88,7 +77,6 @@ export default {
         const data = await response.json();
         this.userInfo = data;
 
-        // 음악 자동 재생 시도
         this.$nextTick(() => {
           const player = this.$refs.audioPlayer;
           if (player) {
@@ -128,23 +116,89 @@ export default {
       if (!seconds || isNaN(seconds)) return '00:00';
       const min = Math.floor(seconds / 60);
       const sec = Math.floor(seconds % 60);
-      return `${min.toString().padStart(2, '0')}:${sec
-        .toString()
-        .padStart(2, '0')}`;
+      return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
     }
   }
 };
 </script>
 
 <style scoped>
-.music-row {
-  color: #4b5563;
-  user-select: none;
-  transition: color 0.3s ease;
+.user-profile {
+  max-width: 768px;
+  margin: 40px auto;
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  background-color: #ffffff; /* 배경 흰색 */
+  color: #1f2937;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb; /* 연한 회색 테두리 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); /* 가볍고 부드러운 그림자 */
+  gap: 32px;
 }
-.music-row:hover {
+
+
+.profile-img img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #d1d5db;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.user-name {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.user-stats {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.user-bio {
+  font-size: 16px;
   color: #374151;
 }
+
+.music-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+.time-info {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.button-group {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.button-group button {
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #e5e7eb;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
 .hidden {
   display: none;
 }
