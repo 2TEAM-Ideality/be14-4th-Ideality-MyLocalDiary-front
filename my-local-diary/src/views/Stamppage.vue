@@ -185,14 +185,17 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center; 
 }
 .stamps {
   width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center; /* ✅ 가로 방향 중앙 정렬 */
   gap: 16px;
   flex-grow: 1;
 }
+
 .button-row {
   display: flex;
   justify-content: flex-end;
