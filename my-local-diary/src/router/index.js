@@ -5,6 +5,7 @@ import MapHome from '@/views/MapHome.vue';
 import Stamppage from '@/views/Stamppage.vue';
 import CreateDiary from '@/views/CreateDiary.vue';
 import UserMapView from '@/views/UserMapView.vue';
+import TestMarker from '@/views/TestMarker.vue';
 
 const routes = [
     {
@@ -38,6 +39,11 @@ const routes = [
         path: '/home',
         name: 'MapHome',
         component : MapHome
+      },
+      {
+        path: '/marker',
+        name: 'TestMarker',
+        component : TestMarker
       },
       {
         path: '/create-diary',
