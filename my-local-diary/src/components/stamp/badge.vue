@@ -9,11 +9,13 @@
           </div>
         </div>
       </div>
+  
       <div class="badge-list">
         <div
           v-for="(badge, index) in badges"
           :key="index"
           class="badge-item"
+          @click="playRandomMeow"
         >
           <img :src="getBadgeImage(badge.name)" alt="badge" />
         </div>
@@ -27,6 +29,26 @@
   
   const userStore = useUserStore();
   const badges = ref([]);
+  
+  const catSounds = [
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat1.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat2.wav',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat3.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat4.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat5.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat6.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat7.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat8.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat9.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat10.wav',
+  ];
+  
+  const playRandomMeow = () => {
+    const randomIndex = Math.floor(Math.random() * catSounds.length);
+    const audio = new Audio(catSounds[randomIndex]);
+    audio.volume = 0.8; // (선택) 소리 약간 부드럽게
+    audio.play();
+  };
   
   const getBadgeImage = (name) => {
     return `/src/assets/badge/${name}뱃지.png`; 
@@ -72,13 +94,13 @@
   .title-wrapper {
     display: flex;
     align-items: center;
-    gap: 8px; /* 제목과 *설명 사이 간격 */
+    gap: 8px;
   }
   
   .badge-title {
     font-size: 18px;
     font-weight: 600;
-    margin: 0; /* h2 기본 margin 없앰 */
+    margin: 0;
   }
   
   .tooltip-wrapper {
@@ -88,12 +110,12 @@
   
   .tooltip-text {
     font-size: 12px;
-    color: #aaa; /* ✅ 연한 회색 */
+    color: #aaa;
   }
   
   .tooltip-box {
     position: absolute;
-    top: 24px; /* 아래로 툴팁 */
+    top: 24px;
     left: 50%;
     transform: translateX(-50%);
     padding: 6px 10px;
@@ -125,6 +147,7 @@
     height: 170px;
     object-fit: cover;
     transition: transform 0.3s ease;
+    cursor: pointer;
   }
   
   .badge-item img:hover {
