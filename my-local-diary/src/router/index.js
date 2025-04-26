@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Mypage from '@/views/Mypage.vue'
+import Mypage from '@/views/mypage/Mypage.vue'
 import Landingpage from '@/views/Landingpage.vue';
 import MapHome from '@/views/MapHome.vue'; 
 import Stamppage from '@/views/Stamppage.vue';
 import CreateDiary from '@/views/CreateDiary.vue';
 import UserMapView from '@/views/UserMapView.vue';
 import TestMarker from '@/views/TestMarker.vue';
+import EditProfile from '@/views/mypage/EditPage.vue'
 
 import TempLoadingModalParent from '@/components/common/TempLoadingModalParent.vue';
 
@@ -56,6 +57,11 @@ const routes = [
         path: '/mypage',
         name: 'Mypage',
         component: Mypage,
+      },
+      {
+        path: '/edit-profile',
+        name: 'EditProfile',
+        component: EditProfile
       },
       {
         path: '/stamp',
