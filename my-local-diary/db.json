@@ -1,0 +1,20 @@
+{
+  "user": {
+    "name": "Madara Uchiha",
+    "profileImage": "/src/assets/profile/profile.png",
+    "posts": 10,
+    "followers": 600,
+    "following": 600,
+    "bio": "음악과 여행을 즐기는 맛집 에디터!",
+    "musicUrl": "https://rococo-cocada-2c23e0.netlify.app/audio/aespa%20-%20Supernova.mp3",
+    "musicTitle": "aespa - Supernonva"
+  },
+  "stampCounts": {
+    "카페냥": 4,
+    "산책냥": 2,
+    "꽐라냥": 5,
+    "독서냥": 1,
+    "맛집냥": 3,
+    "영화냥": 1
+  }
+}

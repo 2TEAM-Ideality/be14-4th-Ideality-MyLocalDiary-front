@@ -4,26 +4,28 @@
           ref="mapContainer"
           :style="{ width, height }"
         ></div>
-      </template>
-      
-      <script setup>
-      import { ref, onMounted } from 'vue'
-      
-      const props = defineProps({
-        width: {
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+
+const props = defineProps({
+        width: 
+        {
           type: String,
           default: '100%'
         },
-        height: {
+        height: 
+        {
           type: String,
           default: '300px'
         }
-      })
+        })
       
-      const mapContainer = ref(null)
-      let map = null
-      
-      // ✅ 임의의 위치 데이터 배열
+const mapContainer = ref(null)
+let map = null
+
+// ✅ 임의의 위치 데이터 배열
       const postLocations = [
         {
           lat: 37.5704,
@@ -47,7 +49,7 @@
         }
       ]
       
-      onMounted(() => {
+onMounted(() => {
         if (!window.naver || !window.naver.maps) {
           console.error('❌ Naver Maps API가 아직 로드되지 않았어요.')
           return
@@ -64,8 +66,8 @@
           zoomControl: true
         })
       
-        // ✅ 마커 여러 개 찍기
-        postLocations.forEach(loc => {
+// ✅ 마커 여러 개 찍기
+postLocations.forEach(loc => {
           new naver.maps.Marker({
             position: new naver.maps.LatLng(loc.lat, loc.lng),
             map: map,
@@ -89,11 +91,10 @@
           })
         })
       })
-      </script>
-      
-      <style scoped>
-      .mini-map {
+</script>
+
+<style scoped>
+.mini-map {
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      }
-      </style>
-      
+}
+</style>
