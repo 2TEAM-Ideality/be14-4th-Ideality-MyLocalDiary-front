@@ -3,6 +3,7 @@
     <!-- 유저 프로필 -->
     <div class="left-side">
       <UserProfile :userData="userStore" />
+      <Badge />
     </div>
 
     <!-- 스탬프 영역 -->
@@ -24,10 +25,12 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted } from 'vue';
 import CatStampBar from '/src/components/stamp/stamp.vue';
 import UserProfile from '/src/components/common/UserProfile.vue';
 import { useUserStore } from '/src/stores/userStore.js';
+import Badge from '/src/components/stamp/badge.vue';
 
 const BASE_STAMPS = [
   { title: '카페냥', stampImage: '/src/assets/stamp_pic/카페냥.png' },
@@ -38,69 +41,71 @@ const BASE_STAMPS = [
   { title: '영화냥', stampImage: '/src/assets/stamp_pic/영화냥.png' }
 ];
 
-export default {
-  name: 'Stamppage',
-  components: { CatStampBar, UserProfile },
-  data() {
-    return {
-      currentPage: 0,
-      stampsPerPage: 4,
-      stamps: []
-    };
-  },
-  computed: {
-    userStore() { // <-- 이거 추가
-      return useUserStore();
-    },
-    totalPages() {
-      return Math.ceil(this.stamps.length / this.stampsPerPage);
-    },
-    paginatedStamps() {
-      const start = this.currentPage * this.stampsPerPage;
-      return this.stamps.slice(start, start + this.stampsPerPage);
-    }
-  },
-  mounted() {
-  this.userStore.restoreUser();
-  this.fetchStampCounts();
-},
+const userStore = useUserStore();
 
-  methods: {
-    async fetchStampCounts() {
-      try {
-        const res = await fetch('http://localhost:3000/stampCounts');
-        const stampCounts = await res.json();
-        this.stamps = BASE_STAMPS.map((stamp) => ({
-          ...stamp,
-          count: stampCounts[stamp.title] ?? 0
-        }));
-      } catch (err) {
-        console.error('❌ 스탬프 count 불러오기 실패:', err);
-      }
-    },
-    nextPage() {
-      if (this.currentPage < this.totalPages - 1) this.currentPage++;
-    },
-    previousPage() {
-      if (this.currentPage > 0) this.currentPage--;
-    }
+const currentPage = ref(0);
+const stampsPerPage = 4;
+const stamps = ref([]);
+
+const totalPages = computed(() => Math.ceil(stamps.value.length / stampsPerPage));
+
+const paginatedStamps = computed(() => {
+  const start = currentPage.value * stampsPerPage;
+  return stamps.value.slice(start, start + stampsPerPage);
+});
+
+const fetchStampCounts = async () => {
+  try {
+    const res = await fetch('http://localhost:3000/stampCounts');
+    const stampCounts = await res.json();
+    stamps.value = BASE_STAMPS.map((stamp) => ({
+      ...stamp,
+      count: stampCounts[stamp.title] ?? 0
+    }));
+  } catch (err) {
+    console.error('❌ 스탬프 count 불러오기 실패:', err);
   }
 };
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value - 1) currentPage.value++;
+};
+
+const previousPage = () => {
+  if (currentPage.value > 0) currentPage.value--;
+};
+
+onMounted(() => {
+  userStore.restoreUser();
+  fetchStampCounts();
+});
 </script>
 
 <style scoped>
+/* 화면 기본 여백 없애기 */
+:global(body) {
+  margin: 0;
+  padding: 0;
+}
+
 .container {
   display: flex;
   height: 100vh;
-  width: 100%;
+  width: 100vw; /* 기존 100% → 100vw 로! */
+  min-width: 100vw; /* 추가 */
   margin: 0;
 }
+
 .left-side {
   width: 50%;
   display: flex;
-  justify-content: center;
-  align-items: start;
-  padding-top: 40px;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0;
+  margin-top: 0;
+  position: relative;
+  top: -20px;
 }
 .right-side {
   width: 50%;
@@ -110,9 +115,10 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; 
+  justify-content: center;
 }
 .stamps {
+  padding-top: 20px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -120,7 +126,6 @@ export default {
   gap: 16px;
   flex-grow: 1;
 }
-
 .button-row {
   display: flex;
   justify-content: flex-end;

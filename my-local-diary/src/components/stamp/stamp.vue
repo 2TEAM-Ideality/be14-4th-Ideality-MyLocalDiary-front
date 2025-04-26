@@ -21,38 +21,37 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'CatStampBar',
-  props: {
-    title: { type: String, required: true },
-    stampImage: { type: String, required: true },
-    count: { type: Number, default: 5 },
-  },
-  computed: {
-    generatedStamps() {
-      return Array(this.count).fill(this.stampImage);
-    },
-  },
-  methods: {
-    playRandomMeow() {
-      const catSounds = [
-        'https://prismatic-sunshine-3445cc.netlify.app/cats/cat1.mp3',
-        'https://prismatic-sunshine-3445cc.netlify.app/cats/cat2.wav',
-        'https://prismatic-sunshine-3445cc.netlify.app/cats/cat3.mp3',
-        'https://prismatic-sunshine-3445cc.netlify.app/cats/cat4.mp3',
-        'https://prismatic-sunshine-3445cc.netlify.app/cats/cat5.mp3',
-        'https://prismatic-sunshine-3445cc.netlify.app/cats/cat6.mp3',
-        'https://prismatic-sunshine-3445cc.netlify.app/cats/cat7.mp3',
-        'https://prismatic-sunshine-3445cc.netlify.app/cats/cat8.mp3',
-        'https://prismatic-sunshine-3445cc.netlify.app/cats/cat9.mp3',
-        'https://prismatic-sunshine-3445cc.netlify.app/cats/cat10.wav',
-      ];
-      const randomIndex = Math.floor(Math.random() * catSounds.length);
-      const audio = new Audio(catSounds[randomIndex]);
-      audio.play();
-    },
-  },
+<script setup>
+import { computed } from 'vue';
+import { ref } from 'vue';
+import { defineProps } from 'vue';
+
+const props = defineProps({
+  title: { type: String, required: true },
+  stampImage: { type: String, required: true },
+  count: { type: Number, default: 5 },
+});
+
+const generatedStamps = computed(() => {
+  return Array(props.count).fill(props.stampImage);
+});
+
+const playRandomMeow = () => {
+  const catSounds = [
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat1.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat2.wav',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat3.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat4.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat5.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat6.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat7.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat8.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat9.mp3',
+    'https://prismatic-sunshine-3445cc.netlify.app/cats/cat10.wav',
+  ];
+  const randomIndex = Math.floor(Math.random() * catSounds.length);
+  const audio = new Audio(catSounds[randomIndex]);
+  audio.play();
 };
 </script>
 
@@ -89,8 +88,8 @@ export default {
 }
 
 .stamp {
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   display: block;
   border: none;
   border-radius: 0;
