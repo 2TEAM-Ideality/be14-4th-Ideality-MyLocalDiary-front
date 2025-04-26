@@ -1,0 +1,371 @@
+<template>
+    <div ref="modalRef" class="search-user-modal">
+        <v-card>
+            <div class="title-text">검색</div>
+            <v-row no-gutters class="search-bar-row">
+                <!-- 왼쪽 동그란 아이콘 -->
+                <v-icon size="48">mdi-account-circle</v-icon>
+
+                <!-- 오른쪽 검색창 -->
+                <v-text-field
+                    v-model="searchQuery"
+                    placeholder="유저 검색"
+                    append-inner-icon="mdi-magnify"
+                    hide-details
+                    variant="solo-inverted"
+                    density="comfortable"
+                    class="pill-input"
+                    style="flex: 1;"
+                />
+            </v-row>
+
+            <v-divider class="divider-spacing"/>
+
+            <v-list lines="two" density="comfortable" class="user-list">
+
+            <v-list-item
+            v-for="user in filteredUsers"
+            :key="user.id"
+            class="user-list-item custom-list-item"
+            >
+            <!-- 왼쪽 아바타 -->
+            <template #prepend>
+                <v-avatar size="48" class="avatar-align">
+                <img :src="user.avatar" alt="avatar" />
+                </v-avatar>
+            </template>
+
+            <!-- 오른쪽 전체 정보 -->
+            <div class="user-info">
+                <!-- 상단: 이름 + 아이콘 + 팔로우 버튼 -->
+                <div class="user-header">
+                <div class="name-icon">
+                    <span class="user-name">{{ user.name }}</span>
+                    <v-icon v-if="user.icon" size="16" class="ml-1">{{ user.icon }}</v-icon>
+                </div>
+                <v-btn
+                ripple="false"
+                :class="['follow-btn', statusClass(user.followStatus)]"
+                :variant="user.followStatus === 'wait' ? 'outlined' : 'flat'"
+                size="small"
+                :disabled="user.followStatus === 'wait'"
+                @click="handleClick(user)"
+                >
+                {{ user.statusText }}
+                </v-btn>
+                </div>
+
+                <!-- 하단: 자기소개 -->
+                <div class="user-subtitle">
+                소도시의 숨은 매력을 발굴하는 여행 에디터.
+                </div>
+            </div>
+            </v-list-item>
+
+            </v-list>
+        </v-card>
+    </div>
+</template>
+
+<script setup>
+    import { ref, watch, onMounted ,onUnmounted, onBeforeUnmount, defineEmits } from 'vue';
+    import { useUserStore } from '@/stores/userStore';
+    import profileImage from '@/assets/profile/profile.png';
+
+    // ✅ 바깥 클릭 감지용
+    const modalRef = ref(null)
+    const emit = defineEmits(['close'])
+    
+    const searchQuery = ref('');
+    const userStore = useUserStore();
+    const userId = userStore.id;
+
+    const filteredUsers = ref([]);
+    let timeoutId = null; // 디바운스용 타이머
+
+    const statusClass = (followStatus) => {
+        if (followStatus === 'following') return 'btn-following';
+        if (followStatus === 'wait') return 'btn-wait';
+        return 'btn-follow'; // followStatus가 null이거나 아무거나 → 기본 follow 버튼 스타일
+    };
+
+    function handleClick(user) {
+        if (user.followStatus === null) {
+            // 아직 팔로우 안 한 유저 → POST 요청
+            fetch('http://localhost:3001/follow', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                following_member_id: userId,
+                follower_target_member_id: user.id,
+                status: user.is_public === 'TRUE' ? 'follow' : 'wait' // ✨ 여기가 핵심
+            })
+            }).then(() => {
+            if (user.is_public) {
+                user.followStatus = 'wait';
+                user.statusText = '수락 대기';
+            } else {
+                user.followStatus = 'following';
+                user.statusText = '팔로잉';
+            }
+            }).catch(error => {
+            console.error('팔로우 요청 실패', error);
+            });
+        } else if (user.followStatus === 'following') {
+            // 팔로잉 중인 유저 → 그냥 팔로우 상태로 바꿔주기 (언팔처럼)
+            user.followStatus = null;
+            user.statusText = '팔로우';
+            // ❗ 실제 DB 삭제(언팔로우)는 나중에 진짜 서버 열릴 때 추가!
+        }
+        }
+
+    async function fetchSearchResults() {
+    if (searchQuery.value.trim() === '') {
+        filteredUsers.value = [];
+        return;
+    }
+
+    const membersRes = await fetch(`http://localhost:3001/members`);
+    const fetchedMembers = await membersRes.json();
+
+    const followsRes = await fetch(`http://localhost:3001/follow`);
+    const fetchedFollows = await followsRes.json();
+
+    const validFollows = fetchedFollows.filter(f => String(f.following_member_id) === String(userId));
+
+    const followMap = new Map();
+    validFollows.forEach(follow => {
+        followMap.set(Number(follow.follower_target_member_id), follow.status);
+    });
+
+    // 🔥 여기 프론트에서 검색어 기준으로 직접 필터링
+    const filteredByNickname = fetchedMembers.filter(member => {
+        if (!member.nickname) return false;
+        return member.nickname.toLowerCase().includes(searchQuery.value.toLowerCase());
+    });
+
+    filteredUsers.value = filteredByNickname
+        .filter(member => member.role !== 'ADMIN' && member.status !== 'SUSPENDED')
+        .map(member => {
+        const followState = followMap.get(Number(member.id));
+        let followStatus = null;
+        let statusText = '팔로우';
+
+        if (followState === 'follow') {
+            followStatus = 'following';
+            statusText = '팔로잉';
+        } else if (followState === 'wait') {
+            followStatus = 'wait';
+            statusText = '수락 대기';
+        }
+
+        return {
+            id: member.id,
+            name: member.nickname || member.name,
+            avatar: member.profile_image || profileImage,
+            is_public: member.is_public === 'TRUE',
+            bio: member.bio || '',
+            icon: member.is_public === 'TRUE' ? 'mdi-lock' : 'mdi-web',
+            followStatus,
+            statusText,
+        };
+        });
+    }
+
+
+    watch(searchQuery, () => {
+    if (timeoutId) clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => {
+        fetchSearchResults();
+    }, 500);
+    });
+
+    onUnmounted(() => {
+    if (timeoutId) clearTimeout(timeoutId);
+    });
+
+    function handleClickOutside(event) {
+        if (modalRef.value && !modalRef.value.contains(event.target)) {
+            emit('close')
+        }
+    }
+
+    onMounted(() => {
+        window.addEventListener('mousedown', handleClickOutside)
+    })
+
+    onBeforeUnmount(() => {
+        window.removeEventListener('mousedown', handleClickOutside)
+    })
+</script>
+
+<style scoped>
+    .v-card {
+    /* width: 450px; */
+    height: 100vh;
+    padding: 24px 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-left: 1px solid #eee;
+    border-radius: 0;
+    background-color: #fff;
+    overflow-y: auto;
+    font-family: sans-serif;
+    }
+
+    .title-text {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    font-weight: bold;
+    }
+    .search-bar-row {
+    align-items: center; /* ✅ 이걸로 아이콘과 텍스트필드 중앙 정렬 */
+    gap: 12px;
+    margin-bottom: 16px; /* 옵션: 아래 공간 필요할 경우 */
+    }
+
+    .pill-input ::v-deep(.v-input__control) {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    min-height: 40px !important;
+    }
+
+    .pill-input ::v-deep(.v-input.v-input--focused .v-field),
+    .pill-input ::v-deep(.v-field--focused),
+    .pill-input ::v-deep(.v-field__overlay) {
+    background-color: #fff !important;
+    border-color: #D9D9D9 !important;
+    box-shadow: none !important;
+    }
+
+    .pill-input ::v-deep(.v-field) {
+    border-radius: 9999px !important;
+    border: 1px solid #D9D9D9 !important;
+    background-color: #fff !important;
+    box-shadow: none !important;
+    align-items: center;
+    min-height: 40px !important;
+    padding-left: 12px;
+    padding-right: 8px;
+    }
+
+    .pill-input ::v-deep(.v-field--focused) {
+    border-color: #D9D9D9 !important;
+    background-color: #fff !important;
+    box-shadow: none !important;
+    }
+
+    .pill-input ::v-deep(input) {
+    color: black !important;
+    font-size: 14px;
+    padding: 0 8px !important;
+    line-height: 40px;
+    }
+
+    .pill-input ::v-deep(input::placeholder) {
+    color: black !important;
+    opacity: 1 !important;
+    }
+    .divider-spacing {
+    margin: 20px 0; /* 위아래 12px 간격 */
+    }
+
+    .custom-list-item {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: -8px;   /* 카드의 padding 보정 */
+    margin-right: -8px;
+    /* width: 380px; v-card보다 클 경우엔 margin도 조정 필요 */
+    }
+
+    .user-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 48px; /* 아바타 높이와 비슷하게 유지 */
+    }
+
+    .user-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px; /* ✅ 아이콘-버튼 사이에 최소 간격 확보 */
+    }
+
+    .name-icon {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 16px;
+    }
+
+    .user-name {
+    font-weight: 700;
+    white-space: nowrap;      /* 👉 줄바꿈 방지 */
+    overflow: hidden;         /* 👉 넘치는 건 숨기기 */
+    text-overflow: ellipsis;  /* 👉 ... 표시 */
+    max-width: 140px;         /* 👉 최대 너비 설정 (필요에 따라 조정) */
+    }
+
+
+    .user-subtitle {
+    font-size: 10px;
+    color: #9C9C9C;
+    margin-top: 4px;
+    white-space: normal;
+    word-break: break-word;
+    }
+
+    .follow-btn {
+    flex-shrink: 0;
+    width: 65px;
+    height: 22px !important; /* ✨ 세로 고정 추가 (24px → 28px 추천) */
+    min-height: 22px !important; /* ✨ 같이 맞춰주자 */
+    border-radius: 8px;
+    font-size: 13px;
+    padding: 0px 8px;
+    line-height: 1.2;
+    justify-content: center;
+    text-align: center;
+    transition: none !important;
+    box-shadow: none !important;
+    background-image: none !important;
+    }
+
+
+
+
+    /* 상태별 커스텀 */
+    .btn-follow {
+        background-color: #2C2C2C;
+        color: #F5F5F5;      /* 검정 */
+    }
+
+    .btn-following {
+        background-color: #FFE8F3;   /* 연한 핑크 */
+        color: #efb8c8;
+    }
+
+    .btn-wait {
+        background-color: #D9D9D9;   /* 회색 */
+        color: #B3B3B3;
+    }
+
+    .avatar-align {
+    align-self: flex-start;
+    margin-top: 2px;
+    }
+
+    .search-user-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1100;
+    width: 450px; /* ✨ 네가 원래 설정한 카드 크기 */
+    height: 100vh;
+    display: flex; /* ✨ 카드만 중앙정렬하려면 */
+    flex-direction: column;
+    }
+
+</style>

@@ -68,6 +68,14 @@
       </v-list-item>
     </v-list>
   </VNavigationDrawer>
+
+  <SearchUserModal
+  v-if="searchPanelOpen"
+  class="search-user-modal"
+  :style="{ left: ui.isHover ? '200px' : '80px' }"
+  @close="searchPanelOpen = false"
+  />
+
 </template>
 
 
@@ -77,103 +85,78 @@ import { useRouter } from 'vue-router'
 
 import { useUIStore } from '@/stores/uiStore'
 
+import SearchUserModal from '../search/SearchUserModal.vue'
+
 const drawer = ref(true)
 const router = useRouter()
 const ui = useUIStore()
+
+const searchPanelOpen = ref(false)
 
 const goToHome = () => router.push('/home')
 const goToMypage = () => router.push('/mypage')
 const goToCreateDiary = () => router.push('/post/create')
 const goToStamp = () => router.push('/stamp')
-const openUserSearch = () => console.log('유저 검색 창 뜨기')
+const openUserSearch = () => searchPanelOpen.value = !searchPanelOpen.value
 const openAlarm = () => console.log('알림 창 뜨기')
 
-// const isHover = ref(false)
-// const showText = ref(false)
-// const showImage = ref(false)
-// const drawer = ref(true)
-// const router = useRouter()
 
-// const handleMouseEnter = () => {
-//   isHover.value = true
-//   setTimeout(() => {
-//     showText.value = true
-//     showImage.value = true
-//   }, 250) // 딜레이 후 로고 표시
-// }
-
-// const handleMouseLeave = () => {
-//   isHover.value = false
-//   showText.value = false
-//   showImage.value = false
-// }
-
-// const goToHome = () => {
-//   router.push('/home')
-// }
-// const goToMypage = () => {
-//   router.push('/mypage')
-// }
-// const goToCreateDiary = () => {
-//   router.push('/create-diary')
-// }
-// const goToStamp = () => {
-//   router.push('/stamp')
-// }
-// const openUserSearch = () => {
-//   console.log("유저 검색 창 뜨기")
-// }
-// const openAlarm = () => {
-//   console.log("알림 창 뜨기")
-// }
 </script>
 
 <style scoped>
-:deep(.v-navigation-drawer) {
-  transition: width 0.3s ease;
-  overflow: hidden;
-  z-index: 1000;
-}
+  :deep(.v-navigation-drawer) {
+    transition: width 0.3s ease;
+    overflow: hidden;
+    z-index: 1000;
+  }
 
-.menu-item {
-  display: flex;
-  align-items: center;
-}
+  .menu-item {
+    display: flex;
+    align-items: center;
+  }
 
-.menu-icon {
-  width: 25px;
-  height: 25px;
-  min-width: 25px;
-  max-width: 25px;
-  flex-shrink: 0;
-  margin-right: 8px;
-  object-fit: contain;
-}
+  .menu-icon {
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+    max-width: 25px;
+    flex-shrink: 0;
+    margin-right: 8px;
+    object-fit: contain;
+  }
 
-.stamp-icon {
-  width: 35px;
-  height: 35px;
-  min-width: 35px;
-  max-width: 35px;
-  flex-shrink: 0;
-  margin-right: 8px;
-  object-fit: contain;
-}
+  .stamp-icon {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    max-width: 35px;
+    flex-shrink: 0;
+    margin-right: 8px;
+    object-fit: contain;
+  }
 
-.logo-container {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  .logo-container {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-/* 페이드 효과 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
+  /* 페이드 효과 */
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.3s ease;
+  }
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+  }
+
+  .search-user-modal {
+    position: absolute;
+    top: 0;
+    z-index: 1100;
+    width: 350px;
+    height: 100vh;
+  }
 </style>
