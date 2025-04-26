@@ -59,7 +59,7 @@
             new naver.maps.Marker({
                 position,
                 map,
-                title: place.name,
+                // title: place.name,
                 icon: {
                     content: markerEl,
                     size: new naver.maps.Size(50, 50),
