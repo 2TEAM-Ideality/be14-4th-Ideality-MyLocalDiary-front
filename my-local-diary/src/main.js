@@ -3,6 +3,9 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import vuetify from './plugins/vuetify'
+import 'swiper/css';
+import 'swiper/css/pagination';
+
 import '@mdi/font/css/materialdesignicons.css'  // 아이콘
 
 
