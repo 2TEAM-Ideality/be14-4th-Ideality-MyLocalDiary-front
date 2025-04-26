@@ -7,9 +7,11 @@ import CreateDiary from '@/views/CreateDiary.vue';
 import UserMapView from '@/views/UserMapView.vue';
 import PostCreate from '@/components/post/PostCreate.vue'
 import TestMarker from '@/views/TestMarker.vue';
-import EditProfile from '@/views/mypage/EditPage.vue'
+import EditProfile from '@/components/mypage/EditProfile.vue'
+import EditAccount from '@/components/mypage/EditAccount.vue';
 
 import TempLoadingModalParent from '@/components/common/TempLoadingModalParent.vue';
+import EditPage from '@/views/mypage/EditPage.vue';
 
 const routes = [
     {
@@ -45,19 +47,23 @@ const routes = [
         component : TestMarker
       },
       {
-        path: '/create-diary',
-        name: 'CreateDiary',
-        component : CreateDiary
-      },
-      {
         path: '/mypage',
         name: 'Mypage',
         component: Mypage,
       },
       {
-        path: '/edit-profile',
-        name: 'EditProfile',
-        component: EditProfile
+        path: '/edit',
+        component: EditPage,   // 🔥 EditLayout이 먼저 나오고
+        children: [
+          {
+            path: 'profile',
+            component: EditProfile
+          },
+          {
+            path: 'account',
+            component: EditAccount
+          }
+        ]
       },
       {
         path: '/stamp',

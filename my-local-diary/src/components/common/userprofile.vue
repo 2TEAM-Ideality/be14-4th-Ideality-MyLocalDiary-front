@@ -124,7 +124,11 @@ watch(() => props.userData.profileMusic, (newMusic) => {
 
 const editProfile = () => {
   console.log("프로필 편집 클릭")
-  router.push('/edit-profile');
+  router.push('/edit/profile');
+}
+const editAccount = () => {
+  console.log("개인 정보 수정 클릭")
+  router.push('/edit/account');
 }
 </script>
 
