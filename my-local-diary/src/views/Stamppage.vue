@@ -45,7 +45,7 @@ const userStore = useUserStore();
 
 const currentPage = ref(0);
 const stampsPerPage = 4;
-const stamps = ref([]);
+const stamps = ref([]); // [ {title, stampImage, count} 배열 저장 ]
 
 const totalPages = computed(() => Math.ceil(stamps.value.length / stampsPerPage));
 
@@ -56,12 +56,31 @@ const paginatedStamps = computed(() => {
 
 const fetchStampCounts = async () => {
   try {
-    const res = await fetch('http://localhost:3000/stampCounts');
-    const stampCounts = await res.json();
+    const res = await fetch('http://localhost:3001/member_stamp');
+    const memberStamps = await res.json();
+
+    // ✅ 내 id만 필터링
+    const myId = Number(userStore.id);
+    const myStamps = memberStamps.filter(record => record.member.id === myId);
+
+    // ✅ 내 스탬프 기록으로 count 세기
+    const stampCountMap = {};
+
+    myStamps.forEach((record) => {
+      const stampName = record.stamp.name;
+      if (stampCountMap[stampName]) {
+        stampCountMap[stampName]++;
+      } else {
+        stampCountMap[stampName] = 1;
+      }
+    });
+
+    // ✅ BASE_STAMPS 기준으로 갯수 매칭
     stamps.value = BASE_STAMPS.map((stamp) => ({
       ...stamp,
-      count: stampCounts[stamp.title] ?? 0
+      count: stampCountMap[stamp.title] ?? 0
     }));
+
   } catch (err) {
     console.error('❌ 스탬프 count 불러오기 실패:', err);
   }
@@ -75,10 +94,11 @@ const previousPage = () => {
   if (currentPage.value > 0) currentPage.value--;
 };
 
-onMounted(() => {
-  userStore.restoreUser();
-  fetchStampCounts();
+onMounted(async () => {
+  await userStore.restoreUser();  // ✅ await 필수
+  fetchStampCounts();              // ✅ 그 다음에 데이터 받아와야
 });
+
 </script>
 
 <style scoped>
@@ -91,8 +111,8 @@ onMounted(() => {
 .container {
   display: flex;
   height: 100vh;
-  width: 100vw; /* 기존 100% → 100vw 로! */
-  min-width: 100vw; /* 추가 */
+  width: 100vw;
+  min-width: 100vw;
   margin: 0;
 }
 
@@ -107,6 +127,7 @@ onMounted(() => {
   position: relative;
   top: -20px;
 }
+
 .right-side {
   width: 50%;
   background-color: #fff5f7;
@@ -117,6 +138,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
 }
+
 .stamps {
   padding-top: 20px;
   width: 100%;
@@ -126,12 +148,14 @@ onMounted(() => {
   gap: 16px;
   flex-grow: 1;
 }
+
 .button-row {
   display: flex;
   justify-content: flex-end;
   width: 100%;
   margin-top: auto;
 }
+
 .next-button,
 .prev-button {
   background-color: #ff88a0;

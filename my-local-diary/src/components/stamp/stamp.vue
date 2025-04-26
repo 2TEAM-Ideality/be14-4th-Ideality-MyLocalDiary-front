@@ -29,7 +29,7 @@ import { defineProps } from 'vue';
 const props = defineProps({
   title: { type: String, required: true },
   stampImage: { type: String, required: true },
-  count: { type: Number, default: 5 },
+  count: { type: Number, default: 1 },
 });
 
 const generatedStamps = computed(() => {
