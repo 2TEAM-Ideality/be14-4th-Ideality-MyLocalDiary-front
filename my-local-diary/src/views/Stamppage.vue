@@ -2,7 +2,10 @@
   <div class="container">
     <!-- 유저 프로필 -->
     <div class="left-side">
-      <UserProfile :userData="userStore" />
+      <UserProfile :userData="userStore" 
+        @open-follower="isFollowerModalOpen = true"
+        @open-following="isFollowingModalOpen = true"
+      />
       <Badge />
     </div>
 
@@ -23,6 +26,16 @@
       </div>
     </div>
   </div>
+
+  <Follower
+    v-if="isFollowerModalOpen"
+    @close="isFollowerModalOpen = false"
+  />
+
+  <Following
+    v-if="isFollowingModalOpen"
+    @close="isFollowingModalOpen = false"
+  />
 </template>
 
 <script setup>
@@ -31,6 +44,10 @@ import CatStampBar from '/src/components/stamp/stamp.vue';
 import UserProfile from '/src/components/common/UserProfile.vue';
 import { useUserStore } from '/src/stores/userStore.js';
 import Badge from '/src/components/stamp/badge.vue';
+import Follower from '/src/components/follow/Follower.vue';
+import Following from '/src/components/follow/Following.vue';
+
+const userStore = useUserStore();
 
 const BASE_STAMPS = [
   { title: '카페냥', stampImage: '/src/assets/stamp_pic/카페냥.png' },
@@ -41,11 +58,12 @@ const BASE_STAMPS = [
   { title: '영화냥', stampImage: '/src/assets/stamp_pic/영화냥.png' }
 ];
 
-const userStore = useUserStore();
-
+// 상태 관리
 const currentPage = ref(0);
 const stampsPerPage = 4;
-const stamps = ref([]); // [ {title, stampImage, count} 배열 저장 ]
+const stamps = ref([]);
+const isFollowerModalOpen = ref(false);
+const isFollowingModalOpen = ref(false);
 
 const totalPages = computed(() => Math.ceil(stamps.value.length / stampsPerPage));
 
@@ -54,16 +72,17 @@ const paginatedStamps = computed(() => {
   return stamps.value.slice(start, start + stampsPerPage);
 });
 
+// 데이터 가져오기
 const fetchStampCounts = async () => {
   try {
     const res = await fetch('http://localhost:3001/member_stamp');
     const memberStamps = await res.json();
 
-    // ✅ 내 id만 필터링
+    // 내 id만 필터링
     const myId = Number(userStore.id);
     const myStamps = memberStamps.filter(record => record.member.id === myId);
 
-    // ✅ 내 스탬프 기록으로 count 세기
+    // 내 스탬프 기록으로 count 세기
     const stampCountMap = {};
 
     myStamps.forEach((record) => {
@@ -75,7 +94,7 @@ const fetchStampCounts = async () => {
       }
     });
 
-    // ✅ BASE_STAMPS 기준으로 갯수 매칭
+    // BASE_STAMPS 기준으로 갯수 매칭
     stamps.value = BASE_STAMPS.map((stamp) => ({
       ...stamp,
       count: stampCountMap[stamp.title] ?? 0
@@ -86,6 +105,7 @@ const fetchStampCounts = async () => {
   }
 };
 
+// 페이지 네비게이션
 const nextPage = () => {
   if (currentPage.value < totalPages.value - 1) currentPage.value++;
 };
@@ -94,11 +114,11 @@ const previousPage = () => {
   if (currentPage.value > 0) currentPage.value--;
 };
 
+// 컴포넌트 마운트 시 데이터 로딩
 onMounted(async () => {
   await userStore.restoreUser();  // ✅ await 필수
   fetchStampCounts();              // ✅ 그 다음에 데이터 받아와야
 });
-
 </script>
 
 <style scoped>
