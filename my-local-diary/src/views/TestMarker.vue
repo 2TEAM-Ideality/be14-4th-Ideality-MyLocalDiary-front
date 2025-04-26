@@ -8,7 +8,7 @@
         :ref="el => markerRefs[index] = el"
         :image="place.thumbnail_image"
         :post_id="place.post_id"
-        :name="name"
+        :name="place.name"
         @click="handleMarkerClick"
     />
 
@@ -59,7 +59,7 @@
             new naver.maps.Marker({
                 position,
                 map,
-                title: place.name,
+                // title: place.name,
                 icon: {
                     content: markerEl,
                     size: new naver.maps.Size(50, 50),
