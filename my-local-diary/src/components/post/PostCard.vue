@@ -90,10 +90,30 @@
             :key="index"
             :comment="comment"/>
         </div>
+        <button 
+        v-show="scrollPosition > 0"
+        @click="scrollToTop"
+        style="
+          position: fixed;
+          bottom: 165px;
+          right: 200px;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background-color: #fff5f7;
+          color: #020725;
+          border: none;
+          cursor: pointer;
+          font-size: 16px;
+        "
+      >
+        ↑
+     </button>
       </div>
       <v-divider class="my-3"/>
       <!-- 댓글 작성 -->
       <PostCommentInput />
+      
     </div>
   </div>
 </template>
@@ -322,14 +342,20 @@
     currentPage++;
     isLoading.value = false
   }
-
+  const scrollPosition = ref(0)
   const onScroll = () => {
     const el = scrollArea.value
     if (!el) return
-
+    scrollPosition.value = el.scrollTop
     const bottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 10
     if (bottom) {
       loadMore()
+    }
+  }
+  const scrollToTop = () => {
+    const el = scrollArea.value
+    if (el) {
+      el.scrollTop = 0  // 스크롤을 맨 위로 이동
     }
   }
 
