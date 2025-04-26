@@ -5,6 +5,7 @@ import MapHome from '@/views/MapHome.vue';
 import Stamppage from '@/views/Stamppage.vue';
 import CreateDiary from '@/views/CreateDiary.vue';
 import UserMapView from '@/views/UserMapView.vue';
+import PostCreate from '@/components/post/PostCreate.vue'
 import TestMarker from '@/views/TestMarker.vue';
 import EditProfile from '@/views/mypage/EditPage.vue'
 
@@ -69,10 +70,15 @@ const routes = [
         component: UserMapView,
       },
       {
+        path: '/post/create',
+        name: 'PostCreate',
+        component: PostCreate
+      },
+      {
         path: '/loadingmodal',
         name: 'LoadingModal',
-        component: TempLoadingModalParent,
-      },
+        component: TempLoadingModalParent
+      }
 ]
 
 const router = createRouter({

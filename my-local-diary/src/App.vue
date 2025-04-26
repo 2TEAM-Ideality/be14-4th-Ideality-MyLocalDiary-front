@@ -11,6 +11,7 @@
 import Sidebar from './components/common/Sidebar.vue'
 import { useRoute } from 'vue-router'
 
+
 const route = useRoute()
 </script>
 

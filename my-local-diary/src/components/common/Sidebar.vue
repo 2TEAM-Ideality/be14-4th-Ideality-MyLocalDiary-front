@@ -108,7 +108,7 @@ const showMoreMenu = ref(false)
 
 const goToHome = () => router.push('/home')
 const goToMypage = () => router.push('/mypage')
-const goToCreateDiary = () => router.push('/create-diary')
+const goToCreateDiary = () => router.push('/post/create')
 const goToStamp = () => router.push('/stamp')
 const openUserSearch = () => console.log('유저 검색 창 뜨기')
 const openAlarm = () => console.log('알림 창 뜨기')
