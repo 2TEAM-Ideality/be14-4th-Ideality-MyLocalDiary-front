@@ -102,44 +102,43 @@ export const useUserStore = defineStore('user', () => {
       console.error('프로필 통계 가져오기 실패:', error);
     }
   }
-
-  function restoreUser() {
-    const savedUser = localStorage.getItem('user')
+  async function restoreUser() {
+    const savedUser = localStorage.getItem('user');
     if (savedUser) {
-      const user = JSON.parse(savedUser)
-
-      id.value = user.id
-      loginId.value = user.loginId
-      name.value = user.name
-      nickname.value = user.nickname
-      email.value = user.email
-      birth.value = user.birth
-      role.value = user.role
-      status.value = user.status
-      isPublic.value = user.isPublic
-      bio.value = user.bio
-      profileImage.value = user.profileImage
-      profileMusic.value = user.profileMusic
-
-      fetchProfileStats()
+      const user = JSON.parse(savedUser);
+  
+      id.value = user.id;
+      loginId.value = user.loginId;
+      name.value = user.name;
+      nickname.value = user.nickname;
+      email.value = user.email;
+      birth.value = user.birth;
+      role.value = user.role;
+      status.value = user.status;
+      isPublic.value = user.isPublic;
+      bio.value = user.bio;
+      profileImage.value = user.profileImage;
+      profileMusic.value = user.profileMusic;
+  
+      await fetchProfileStats();
     } else {
-      // ✅ 기본값: Madara Uchiha로 로그인
-      id.value = '5'
-      loginId.value = 'test05'
-      name.value = '사륜안'
-      nickname.value = 'Madara Uchiha'
-      email.value = 'test05@example.com'
-      birth.value = '1995-02-11'
-      role.value = 'MEMBER'
-      status.value = 'ACTIVE'
-      isPublic.value = true
-      bio.value = '소도시의 숨은 매력을 발굴하는 여행 에디터.'
-      profileImage.value = '/images/profile/profile.png'
-      profileMusic.value = 'https://rococo-cocada-2c23e0.netlify.app/audio/잔나비 (JANNABI) - 주저하는 연인들을 위해.mp3'
-
-      fetchProfileStats()
+      id.value = '5';
+      loginId.value = 'test05';
+      name.value = '사륜안';
+      nickname.value = 'Madara Uchiha';
+      email.value = 'test05@example.com';
+      birth.value = '1995-02-11';
+      role.value = 'MEMBER';
+      status.value = 'ACTIVE';
+      isPublic.value = true;
+      bio.value = '소도시의 숨은 매력을 발굴하는 여행 에디터.';
+      profileImage.value = '/images/profile/profile.png';
+      profileMusic.value = 'https://rococo-cocada-2c23e0.netlify.app/audio/잔나비 (JANNABI) - 주저하는 연인들을 위해.mp3';
+  
+      await fetchProfileStats();
     }
   }
+  
 
   return {
     id,

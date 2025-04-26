@@ -11,8 +11,15 @@
 
       <div class="user-stats">
         <span>게시글 <strong>{{ userData.posts }}</strong>개</span>
-        <span>팔로워 <strong>{{ userData.followers }}</strong></span>
-        <span>팔로우 <strong>{{ userData.following }}</strong></span>
+        <!-- ✅ 팔로워 클릭하면 open-follower 이벤트 emit -->
+        <span @click="$emit('open-follower')" style="cursor: pointer;">
+          팔로워 <strong>{{ userData.followers }}</strong>
+        </span>
+
+        <!-- ✅ 팔로우 클릭하면 open-following 이벤트 emit -->
+        <span @click="$emit('open-following')" style="cursor: pointer;">
+          팔로우 <strong>{{ userData.following }}</strong>
+        </span>
       </div>
 
       <p class="user-bio">{{ userData.bio }}</p>
