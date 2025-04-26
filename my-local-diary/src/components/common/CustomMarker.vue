@@ -6,23 +6,24 @@
         @mouseover="showTooltip = true"
         @mouseleave="showTooltip = false"
     >
-        <!-- 🔥 스파크 컨테이너 -->
-        <div class="spark-container" :class="{ visible: showTooltip }">
-            <div
-                v-for="(spark, idx) in sparks"
-                :key="idx"
-                class="spark"
-                :style="{
-                    transform: `rotate(${spark.angle}deg) translate(${spark.radius}px)`
-                }"
-            />
-        </div>
+        <transition name="fade">
+            <div v-if="showTooltip" class="spark-container">
+                <div
+                    v-for="(spark, idx) in sparks"
+                    :key="idx"
+                    class="spark"
+                    :style="{
+                        transform: `rotate(${spark.angle}deg) translate(${spark.radius}px)`
+                    }"
+                />
+            </div>
+        </transition>
 
-        <!-- 📷 마커 이미지 -->
         <img :src="imageSrc" alt="marker image" />
 
-        <!-- 📝 툴팁 -->
-        <div v-if="showTooltip" class="tooltip">{{ name }}</div>
+        <transition name="fade">
+            <div v-if="showTooltip" class="tooltip">{{ name }}</div>
+        </transition>
     </div>
 </template>
 
@@ -51,12 +52,11 @@ function handleClick() {
     emit('click', props.post_id)
 }
 
-// 🔥 spark 데이터 생성
 const sparks = ref([])
 onMounted(() => {
     sparks.value = Array.from({ length: 180 }, (_, i) => ({
         angle: i * 2,
-        radius: Math.random() * 10 + 40 // 40~50 사이
+        radius: Math.random() * 10 + 40
     }))
 })
 </script>
@@ -94,15 +94,8 @@ onMounted(() => {
     animation: rotate 1.2s linear infinite;
     z-index: 1;
     pointer-events: none;
-
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
-}
-
-.spark-container.visible {
     opacity: 1;
-    visibility: visible;
+    transition: opacity 0.5s ease;
 }
 
 .spark {
@@ -112,21 +105,6 @@ onMounted(() => {
     background: linear-gradient(rgb(255, 106, 0), transparent);
     transform-origin: top left;
     animation: resizer 1s ease-in-out infinite;
-}
-
-@keyframes rotate {
-    to {
-        transform: translate(-50%, -50%) rotate(-360deg);
-    }
-}
-
-@keyframes resizer {
-    0%, 100% {
-        height: 20px;
-    }
-    50% {
-        height: 40px;
-    }
 }
 
 .tooltip {
@@ -147,8 +125,8 @@ onMounted(() => {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     white-space: nowrap;
     z-index: 999;
-    animation: popUp 0.3s ease-in-out forwards;
-    opacity: 0;
+    opacity: 1;
+    transition: opacity 0.5s ease;
 }
 
 .tooltip::after {
@@ -166,14 +144,30 @@ onMounted(() => {
     -webkit-backdrop-filter: blur(8px);
 }
 
-@keyframes popUp {
-    0% {
-        transform: translateX(-50%) scale(0.8) translateY(0);
-        opacity: 0;
+@keyframes rotate {
+    to {
+        transform: translate(-50%, -50%) rotate(-360deg);
     }
-    100% {
-        transform: translateX(-50%) scale(1) translateY(-6px);
-        opacity: 1;
+}
+
+@keyframes resizer {
+    0%, 100% {
+        height: 20px;
     }
+    50% {
+        height: 40px;
+    }
+}
+
+.fade-enter-from, .fade-leave-to {
+    opacity: 0;
+}
+
+.fade-enter-to, .fade-leave-from {
+    opacity: 1;
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.5s ease;
 }
 </style>
