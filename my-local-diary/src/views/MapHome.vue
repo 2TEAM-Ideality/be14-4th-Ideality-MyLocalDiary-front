@@ -3,14 +3,14 @@
     <!-- 지도 -->
     <div ref="mapRef" class="map-container" />
 
-    <!-- 검색창 -->
+    <!-- ✨ 검은색 검색창 -->
     <SearchLocation2
       :query="query"
       @update:query="query = $event"
       @place-selected="selectPlace"
     />
 
-    <!-- 유저 아이콘 리스트 (페이지네이션 적용) -->
+    <!-- ✨ 오른쪽 유저 아이콘 리스트 -->
     <div class="user-icon-pagination">
       <v-btn
         v-if="userList.length > itemsPerPage"
@@ -49,117 +49,163 @@
       </v-btn>
     </div>
 
-    <!-- 내 위치 버튼 -->
+    <!-- ✨ 내 위치 버튼 -->
     <v-btn class="my-location-btn" @click="moveToMyLocation" icon color="primary">
       📍
     </v-btn>
   </div>
 </template>
 
+
 <script setup>
-    import { ref, computed, onMounted } from 'vue'
-    import { useRouter } from 'vue-router'
-    import axios from 'axios'
-    import SearchLocation2 from '@/components/map/SearchLocation2.vue'
-    import profileImageDummy from '@/assets/profile/profile.png'
+import { ref, computed, onMounted, h, render } from 'vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+import SearchLocation2 from '@/components/map/SearchLocation2.vue'
+import CustomMarker from '@/components/common/CustomMarker.vue'
+import profileImageDummy from '@/assets/profile/profile.png'
 
-    const router = useRouter()
-    const query = ref('')
-    const mapRef = ref(null)
-    let map, infoWindow, currentMarker
+const router = useRouter()
+const query = ref('')
+const mapRef = ref(null)
+let map, infoWindow, currentMarker
 
-    const userList = ref([])
+const userList = ref([])
+const places = ref([])
 
-    function getUserImage(image) {
-      return image && image.trim() !== '' ? image : profileImageDummy
-    }
+const page = ref(0)
+const itemsPerPage = 6
+const startIndex = computed(() => page.value * itemsPerPage)
+const endIndex = computed(() => startIndex.value + itemsPerPage)
+const paginatedUsers = computed(() => userList.value.slice(startIndex.value, endIndex.value))
 
-    // 페이지네이션
-    const page = ref(0)
-    const itemsPerPage = 6
-    const startIndex = computed(() => page.value * itemsPerPage)
-    const endIndex = computed(() => startIndex.value + itemsPerPage)
-    const paginatedUsers = computed(() => userList.value.slice(startIndex.value, endIndex.value))
+function getUserImage(image) {
+  return image && image.trim() !== '' ? image : profileImageDummy
+}
 
-    function prevPage() {
-      if (page.value > 0) page.value--
-    }
+function prevPage() {
+  if (page.value > 0) page.value--
+}
 
-    function nextPage() {
-      if (endIndex.value < userList.value.length) page.value++
-    }
+function nextPage() {
+  if (endIndex.value < userList.value.length) page.value++
+}
 
-    // 지도 관련
-    function moveToMyLocation() {
-      if (!navigator.geolocation) return
-      navigator.geolocation.getCurrentPosition(pos => {
-        const latlng = new naver.maps.LatLng(pos.coords.latitude, pos.coords.longitude)
-        map.setCenter(latlng)
-        map.setZoom(15)
-        renderResult(latlng, '📍 내 위치', '')
-        placeMarker(latlng, '내 위치')
+function moveToMyLocation() {
+  if (!navigator.geolocation) return
+  navigator.geolocation.getCurrentPosition(pos => {
+    const latlng = new naver.maps.LatLng(pos.coords.latitude, pos.coords.longitude)
+    map.setCenter(latlng)
+    map.setZoom(15)
+    renderResult(latlng, '📍 내 위치', '')
+    placeMarker(latlng, '내 위치')
+  })
+}
+
+function initMap() {
+  map = new naver.maps.Map(mapRef.value, {
+    center: new naver.maps.LatLng(37.3595316, 127.1052133),
+    zoom: 15
+  })
+  infoWindow = new naver.maps.InfoWindow({ anchorSkew: true })
+  map.setCursor('pointer')
+  moveToMyLocation()
+}
+
+function selectPlace(item) {
+  const lat = Number(item.mapy) / 1e7
+  const lng = Number(item.mapx) / 1e7
+  const latlng = new naver.maps.LatLng(lat, lng)
+  renderResult(latlng, item.title, item.roadAddress || item.address)
+  placeMarker(latlng, item.title)
+}
+
+function renderResult(latlng, title, address) {
+  map.setCenter(latlng)
+  map.setZoom(15)
+  infoWindow.setContent(`<div style="padding:10px;"><strong>${title}</strong><br/>${address}</div>`)
+  infoWindow.open(map, latlng)
+}
+
+function placeMarker(latlng, name) {
+  if (currentMarker) currentMarker.setMap(null)
+  currentMarker = new naver.maps.Marker({
+    position: latlng,
+    map: map,
+    title: name
+  })
+}
+
+async function fetchUserList() {
+  try {
+    const response = await axios.get('/json/following_list.json')
+    userList.value = response.data.following
+      .filter(member => member.status === 'ACTIVE')
+      .map(member => ({
+        id: member.id,
+        name: member.nickname,
+        image: member.profile_image || ''
+      }))
+  } catch (error) {
+    console.error('유저 리스트를 불러오는 데 실패했습니다.', error)
+  }
+}
+
+async function fetchPosts() {
+  try {
+    const response = await axios.get('/json/post.json')
+    const posts = response.data.post
+    posts.forEach(post => {
+      post.places.forEach(place => {
+        places.value.push(place)
       })
-    }
-
-    function initMap() {
-      map = new naver.maps.Map(mapRef.value, {
-        center: new naver.maps.LatLng(37.3595316, 127.1052133),
-        zoom: 15
-      })
-      infoWindow = new naver.maps.InfoWindow({ anchorSkew: true })
-      map.setCursor('pointer')
-      moveToMyLocation()
-    }
-
-    function selectPlace(item) {
-      const lat = Number(item.mapy) / 1e7
-      const lng = Number(item.mapx) / 1e7
-      const latlng = new naver.maps.LatLng(lat, lng)
-      renderResult(latlng, item.title, item.roadAddress || item.address)
-      placeMarker(latlng, item.title)
-    }
-
-    function renderResult(latlng, title, address) {
-      map.setCenter(latlng)
-      map.setZoom(15)
-      infoWindow.setContent(`<div style="padding:10px;"><strong>${title}</strong><br/>${address}</div>`)
-      infoWindow.open(map, latlng)
-    }
-
-    function placeMarker(latlng, name) {
-      if (currentMarker) currentMarker.setMap(null)
-      currentMarker = new naver.maps.Marker({
-        position: latlng,
-        map: map,
-        title: name
-      })
-    }
-
-    // JSON 데이터 받아오기
-    async function fetchUserList() {
-      try {
-        const response = await axios.get('/json/following_list.json')
-        userList.value = response.data.following
-          .filter(member => member.status === 'ACTIVE') 
-          .map(member => ({
-            id: member.id,
-            name: member.nickname,
-            image: member.profile_image || '' 
-          }))
-      } catch (error) {
-        console.error('유저 리스트를 불러오는 데 실패했습니다.', error)
-      }
-    }
-
-    const goToUserMap = () => {router.push('/user-map-home')}
-
-    onMounted(() => {
-      if (window.naver?.maps) {
-        initMap()
-      }
-      fetchUserList()
     })
+  } catch (error) {
+    console.error('포스트 데이터 로드 실패:', error)
+  }
+}
+
+const goToUserMap = () => {
+  router.push('/user-map-home')
+}
+
+function createCustomMarker(place, index) {
+  const vnode = h(CustomMarker, {
+    image: place.thumbnail_image,
+    post_id: place.post_id,
+    name: place.name,
+    onClick: (id) => {
+      console.log(`📌 CustomMarker 클릭됨! post_id=${id}, 장소=${place.name}`)
+    }
+  })
+
+  const container = document.createElement('div')
+  render(vnode, container)
+
+  new naver.maps.Marker({
+    map: map,
+    position: new naver.maps.LatLng(place.latitude, place.longitude),
+    icon: {
+      content: container,
+      size: new naver.maps.Size(70, 80),
+      anchor: new naver.maps.Point(35, 80)
+    }
+  })
+}
+
+onMounted(async () => {
+  if (window.naver?.maps) {
+    initMap()
+    await fetchUserList()
+    await fetchPosts()
+
+    places.value.forEach((place, index) => {
+      createCustomMarker(place, index)
+    })
+  }
+})
 </script>
+
 
 <style scoped>
   .map-wrapper {

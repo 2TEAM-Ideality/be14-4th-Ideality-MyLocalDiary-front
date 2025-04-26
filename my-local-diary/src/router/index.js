@@ -2,8 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Mypage from '@/views/mypage/Mypage.vue'
 import Landingpage from '@/views/Landingpage.vue';
 import MapHome from '@/views/MapHome.vue'; 
-import Stamppage from '@/views/Stamppage.vue';
-import CreateDiary from '@/views/CreateDiary.vue';
+import StampPage from '@/views/Stamppage.vue';
 import UserMapView from '@/views/UserMapView.vue';
 import PostCreate from '@/components/post/PostCreate.vue'
 import TestMarker from '@/views/TestMarker.vue';
@@ -68,7 +67,7 @@ const routes = [
       {
         path: '/stamp',
         name: 'Stamp',
-        component: Stamppage,
+        component: StampPage,
       },
       {
         path: '/user-map-home',

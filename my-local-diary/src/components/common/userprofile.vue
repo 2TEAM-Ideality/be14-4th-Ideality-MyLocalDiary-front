@@ -2,7 +2,7 @@
   <div v-if="userData" class="user-profile">
     <!-- 프로필 이미지 -->
     <div class="profile-img">
-      <img :src="userData.profileImage || '/images/default-profile.png'" alt="profile" />
+      <img :src="userData.profileImage || '/images/profile/defaultProfile.png'" alt="profile" />
     </div>
 
     <!-- 텍스트 정보 -->
@@ -20,6 +20,16 @@
       <div class="music-info" @click="togglePlayback">
         <span>🎵 {{ musicTitle }}</span>
         <span class="time-info">{{ formattedTime }} / {{ formattedDuration }}</span>
+
+        <!-- 🎵 추가: 재생중일 때만 보여주는 로딩 애니메이션 -->
+        <l-waveform
+          v-if="isPlaying"
+          size="18"
+          stroke="2.5"
+          speed="1"
+          color="gray"
+          style="margin-left: 8px;"
+        />
       </div>
 
       <!-- 버튼 영역 -->
@@ -46,6 +56,10 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter }from 'vue-router';
 import { useUserStore } from '@/stores/userStore'
+import { waveform } from 'ldrs'
+
+waveform.register()  // 배경음악 재생 중 표시 
+
 
 const props = defineProps({
   userData: {
@@ -134,16 +148,18 @@ const editAccount = () => {
 
 <style scoped>
 .user-profile {
-  max-width: 768px;
+  width:100%;
+  /* max-width: 768px; */
   margin: 40px auto;
   padding: 32px;
   display: flex;
-  align-items: center;
-  background-color: #ffffff;
+  align-items: flex-start; 
+  /* align-items: center; */
+  /* background-color: #ffffff; */
   color: #1f2937;
-  border-radius: 16px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  /* border-radius: 16px; */
+  /* border: 1px solid #e5e7eb; */
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); */
   gap: 32px;
 }
 
