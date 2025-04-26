@@ -5,7 +5,7 @@
         <div class="tooltip-wrapper">
           <span class="tooltip-text">* 나의 유형은?</span>
           <div class="tooltip-box">
-            스탬프 5개를 모으면 해당하는 뱃지를 얻을 수 있습니다! <br>뱃지를 모아내가 어떤 유형인지 알아보세요.
+            스탬프 5개를 모으면 해당하는 뱃지를 얻을 수 있습니다! <br>뱃지를 모아 내가 어떤 유형인지 알아보세요.
           </div>
         </div>
       </div>

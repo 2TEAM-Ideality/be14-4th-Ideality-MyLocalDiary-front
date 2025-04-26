@@ -68,8 +68,8 @@ const generatedStamps = computed(() => {
 }
 
 .stamp {
-  width: 90px;
-  height: 90px;
+  width: 80px;
+  height: 80px;
   display: block;
   border: none;
   background-color: transparent;
