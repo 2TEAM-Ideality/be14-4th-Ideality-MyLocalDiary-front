@@ -1,15 +1,17 @@
 <template>
-  <div style="display: flex; height: 100vh; overflow:hidden">
+  <div style="display: flex; height: 80vh; overflow:hidden">
     <!-- 왼쪽 고정 블럭 -->
     <div
       class="left-pane d-flex align-center justify-center"
       style="flex: 5.6;
         border-right: 1px solid #E5E7EB;
         box-shadow: 4px 0 12px -4px rgba(0, 0, 0, 0.1);
-        overflow-y: auto;"
+        overflow-y: auto;
+        height: 80vh;
+        width: 100vh"
     >
       <!-- 사진 -->
-      <PostPhoto :images="photoList"/>
+      <PostPhoto v-once :images="photoList"/>
     </div>
     <!-- 오른쪽 스크롤 블럭 + 댓글 고정 영역 -->
     <div
@@ -17,12 +19,12 @@
       style="flex: 4.4;
         display: flex; 
         flex-direction: column; 
-        padding-top: 30px;
         padding-left: 30px;
-        padding-right: 30px;">
+        padding-right: 30px;
+        min-width: 0; max-width: 100%;">
       <div
         ref="scrollArea"
-        class="flex-grow-1 overflow-y-auto pr-4 pt-4"
+        class="flex-grow-1 overflow-y-scroll pr-4 pt-4"
         @scroll="onScroll"
       >
         <div>
@@ -119,12 +121,10 @@
     샤프르에서 JR 열차로 한시간 거리.
     오타루 운하가 유명합니다.
     오타루 운하는 낮에도 예쁘고 밤에도 예쁨
-    유명한 맛집들이 많지는 않습니다.
-  `
+    유명한 맛집들이 많지는 않습니다.`
 
   const diaryContent = `다 좋았는데 여자친구랑 대판 싸움
-    아직도 내가 뭘 잘못했는지 모르겠음. 개빡침
-  `
+    아직도 내가 뭘 잘못했는지 모르겠음. 개빡침`
 
   // 좋아요 날짜 부분도 컴포넌트로 빼자
   const postLikeCount = ref(777)
@@ -335,8 +335,9 @@
 
   const photoList = [
     { id: 1, url: 'https://randomuser.me/api/portraits/men/2.jpg', orders: 1, post_id: 10 },
-    { id: 2, url: 'https://randomuser.me/api/portraits/men/4.jpg', orders: 2, post_id: 10 },
-    { id: 3, url: 'https://randomuser.me/api/portraits/men/5.jpg', orders: 3, post_id: 10 },
+    { id: 2, url: 'https://img.news-wa.com/img/upload/2024/09/10/NWC_20240910205105.png', orders: 2, post_id: 10 },
+    { id: 3, url: 'https://photo.newsen.com/news_photo/2023/08/02/202308021551233510_1.jpg', orders: 3, post_id: 10 },
+    { id: 4, url: 'https://i.namu.wiki/i/uJdm1UUvAU1I3_zo4zC-FBg5t4tA6kT-FQ9HiFbPs7fMl7pacQfaSXlkTZla69iuwCx0vwwTlulboMyPPTpb5g.webp', orders:4, post_id:10}
   ]
 </script>
 
