@@ -126,6 +126,8 @@ onMounted(async () => {
   margin-top: 0;
   position: relative;
   top: -20px;
+  align-self: flex-start;
+  margin-left: 100px;
 }
 
 .right-side {
