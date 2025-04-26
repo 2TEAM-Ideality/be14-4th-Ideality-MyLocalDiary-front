@@ -2,7 +2,10 @@
   <div class="container">
     <!-- 유저 프로필 -->
     <div class="left-side">
-      <UserProfile :userData="userStore" />
+      <UserProfile :userData="userStore" 
+        @open-follower="isFollowerModalOpen = true"
+        @open-following="isFollowingModalOpen = true"
+      />
     </div>
 
     <!-- 스탬프 영역 -->
@@ -22,12 +25,24 @@
       </div>
     </div>
   </div>
+
+  <Follower
+  v-if="isFollowerModalOpen"
+  @close="isFollowerModalOpen = false"
+  />
+
+  <Following
+  v-if="isFollowingModalOpen"
+  @close="isFollowingModalOpen = false"
+  />
 </template>
 
 <script>
 import CatStampBar from '/src/components/stamp/stamp.vue';
 import UserProfile from '/src/components/common/UserProfile.vue';
 import { useUserStore } from '/src/stores/userStore.js';
+import Follower from '@/components/follow/Follower.vue';
+import Following from '@/components/follow/Following.vue';
 
 const BASE_STAMPS = [
   { title: '카페냥', stampImage: '/src/assets/stamp_pic/카페냥.png' },
@@ -40,12 +55,14 @@ const BASE_STAMPS = [
 
 export default {
   name: 'Stamppage',
-  components: { CatStampBar, UserProfile },
+  components: { CatStampBar, UserProfile, Follower, Following },
   data() {
     return {
       currentPage: 0,
       stampsPerPage: 4,
-      stamps: []
+      stamps: [],
+      isFollowerModalOpen: false,
+      isFollowingModalOpen: false
     };
   },
   computed: {
