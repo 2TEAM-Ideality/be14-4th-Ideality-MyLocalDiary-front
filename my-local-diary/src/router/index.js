@@ -32,11 +32,6 @@ const routes = [
       name: 'MapHome',
       component : MapHome
     },
-    {
-      path: '/stamppage',
-      name: 'Stamppage',
-      component : Stamppage
-    },
       {
         path: '/home',
         name: 'MapHome',
