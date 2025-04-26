@@ -24,8 +24,8 @@
 
       <!-- 버튼 영역 -->
       <div class="button-group" v-if="isMyProfile">
-        <button>프로필 편집</button>
-        <button>개인 정보 설정</button>
+        <v-btn color=" gray" variant="flat" @click="editProfile">프로필 편집</v-btn>
+        <v-btn color=" gray" variant="flat" @click="editAccount">개인 정보 설정</v-btn>
       </div>
       <button v-else class="follow-button">팔로우</button>
     </div>
@@ -44,6 +44,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter }from 'vue-router';
 import { useUserStore } from '@/stores/userStore'
 
 const props = defineProps({
@@ -52,7 +53,7 @@ const props = defineProps({
     required: true
   }
 })
-
+const router = useRouter();
 const userStore = useUserStore()
 const isMyProfile = computed(() => props.userData.id === userStore.id)
 
@@ -120,6 +121,11 @@ watch(() => props.userData.profileMusic, (newMusic) => {
     })
   }
 })
+
+const editProfile = () => {
+  console.log("프로필 편집 클릭")
+  router.push('/edit-profile');
+}
 </script>
 
 <style scoped>
