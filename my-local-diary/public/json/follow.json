@@ -13,7 +13,7 @@
           "role": "MEMBER",
           "profile_image": null
         },
-        "follower_target_meeember": {
+        "follower_target_member": {
           "id": "8",
           "nickname": "유저08",
           "status": "ACTIVE",
@@ -35,7 +35,7 @@
           "role": "MEMBER",
           "profile_image": null
         },
-        "follower_target_meeember": {
+        "follower_target_member": {
           "id": "8",
           "nickname": "유저08",
           "status": "ACTIVE",
@@ -57,7 +57,7 @@
           "role": "MEMBER",
           "profile_image": "/images/profile/profile.png"
         },
-        "follower_target_meeember": {
+        "follower_target_member": {
           "id": "8",
           "nickname": "유저08",
           "status": "ACTIVE",
@@ -80,7 +80,7 @@
           "role": "MEMBER",
           "profile_image": null
         },
-        "follower_target_meeember": {
+        "follower_target_member": {
           "id": "8",
           "nickname": "유저08",
           "status": "ACTIVE",
@@ -102,7 +102,7 @@
           "role": "MEMBER",
           "profile_image": null
         },
-        "follower_target_meeember": {
+        "follower_target_member": {
           "id": "8",
           "nickname": "유저08",
           "status": "ACTIVE",

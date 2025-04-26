@@ -26,7 +26,6 @@
 
 <script setup>
 import MiniMap from '@/components/mypage/MiniMap.vue';
-import postDummy from '@/json/post.json';
 
 
 
