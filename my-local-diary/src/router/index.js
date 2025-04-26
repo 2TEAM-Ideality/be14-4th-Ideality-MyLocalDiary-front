@@ -71,7 +71,7 @@ const routes = [
         path: '/loadingmodal',
         name: 'LoadingModal',
         component: TempLoadingModalParent,
-      },
+      }
 ]
 
 const router = createRouter({
