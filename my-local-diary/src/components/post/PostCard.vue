@@ -37,7 +37,7 @@
         <!-- post/diary 타입 선택 -->
         <div
           class="d-inline-flex align-center rounded-pill px-3 py-1 mb-2"
-          style="background-color: #C8E6C9; font-size: 14px; user-select: none; width: fit-content; margin-top: 24px"
+          style="background-color: #fecccc; font-size: 14px; user-select: none; width: fit-content; margin-top: 24px"
         >
           <span
             @click="postType = 'post'"
