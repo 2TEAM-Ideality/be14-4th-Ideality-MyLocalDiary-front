@@ -33,11 +33,15 @@
           <!-- 장소 태그 -->
         </div>
   
+        <!-- 게시글 제목 -->
+        <div class="pt-2">
+          {{ postTitle }}
+        </div>
         <!-- 게시글 내용 -->
         <!-- post/diary 타입 선택 -->
         <div
           class="d-inline-flex align-center rounded-pill px-3 py-1 mb-2"
-          style="background-color: #fecccc; font-size: 14px; user-select: none; width: fit-content; margin-top: 24px"
+          style="background-color: #fecccc; font-size: 14px; user-select: none; width: fit-content; margin-top: 16px"
         >
           <span
             @click="postType = 'post'"
@@ -59,9 +63,8 @@
             Diary
           </span>
         </div>
-        <div>
+        <div class="pb-5">
           <PostContentCard 
-            :postType="postType"
             :content="postType === 'post' ? postContent : diaryContent"
           />
         </div>
@@ -82,7 +85,7 @@
               {{ commentCount }}
           </div>
         </div>
-        <div style="padding-left: 20px; font-size: 14px; color:grey">{{ createdAt }}</div>
+        <div style="font-size: 14px; color:grey">{{ createdAt }}</div>
         <v-divider class="my-3"/>
         <!-- 댓글 목록 -->
         <div v-if="isCommentVisible" class="comment-container">
@@ -135,6 +138,8 @@
     name: 'Madara Uchiha',
     avatar: 'https://randomuser.me/api/portraits/men/85.jpg',
   } 
+
+  const postTitle = `제목`
 
   const postContent = `일본 여행때 다녀온 오타루.
     후카이도에 있는 소도시.
