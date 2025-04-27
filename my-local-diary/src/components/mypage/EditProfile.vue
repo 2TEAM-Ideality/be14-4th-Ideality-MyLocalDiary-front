@@ -23,19 +23,21 @@
     <v-text-field label="닉네임" v-model="nickname" />
 
     <!-- 프로필 뮤직 -->
-    <div class="d-flex flex-column align-center mb-4">
+    <div class="d-flex flex-column  mb-4">
       <v-select
+        style="width: 100%;"
         label="프로필 뮤직"
         :items="musicOptions"
         v-model="selectedMusic"
         prepend-inner-icon="mdi-music"
       />
-      <div class="button-group mt-2">
+      <div class="d-flex justify-end mt-2">
         <v-btn size="small" color="error" variant="text" @click="resetProfileMusic">
           프로필 뮤직 삭제
         </v-btn>
       </div>
     </div>
+
 
     <!-- 공개 범위 -->
     <div class="d-flex align-center justify-space-between my-4">
@@ -58,20 +60,16 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import LoadingModal from '@/components/common/LoadingModal.vue'
-
-const props = defineProps({
-  user: {
-    type: Object,
-    required: true
-  }
-})
+import { useUserStore } from '@/stores/userStore.js' // ✅ 추가
 
 const router = useRouter()
+const userStore = useUserStore() // ✅ 추가
 const showModal = ref(false)
 
+// 🔥 userStore에서 유저정보 가져와서 초기화할 것
 const nickname = ref('')
 const selectedMusic = ref('')
 const isPublic = ref(false)
@@ -86,19 +84,17 @@ const musicOptions = [
   '박재범 - 좋아'
 ]
 
-watch(
-  () => props.user,
-  (val) => {
-    if (val) {
-      nickname.value = val.nickname
-      selectedMusic.value = val.profile_music
-      isPublic.value = val.is_public === 'TRUE'
-      bio.value = val.bio
-      localProfileImage.value = val.profile_image || '/images/profile/defaultProfile.png'
-    }
-  },
-  { immediate: true }
-)
+// onMounted 때 userStore에서 가져오기
+onMounted(async () => {
+  await userStore.restoreUser()
+
+  // ✅ 가져온 유저정보를 세팅
+  nickname.value = userStore.nickname
+  selectedMusic.value = userStore.profile_music
+  isPublic.value = userStore.is_public === 'TRUE'
+  bio.value = userStore.bio
+  localProfileImage.value = userStore.profile_image || '/images/profile/defaultProfile.png'
+})
 
 // 🔥 파일 업로드
 const triggerFileInput = () => {
@@ -126,6 +122,7 @@ const resetProfileMusic = () => {
   selectedMusic.value = ''
 }
 
+// 🔥 프로필 저장
 const submitProfile = () => {
   const updated = {
     nickname: nickname.value,
@@ -145,6 +142,7 @@ const submitProfile = () => {
   }, 2000)
 }
 </script>
+
 
 <style scoped>
 .box {

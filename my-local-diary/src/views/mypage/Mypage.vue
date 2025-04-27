@@ -16,12 +16,12 @@
         </div>
        
        
-        <div style="flex: 4.4; display: flex; justify-content: center; align-items: center;">
+        <div class="right-side" style="flex: 4.4; display: flex; justify-content: center; align-items: center;">
           <div class="stamp-container">
-            <div class="stamp">스탬프</div>
-            <div class="stamp">스탬프</div>
+           
           </div>
-          <div>
+          <div class="today-post">
+            <TodayDiary />
           </div>
         </div>
       </div>
@@ -31,11 +31,20 @@
 
 
 <script setup>
-import MiniMap from '@/components/mypage/MiniMap.vue';
-import UserProfile from '@/components/common/UserProfile.vue';
-import { useUserStore } from '/src/stores/userStore.js';
+  import { onMounted, ref } from 'vue';
+  import MiniMap from '@/components/mypage/MiniMap.vue';
+  import UserProfile from '@/components/common/userprofile.vue';
+  import { useUserStore } from '/src/stores/userStore.js';
+  import TodayDiary from '@/components/mypage/TodayDiary.vue';
 
-const userStore = useUserStore();
+  const userStore = useUserStore();
+
+
+  onMounted(async () => {
+    await userStore.restoreUser();
+  });
+
+
 
 
 </script>
@@ -52,6 +61,12 @@ const userStore = useUserStore();
   justify-content: center;
   align-items: start;
   padding-top: 40px;
+}
+.right-side {
+  width: 100%;
+  padding: 4%;
+  height: 100%;
+  justify-content: flex-start;
 }
 .mini-map-link {
   color: black;
@@ -77,5 +92,9 @@ const userStore = useUserStore();
   display:flex; 
   flex-direction: row;
   gap: 15px;
+}
+.today-post {
+  width: 100%;
+
 }
 </style>

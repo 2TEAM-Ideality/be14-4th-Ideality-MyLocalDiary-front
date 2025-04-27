@@ -62,17 +62,12 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { useUserStore } from '@/stores/userStore.js'
 
-const props = defineProps({
-  user: Object
-})
+const userStore = useUserStore()
 
 const currentStep = ref('verify')
-const showOriginalPassword = ref(false)
-const showNewPassword = ref(false)
-const showConfirmPassword = ref(false)
-
 
 const form = ref({
   id: '',
@@ -80,23 +75,31 @@ const form = ref({
   password: ''
 })
 
+const showOriginalPassword = ref(false)
 const showPasswordEdit = ref(false)
+const showNewPassword = ref(false)
+const showConfirmPassword = ref(false)
+
 const newPassword = ref('')
 const confirmPassword = ref('')
 const passwordErrors = ref({ new: '', confirm: '' })
 
-watch(
-  () => props.user,
-  (val) => {
-    if (val) {
-      form.value.id = val.login_id
-      form.value.email = val.email
-    }
-  },
-  { immediate: true }
-)
+onMounted(async () => {
+  await userStore.restoreUser()
 
-// ✅ 비밀번호 입력 도중 자동 검증
+  form.value.id = userStore.loginId
+  form.value.email = userStore.email
+})
+
+// ✨ 새 비밀번호 유효성 검사 함수
+const validateNewPassword = (password) => {
+  const lengthValid = password.length >= 8
+  const letterValid = /[a-zA-Z]/.test(password)
+  const numberValid = /\d/.test(password)
+  
+  return lengthValid && letterValid && numberValid
+}
+
 watch([newPassword, confirmPassword], ([newVal, confirmVal]) => {
   passwordErrors.value.new = ''
   passwordErrors.value.confirm = ''
@@ -109,7 +112,8 @@ watch([newPassword, confirmPassword], ([newVal, confirmVal]) => {
 })
 
 const verifyPassword = () => {
-  if (form.value.password === 'pass01') {
+  // 테스트용
+  if (form.value.password === 'pass05') {
     currentStep.value = 'edit'
   } else {
     alert('비밀번호가 일치하지 않습니다.')
@@ -126,11 +130,19 @@ const togglePasswordEdit = () => {
 const submitChanges = () => {
   passwordErrors.value = { new: '', confirm: '' }
 
-  if (showPasswordEdit.value && (!newPassword.value || newPassword.value !== confirmPassword.value)) {
-    if (!newPassword.value) passwordErrors.value.new = '새 비밀번호를 입력해주세요.'
-    if (newPassword.value !== confirmPassword.value)
+  if (showPasswordEdit.value) {
+    if (!newPassword.value) {
+      passwordErrors.value.new = '새 비밀번호를 입력해주세요.'
+      return
+    }
+    if (newPassword.value !== confirmPassword.value) {
       passwordErrors.value.confirm = '비밀번호가 일치하지 않습니다.'
-    return
+      return
+    }
+    if (!validateNewPassword(newPassword.value)) {
+      passwordErrors.value.new = '비밀번호는 8자 이상, 영문자와 숫자를 포함해야 합니다.'
+      return
+    }
   }
 
   const updated = {
@@ -139,10 +151,11 @@ const submitChanges = () => {
     new_password: showPasswordEdit.value ? newPassword.value : null
   }
 
-  console.log('저장된 정보:', updated)
+  console.log('✨ 저장된 정보:', updated)
   alert('개인정보 설정이 완료되었습니다!')
 }
 </script>
+
 
 
 <style scoped>

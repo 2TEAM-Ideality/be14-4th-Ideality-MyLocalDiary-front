@@ -5,7 +5,7 @@
       size="small"
       class="chip-container"
     >
-      {{ place.name }}
+      {{ typeof place === 'string' ? place : place.name }}
     </v-chip>
 </template>
   

@@ -52,7 +52,7 @@ const routes = [
       },
       {
         path: '/edit',
-        component: EditPage,   // 🔥 EditLayout이 먼저 나오고
+        component: EditPage,  // EditPage 내부에서 분기
         children: [
           {
             path: 'profile',
