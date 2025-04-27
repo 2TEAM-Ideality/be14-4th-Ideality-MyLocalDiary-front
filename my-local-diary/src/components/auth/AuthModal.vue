@@ -8,13 +8,44 @@
 
       <v-form>
         <v-text-field label="아이디" variant="outlined" dense class="mb-3" />
-        <v-text-field label="이메일 주소" variant="outlined" dense class="mb-3">
+
+        <!-- 이메일 + 인증하기 버튼 -->
+        <v-text-field
+          v-model="email"
+          label="이메일 주소"
+          variant="outlined"
+          dense
+          class="mb-1"
+        >
           <template #append-inner>
-            <v-btn size="x-small" class="me-2" variant="outlined">인증하기</v-btn>
-            <v-btn size="x-small" color="pink-lighten-4" variant="flat">인증 완료</v-btn>
+            <v-btn
+              size="x-small"
+              variant="outlined"
+              @click="sendEmailVerification"
+            >
+              인증하기
+            </v-btn>
           </template>
         </v-text-field>
-        <v-text-field label="인증번호 입력하기" variant="outlined" dense class="mb-3" />
+
+        <!-- 인증번호 입력칸 + 인증완료 버튼 오른쪽 배치 -->
+        <div class="d-flex align-center mb-3">
+          <v-text-field
+            v-model="verifyCode"
+            label="인증번호 입력하기"
+            variant="outlined"
+            dense
+            class="flex-grow-1 me-2"
+          />
+          <v-btn
+            size="small"
+            :color="isEmailVerified ? 'pink-lighten-4' : 'grey'"
+            variant="flat"
+            :disabled="!isEmailVerified"
+          >
+            인증 완료
+          </v-btn>
+        </div>
 
         <!-- 비밀번호 입력 -->
         <v-text-field
@@ -77,6 +108,10 @@ const emit = defineEmits(['close', 'switch'])
 const internalDialog = ref(true)
 const isPublic = ref(true)
 
+const email = ref('')
+const verifyCode = ref('')
+const isEmailVerified = ref(false)
+
 const password = ref('')
 const confirmPassword = ref('')
 
@@ -87,6 +122,21 @@ const passwordsMatch = computed(() => {
 watch(internalDialog, (val) => {
   if (!val) emit('close')
 })
+
+function sendEmailVerification() {
+  if (!email.value) {
+    alert('이메일을 입력하세요!')
+    return
+  }
+  // 여기에 백엔드 SMTP 인증 요청 로직 들어갈 자리
+  console.log('이메일 인증 요청:', email.value)
+
+  // 예시로 성공했다고 처리
+  setTimeout(() => {
+    isEmailVerified.value = true
+    alert('인증 메일이 전송되었습니다!')
+  }, 500)
+}
 
 function switchToLogin() {
   internalDialog.value = false
