@@ -12,15 +12,17 @@
     "@mdi/font": "^7.4.47",
     "axios": "^1.9.0",
     "date-fns": "^4.1.0",
-    "json-server": "^1.0.0-beta.3",
     "ldrs": "^1.1.7",
+    "lucide-vue-next": "^0.503.0",
     "pinia": "^3.0.2",
+    "swiper": "^11.2.6",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
     "vuetify": "^3.8.0-beta.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
+    "json-server": "^1.0.0-beta.3",
     "vite": "^6.2.4",
     "vite-plugin-vue-devtools": "^7.7.2"
   }

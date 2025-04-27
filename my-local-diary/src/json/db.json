@@ -287,7 +287,7 @@
                 "role": "MEMBER",
                 "profile_image": null
             },
-            "follower_target_meeember": {
+            "follower_target_member": {
                 "id": "8",
                 "nickname": "유저08",
                 "status": "ACTIVE",
@@ -309,7 +309,7 @@
                 "role": "MEMBER",
                 "profile_image": null
             },
-            "follower_target_meeember": {
+            "follower_target_member": {
                 "id": "8",
                 "nickname": "유저08",
                 "status": "ACTIVE",
@@ -331,7 +331,7 @@
                 "role": "MEMBER",
                 "profile_image": "/images/profile/profile.png"
             },
-            "follower_target_meeember": {
+            "follower_target_member": {
                 "id": "8",
                 "nickname": "유저08",
                 "status": "ACTIVE",
@@ -354,7 +354,7 @@
                 "role": "MEMBER",
                 "profile_image": null
             },
-            "follower_target_meeember": {
+            "follower_target_member": {
                 "id": "8",
                 "nickname": "유저08",
                 "status": "ACTIVE",
@@ -376,7 +376,7 @@
                 "role": "MEMBER",
                 "profile_image": null
             },
-            "follower_target_meeember": {
+            "follower_target_member": {
                 "id": "8",
                 "nickname": "유저08",
                 "status": "ACTIVE",
@@ -496,516 +496,733 @@
             }
         }
     ],
-    "member_stamp": [
+    "member_stamp":[
         {
-            "id": 1,
-            "achieved_date": "2025-04-23",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 1,
-                "name": "카페냥",
-                "description": "/images/stamp_pic/카페냥"
-            }
-        },
-        {
-            "id": 2,
-            "achieved_date": "2025-04-23",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 1,
-                "name": "카페냥",
-                "description": "/images/stamp_pic/카페냥"
-            }
-        },
-        {
-            "id": 3,
-            "achieved_date": "2025-04-23",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 1,
-                "name": "카페냥",
-                "description": "/images/stamp_pic/카페냥"
-            }
-        },
-        {
-            "id": 4,
-            "achieved_date": "2025-04-23",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 1,
-                "name": "카페냥",
-                "description": "/images/stamp_pic/카페냥"
-            }
-        },
-        {
-            "id": 5,
-            "achieved_date": "2025-04-23",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 1,
-                "name": "카페냥",
-                "description": "/images/stamp_pic/카페냥"
-            }
-        },
-        {
-            "id": 6,
-            "achieved_date": "2025-04-25",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 2,
-                "name": "산책냥",
-                "description": "/images/stamp_pic/산책냥"
-            }
-        },
-        {
-            "id": 7,
-            "achieved_date": "2025-04-25",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 2,
-                "name": "산책냥",
-                "description": "/images/stamp_pic/산책냥"
-            }
-        },
-        {
+          "id": 1,
+          "achieved_date": "2025-04-10",
+          "member": {
             "id": 8,
-            "achieved_date": "2025-04-25",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 2,
-                "name": "산책냥",
-                "description": "/images/stamp_pic/산책냥"
-            }
+            "nickname": "유저08",
+            "bio": "집에 있지만 집에 가고 싶다.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": null
+          },
+          "stamp": {
+            "id": 1,
+            "name": "카페냥",
+            "description": "/images/stamp_pic/카페냥"
+          }
         },
         {
-            "id": 9,
-            "achieved_date": "2025-04-25",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 2,
-                "name": "산책냥",
-                "description": "/images/stamp_pic/산책냥"
-            }
+          "id": 2,
+          "achieved_date": "2025-04-11",
+          "member": {
+            "id": 8,
+            "nickname": "유저08",
+            "bio": "집에 있지만 집에 가고 싶다.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": null
+          },
+          "stamp": {
+            "id": 1,
+            "name": "산책냥",
+            "description": "/images/stamp_pic/산책냥"
+          }
         },
         {
-            "id": 10,
-            "achieved_date": "2025-04-25",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 2,
-                "name": "산책냥",
-                "description": "/images/stamp_pic/산책냥"
-            }
+          "id": 3,
+          "achieved_date": "2025-04-12",
+          "member": {
+            "id": 8,
+            "nickname": "유저08",
+            "bio": "집에 있지만 집에 가고 싶다.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": null
+          },
+          "stamp": {
+            "id": 1,
+            "name": "꽐라냥",
+            "description": "/images/stamp_pic/꽐라냥"
+          }
         },
         {
-            "id": 11,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 3,
-                "name": "꽐라냥",
-                "description": "/images/stamp_pic/꽐라냥"
-            }
+          "id": 4,
+          "achieved_date": "2025-04-13",
+          "member": {
+            "id": 8,
+            "nickname": "유저08",
+            "bio": "집에 있지만 집에 가고 싶다.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": null
+          },
+          "stamp": {
+            "id": 1,
+            "name": "독서냥",
+            "description": "/images/stamp_pic/독서냥"
+          }
         },
         {
-            "id": 12,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 3,
-                "name": "꽐라냥",
-                "description": "/images/stamp_pic/꽐라냥"
-            }
+          "id": 5,
+          "achieved_date": "2025-04-14",
+          "member": {
+            "id": 8,
+            "nickname": "유저08",
+            "bio": "집에 있지만 집에 가고 싶다.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": null
+          },
+          "stamp": {
+            "id": 1,
+            "name": "맛집냥",
+            "description": "/images/stamp_pic/맛집냥"
+          }
         },
         {
-            "id": 13,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 3,
-                "name": "꽐라냥",
-                "description": "/images/stamp_pic/꽐라냥"
-            }
+          "id": 6,
+          "achieved_date": "2025-04-15",
+          "member": {
+            "id": 8,
+            "nickname": "유저08",
+            "bio": "집에 있지만 집에 가고 싶다.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": null
+          },
+          "stamp": {
+            "id": 1,
+            "name": "영화냥",
+            "description": "/images/stamp_pic/영화냥"
+          }
         },
         {
-            "id": 14,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 3,
-                "name": "꽐라냥",
-                "description": "/images/stamp_pic/꽐라냥"
-            }
+          "id": 7,
+          "achieved_date": "2025-04-16",
+          "member": {
+            "id": 8,
+            "nickname": "유저08",
+            "bio": "집에 있지만 집에 가고 싶다.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": null
+          },
+          "stamp": {
+            "id": 1,
+            "name": "카페냥",
+            "description": "/images/stamp_pic/카페냥"
+          }
         },
         {
-            "id": 15,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 3,
-                "name": "꽐라냥",
-                "description": "/images/stamp_pic/꽐라냥"
-            }
+          "id": 8,
+          "achieved_date": "2025-04-17",
+          "member": {
+            "id": 8,
+            "nickname": "유저08",
+            "bio": "집에 있지만 집에 가고 싶다.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": null
+          },
+          "stamp": {
+            "id": 1,
+            "name": "산책냥",
+            "description": "/images/stamp_pic/산책냥"
+          }
         },
         {
-            "id": 16,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 4,
-                "name": "독서냥",
-                "description": "/images/stamp_pic/독서냥"
-            }
+          "id": 9,
+          "achieved_date": "2025-04-18",
+          "member": {
+            "id": 8,
+            "nickname": "유저08",
+            "bio": "집에 있지만 집에 가고 싶다.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": null
+          },
+          "stamp": {
+            "id": 1,
+            "name": "꽐라냥",
+            "description": "/images/stamp_pic/꽐라냥"
+          }
         },
         {
-            "id": 17,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 4,
-                "name": "독서냥",
-                "description": "/images/stamp_pic/독서냥"
-            }
+          "id": 10,
+          "achieved_date": "2025-04-19",
+          "member": {
+            "id": 8,
+            "nickname": "유저08",
+            "bio": "집에 있지만 집에 가고 싶다.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": null
+          },
+          "stamp": {
+            "id": 1,
+            "name": "영화냥",
+            "description": "/images/stamp_pic/영화냥"
+          }
         },
         {
-            "id": 18,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 4,
-                "name": "독서냥",
-                "description": "/images/stamp_pic/독서냥"
-            }
+          "id": 11,
+          "achieved_date": "2025-04-20",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "카페냥",
+            "description": "/images/stamp_pic/카페냥"
+          }
         },
         {
-            "id": 19,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 4,
-                "name": "독서냥",
-                "description": "/images/stamp_pic/독서냥"
-            }
+          "id": 12,
+          "achieved_date": "2025-04-21",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "카페냥",
+            "description": "/images/stamp_pic/카페냥"
+          }
         },
         {
-            "id": 20,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 4,
-                "name": "독서냥",
-                "description": "/images/stamp_pic/독서냥"
-            }
+          "id": 13,
+          "achieved_date": "2025-04-22",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "카페냥",
+            "description": "/images/stamp_pic/카페냥"
+          }
         },
         {
-            "id": 21,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 5,
-                "name": "맛집냥",
-                "description": "/images/stamp_pic/맛집냥"
-            }
+          "id": 14,
+          "achieved_date": "2025-04-23",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "카페냥",
+            "description": "/images/stamp_pic/카페냥"
+          }
         },
         {
-            "id": 22,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 5,
-                "name": "맛집냥",
-                "description": "/images/stamp_pic/맛집냥"
-            }
+          "id": 15,
+          "achieved_date": "2025-04-24",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "카페냥",
+            "description": "/images/stamp_pic/카페냥"
+          }
         },
         {
-            "id": 23,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 5,
-                "name": "맛집냥",
-                "description": "/images/stamp_pic/맛집냥"
-            }
+          "id": 16,
+          "achieved_date": "2025-04-25",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "산책냥",
+            "description": "/images/stamp_pic/산책냥"
+          }
         },
         {
-            "id": 24,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 5,
-                "name": "맛집냥",
-                "description": "/images/stamp_pic/맛집냥"
-            }
+          "id": 17,
+          "achieved_date": "2025-04-26",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "산책냥",
+            "description": "/images/stamp_pic/산책냥"
+          }
         },
         {
-            "id": 25,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 5,
-                "name": "맛집냥",
-                "description": "/images/stamp_pic/맛집냥"
-            }
+          "id": 18,
+          "achieved_date": "2025-04-27",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "산책냥",
+            "description": "/images/stamp_pic/산책냥"
+          }
         },
         {
-            "id": 26,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 6,
-                "name": "영화냥",
-                "description": "/images/stamp_pic/영화냥"
-            }
+          "id": 19,
+          "achieved_date": "2025-04-28",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "산책냥",
+            "description": "/images/stamp_pic/산책냥"
+          }
         },
         {
-            "id": 27,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 6,
-                "name": "영화냥",
-                "description": "/images/stamp_pic/영화냥"
-            }
+          "id": 20,
+          "achieved_date": "2025-04-29",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "산책냥",
+            "description": "/images/stamp_pic/산책냥"
+          }
         },
         {
-            "id": 28,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 6,
-                "name": "영화냥",
-                "description": "/images/stamp_pic/영화냥"
-            }
+          "id": 21,
+          "achieved_date": "2025-04-30",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "꽐라냥",
+            "description": "/images/stamp_pic/꽐라냥"
+          }
         },
         {
-            "id": 29,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 6,
-                "name": "영화냥",
-                "description": "/images/stamp_pic/영화냥"
-            }
+          "id": 22,
+          "achieved_date": "2025-04-01",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "꽐라냥",
+            "description": "/images/stamp_pic/꽐라냥"
+          }
         },
         {
-            "id": 30,
-            "achieved_date": "2025-04-22",
-            "member": {
-                "id": 8,
-                "nickname": "유저08",
-                "bio": "집에 있지만 집에 가고 싶다.",
-                "is_public": "TRUE",
-                "status": "ACTIVE",
-                "profile_image": null
-            },
-            "stamp": {
-                "id": 6,
-                "name": "영화냥",
-                "description": "/images/stamp_pic/영화냥"
-            }
+          "id": 23,
+          "achieved_date": "2025-04-02",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "꽐라냥",
+            "description": "/images/stamp_pic/꽐라냥"
+          }
+        },
+        {
+          "id": 24,
+          "achieved_date": "2025-04-03",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "꽐라냥",
+            "description": "/images/stamp_pic/꽐라냥"
+          }
+        },
+        {
+          "id": 25,
+          "achieved_date": "2025-04-04",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "꽐라냥",
+            "description": "/images/stamp_pic/꽐라냥"
+          }
+        },
+        {
+          "id": 26,
+          "achieved_date": "2025-04-05",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "독서냥",
+            "description": "/images/stamp_pic/독서냥"
+          }
+        },
+        {
+          "id": 27,
+          "achieved_date": "2025-04-06",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "독서냥",
+            "description": "/images/stamp_pic/독서냥"
+          }
+        },
+        {
+          "id": 28,
+          "achieved_date": "2025-04-07",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "독서냥",
+            "description": "/images/stamp_pic/독서냥"
+          }
+        },
+        {
+          "id": 29,
+          "achieved_date": "2025-04-08",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "독서냥",
+            "description": "/images/stamp_pic/독서냥"
+          }
+        },
+        {
+          "id": 30,
+          "achieved_date": "2025-04-09",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "독서냥",
+            "description": "/images/stamp_pic/독서냥"
+          }
+        },
+        {
+          "id": 31,
+          "achieved_date": "2025-04-10",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "영화냥",
+            "description": "/images/stamp_pic/영화냥"
+          }
+        },
+        {
+          "id": 32,
+          "achieved_date": "2025-04-11",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "영화냥",
+            "description": "/images/stamp_pic/영화냥"
+          }
+        },
+        {
+          "id": 33,
+          "achieved_date": "2025-04-12",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "영화냥",
+            "description": "/images/stamp_pic/영화냥"
+          }
+        },
+        {
+          "id": 34,
+          "achieved_date": "2025-04-13",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "영화냥",
+            "description": "/images/stamp_pic/영화냥"
+          }
+        },
+        {
+          "id": 35,
+          "achieved_date": "2025-04-14",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "맛집냥",
+            "description": "/images/stamp_pic/맛집냥"
+          }
+        },
+        {
+          "id": 36,
+          "achieved_date": "2025-04-15",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "맛집냥",
+            "description": "/images/stamp_pic/맛집냥"
+          }
+        },
+        {
+          "id": 37,
+          "achieved_date": "2025-04-16",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "맛집냥",
+            "description": "/images/stamp_pic/맛집냥"
+          }
+        },
+        {
+          "id": 38,
+          "achieved_date": "2025-04-17",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "맛집냥",
+            "description": "/images/stamp_pic/맛집냥"
+          }
+        },
+        {
+          "id": 39,
+          "achieved_date": "2025-04-18",
+          "member": {
+            "id": 5,
+            "nickname": "Madara Uchiha",
+            "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+            "is_public": "TRUE",
+            "status": "ACTIVE",
+            "profile_image": "/images/profile/profile.png"
+          },
+          "stamp": {
+            "id": 1,
+            "name": "맛집냥",
+            "description": "/images/stamp_pic/맛집냥"
+          }
         }
-    ]
+      ],
+      "badge": [
+        {
+          "id": 1,
+          "name": "카페인냥",
+          "description": "카페냥 뱃지입니다."
+        },
+        {
+          "id": 2,
+          "name": "산책냥",
+          "description": "산책냥 뱃지입니다."
+        },
+        {
+          "id": 3,
+          "name": "꽐라냥",
+          "description": "꽐라냥 뱃지입니다."
+        },
+        {
+          "id": 4,
+          "name": "독서냥",
+          "description": "독서냥 뱃지입니다."
+        },
+        {
+          "id": 5,
+          "name": "맛집냥",
+          "description": "맛집냥 뱃지입니다."
+        },
+        {
+          "id": 6,
+          "name": "영화냥",
+          "description": "영화냥 뱃지입니다."
+        }
+      ],
+      "member_badge": [
+        {
+          "id": 1,
+          "achived_date": "2025-04-25",
+          "badge_id": 1,
+          "member_id": 5
+        },
+        {
+          "id": 2,
+          "achived_date": "2025-04-25",
+          "badge_id": 2,
+          "member_id": 5
+        },
+        {
+          "id": 3,
+          "achived_date": "2025-04-26",
+          "badge_id": 3,
+          "member_id": 5
+        },
+        {
+          "id": 4,
+          "achived_date": "2025-04-26",
+          "badge_id": 4,
+          "member_id": 5
+        },
+        {
+          "id": 5,
+          "achived_date": "2025-04-27",
+          "badge_id": 5,
+          "member_id": 5
+        }
+      ]
 }
