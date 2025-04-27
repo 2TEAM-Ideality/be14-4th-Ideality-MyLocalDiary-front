@@ -23,11 +23,19 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/naver': {
+      // 네이버 지도
+      '/naver': {  
         target: 'https://openapi.naver.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/naver/, ''),
       },
+
+      // 백엔드
+      '/api': {
+        target: 'http://localhost:8080',  // Spring Boot 서버 주소
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '/api'), // 경로 유지
+      }
     },
   }
 })

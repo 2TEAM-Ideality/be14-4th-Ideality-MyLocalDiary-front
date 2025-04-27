@@ -62,11 +62,12 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 import LoadingModal from '@/components/common/LoadingModal.vue'
-import { useUserStore } from '@/stores/userStore.js' // ✅ 추가
+import { useUserStore } from '@/stores/userStore.js' 
 
 const router = useRouter()
-const userStore = useUserStore() // ✅ 추가
+const userStore = useUserStore() 
 const showModal = ref(false)
 
 // 🔥 userStore에서 유저정보 가져와서 초기화할 것
@@ -101,16 +102,29 @@ const triggerFileInput = () => {
   fileInput.value.click()
 }
 
-const handleImageUpload = (event) => {
+const handleImageUpload = async (event) => {
   const file = event.target.files[0]
   if (file) {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      localProfileImage.value = e.target.result
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      // 1. S3 업로드 요청 보내기
+      const response = await axios.post('/api/s3/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      
+      console.log('S3 업로드 성공:', response.data)
+
+      // 업로드 성공하면 반환된 S3 경로를 프로필 이미지로 세팅
+      const s3Key = response.data
+      localProfileImage.value = `https://my-local-diary-prod.s3.ap-northeast-2.amazonaws.com/${s3Key}`
+    } catch (error) {
+      console.error('S3 업로드 실패:', error)
     }
-    reader.readAsDataURL(file)
   }
 }
+
 
 // 🔥 프로필 사진 삭제
 const resetProfileImage = () => {
