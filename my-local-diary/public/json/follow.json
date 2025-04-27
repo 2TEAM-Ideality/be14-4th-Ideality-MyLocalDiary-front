@@ -1,0 +1,225 @@
+{
+    "follow": [
+      {
+        "id": "1",
+        "following_member_id": "1",
+        "follower_target_member_id": "8",
+        "status": null,
+        "following_member": {
+          "id": "1",
+          "nickname": "유저01",
+          "status": "ACTIVE",
+          "bio": "여행 좋아",
+          "role": "MEMBER",
+          "profile_image": null
+        },
+        "follower_target_member": {
+          "id": "8",
+          "nickname": "유저08",
+          "status": "ACTIVE",
+          "bio": "집에 있지만 집에 가고 싶다.",
+          "role": "MEMBER",
+          "profile_image": null
+        }
+      },
+      {
+        "id": "2",
+        "following_member_id": "4",
+        "follower_target_member_id": "8",
+        "status": null,
+        "following_member": {
+          "id": "4",
+          "nickname": "유저04",
+          "status": "ACTIVE",
+          "bio": "공개는 부끄렁",
+          "role": "MEMBER",
+          "profile_image": null
+        },
+        "follower_target_member": {
+          "id": "8",
+          "nickname": "유저08",
+          "status": "ACTIVE",
+          "bio": "집에 있지만 집에 가고 싶다.",
+          "role": "MEMBER",
+          "profile_image": null
+        }
+      },
+      {
+        "id": "3",
+        "following_member_id": "5",
+        "follower_target_member_id": "8",
+        "status": null,
+        "following_member": {
+          "id": "5",
+          "nickname": "Madara Uchiha",
+          "status": "ACTIVE",
+          "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+          "role": "MEMBER",
+          "profile_image": "/images/profile/profile.png"
+        },
+        "follower_target_member": {
+          "id": "8",
+          "nickname": "유저08",
+          "status": "ACTIVE",
+          "bio": "집에 있지만 집에 가고 싶다.",
+          "role": "MEMBER",
+          "profile_image": null
+        }
+      },
+      {
+        "id": "4",
+        "following_member_id": "6",
+        "follower_target_member_id": "8",
+        "status": null,
+        "following_member": {
+          "id": "6",
+          "nickname": "유저06",
+          "status": "ACTIVE",
+          "is_public": "TRUE",
+          "bio": "하이여",
+          "role": "MEMBER",
+          "profile_image": null
+        },
+        "follower_target_member": {
+          "id": "8",
+          "nickname": "유저08",
+          "status": "ACTIVE",
+          "bio": "집에 있지만 집에 가고 싶다.",
+          "role": "MEMBER",
+          "profile_image": null
+        }
+      },
+      {
+        "id": "5",
+        "following_member_id": "7",
+        "follower_target_member_id": "8",
+        "status": null,
+        "following_member": {
+          "id": "7",
+          "nickname": "유저07",
+          "status": "ACTIVE",
+          "bio": "석현님 커피 왜 안사줌",
+          "role": "MEMBER",
+          "profile_image": null
+        },
+        "follower_target_member": {
+          "id": "8",
+          "nickname": "유저08",
+          "status": "ACTIVE",
+          "bio": "집에 있지만 집에 가고 싶다.",
+          "role": "MEMBER",
+          "profile_image": null
+        }
+      },
+      {
+        "id": "6",
+        "following_member_id": "8",
+        "follower_target_member_id": "1",
+        "status": null,
+        "following_member": {
+          "id": "8",
+          "nickname": "유저08",
+          "status": "ACTIVE",
+          "bio": "집에 있지만 집에 가고 싶다.",
+          "role": "MEMBER",
+          "profile_image": null
+        },
+        "follower_target_member": {
+          "id": "1",
+          "nickname": "유저01",
+          "status": "ACTIVE",
+          "bio": "여행 좋아",
+          "role": "MEMBER",
+          "profile_image": null
+        }
+      },
+      {
+        "id": "7",
+        "following_member_id": "8",
+        "follower_target_member_id": "4",
+        "status": null,
+        "following_member": {
+          "id": "8",
+          "nickname": "유저08",
+          "status": "ACTIVE",
+          "bio": "집에 있지만 집에 가고 싶다.",
+          "role": "MEMBER",
+          "profile_image": null
+        },
+        "follower_target_member": {
+          "id": "4",
+          "nickname": "유저04",
+          "status": "ACTIVE",
+          "bio": "공개는 부끄렁",
+          "role": "MEMBER",
+          "profile_image": null
+        }
+      },
+      {
+        "id": "8",
+        "following_member_id": "8",
+        "follower_target_member_id": "5",
+        "status": null,
+        "following_member": {
+          "id": "8",
+          "nickname": "유저08",
+          "status": "ACTIVE",
+          "bio": "집에 있지만 집에 가고 싶다.",
+          "role": "MEMBER",
+          "profile_image": null
+        },
+        "follower_target_member": {
+          "id": "5",
+          "nickname": "Madara Uchiha",
+          "status": "ACTIVE",
+          "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+          "role": "MEMBER",
+          "profile_image": "/images/profile/profile.png"
+        }
+      },
+      {
+        "id": "9",
+        "following_member_id": "8",
+        "follower_target_member_id": "6",
+        "status": null,
+        "following_member": {
+          "id": "8",
+          "nickname": "유저08",
+          "status": "ACTIVE",
+          "bio": "집에 있지만 집에 가고 싶다.",
+          "role": "MEMBER",
+          "profile_image": null
+        },
+        "follower_target_member": {
+          "id": "6",
+          "nickname": "유저06",
+          "status": "ACTIVE",
+          "bio": "하이여",
+          "role": "MEMBER",
+          "profile_image": null
+        }
+      },
+      {
+        "id": "10",
+        "following_member_id": "8",
+        "follower_target_member_id": "7",
+        "status": null,
+        "following_member": {
+          "id": "8",
+          "nickname": "유저08",
+          "status": "ACTIVE",
+          "bio": "집에 있지만 집에 가고 싶다.",
+          "role": "MEMBER",
+          "profile_image": null
+        },
+        "follower_target_member": {
+          "id": "7",
+          "nickname": "유저07",
+          "status": "ACTIVE",
+          "bio": "석현님 커피 왜 안사줌",
+          "role": "MEMBER",
+          "profile_image": null
+        }
+      }
+    ]
+  }

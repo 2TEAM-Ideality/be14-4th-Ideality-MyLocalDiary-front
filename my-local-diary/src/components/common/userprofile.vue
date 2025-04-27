@@ -2,7 +2,7 @@
   <div v-if="userData" class="user-profile">
     <!-- 프로필 이미지 -->
     <div class="profile-img">
-      <img :src="userData.profileImage || '/images/default-profile.png'" alt="profile" />
+      <img :src="userData.profileImage || '/images/profile/defaultProfile.png'" alt="profile" />
     </div>
 
     <!-- 텍스트 정보 -->
@@ -27,12 +27,22 @@
       <div class="music-info" @click="togglePlayback">
         <span>🎵 {{ musicTitle }}</span>
         <span class="time-info">{{ formattedTime }} / {{ formattedDuration }}</span>
+
+        <!-- 🎵 추가: 재생중일 때만 보여주는 로딩 애니메이션 -->
+        <l-waveform
+          v-if="isPlaying"
+          size="18"
+          stroke="2.5"
+          speed="1"
+          color="gray"
+          style="margin-left: 8px;"
+        />
       </div>
 
       <!-- 버튼 영역 -->
       <div class="button-group" v-if="isMyProfile">
-        <button>프로필 편집</button>
-        <button>개인 정보 설정</button>
+        <v-btn color=" gray" variant="flat" @click="editProfile">프로필 편집</v-btn>
+        <v-btn color=" gray" variant="flat" @click="editAccount">개인 정보 설정</v-btn>
       </div>
       <button v-else class="follow-button">팔로우</button>
     </div>
@@ -51,7 +61,12 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter }from 'vue-router';
 import { useUserStore } from '@/stores/userStore'
+import { waveform } from 'ldrs'
+
+waveform.register()  // 배경음악 재생 중 표시 
+
 
 const props = defineProps({
   userData: {
@@ -59,7 +74,7 @@ const props = defineProps({
     required: true
   }
 })
-
+const router = useRouter();
 const userStore = useUserStore()
 const isMyProfile = computed(() => props.userData.id === userStore.id)
 
@@ -127,20 +142,31 @@ watch(() => props.userData.profileMusic, (newMusic) => {
     })
   }
 })
+
+const editProfile = () => {
+  console.log("프로필 편집 클릭")
+  router.push('/edit/profile');
+}
+const editAccount = () => {
+  console.log("개인 정보 수정 클릭")
+  router.push('/edit/account');
+}
 </script>
 
 <style scoped>
 .user-profile {
-  max-width: 768px;
+  width:100%;
+  /* max-width: 768px; */
   margin: 40px auto;
   padding: 32px;
   display: flex;
-  align-items: center;
-  background-color: #ffffff;
+  align-items: flex-start; 
+  /* align-items: center; */
+  /* background-color: #ffffff; */
   color: #1f2937;
-  border-radius: 16px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  /* border-radius: 16px; */
+  /* border: 1px solid #e5e7eb; */
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); */
   gap: 32px;
 }
 

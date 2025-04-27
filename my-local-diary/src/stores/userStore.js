@@ -36,7 +36,7 @@ export const useUserStore = defineStore('user', () => {
     status.value = memberData.status
     isPublic.value = memberData.is_public === 'TRUE'
     bio.value = memberData.bio
-    profileImage.value = memberData.profile_image
+    profileImage.value = memberData.profile_image || '/images/profile/defaultProfile.png';
     profileMusic.value = memberData.profile_music
 
     await fetchProfileStats()
