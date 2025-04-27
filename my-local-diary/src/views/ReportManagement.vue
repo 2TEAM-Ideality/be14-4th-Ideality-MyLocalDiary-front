@@ -27,7 +27,7 @@
             <td>{{ report.report_type }}</td>
             <td>{{ report.reported_id }}</td>
             <td>
-              <button class="detail-button" @click="openModal(report.content)">자세히보기</button>
+              <button class="detail-button" @click="openContentModal(report.content)">자세히보기</button>
             </td>
             <td>
               <select v-model="report.status" @change="updateReportStatus(report)">
@@ -44,14 +44,6 @@
                     {{ reason.reason }}
                   </option>
                 </select>
-                <div v-if="report.report_reason_id === 10">
-                  <input
-                    v-model="report.custom_reason"
-                    type="text"
-                    placeholder="신고 사유를 입력하세요"
-                    class="custom-reason-input"
-                  />
-                </div>
               </div>
             </td>
           </tr>
@@ -61,13 +53,31 @@
       <div v-else>로딩중...</div>
   
       <!-- 신고 내용 모달 -->
-      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+      <div v-if="showContentModal" class="modal-overlay" @click.self="closeContentModal">
         <div class="modal">
           <h3>신고 내용</h3>
           <p>{{ selectedContent }}</p>
-          <button @click="closeModal" class="close-button">닫기</button>
+          <button @click="closeContentModal" class="close-button">닫기</button>
         </div>
       </div>
+  
+      <!-- 기타 입력 모달 -->
+      <div v-if="showCustomReasonModal" class="modal-overlay" @click.self="closeCustomReasonModal">
+        <div class="modal">
+          <h3>신고 사유 직접 입력</h3>
+          <input
+            v-model="customReasonInput"
+            type="text"
+            placeholder="직접 신고 사유를 입력하세요"
+            class="custom-reason-input"
+          />
+          <div style="margin-top: 20px;">
+            <button @click="confirmCustomReason" class="close-button">확인</button>
+            <button @click="closeCustomReasonModal" class="close-button">취소</button>
+          </div>
+        </div>
+      </div>
+  
     </div>
   </template>
   
@@ -79,8 +89,11 @@
       return {
         reports: [],
         reportReasons: [],
-        showModal: false,
+        showContentModal: false,
+        showCustomReasonModal: false,
         selectedContent: '',
+        selectedReport: null,
+        customReasonInput: '',
       };
     },
     created() {
@@ -93,7 +106,6 @@
           const response = await axios.get('http://localhost:3001/reports');
           this.reports = response.data.map(report => ({
             ...report,
-            custom_reason: '',
           }));
         } catch (error) {
           console.error('Failed to fetch reports', error);
@@ -107,12 +119,12 @@
           console.error('Failed to fetch report reasons', error);
         }
       },
-      openModal(content) {
+      openContentModal(content) {
         this.selectedContent = content;
-        this.showModal = true;
+        this.showContentModal = true;
       },
-      closeModal() {
-        this.showModal = false;
+      closeContentModal() {
+        this.showContentModal = false;
         this.selectedContent = '';
       },
       async updateReportStatus(report) {
@@ -120,14 +132,18 @@
           await axios.patch(`http://localhost:3001/reports/${report.id}`, {
             status: report.status,
           });
-          // 업데이트 성공해도 alert 띄우지 않음
         } catch (error) {
           console.error('Failed to update report status', error);
         }
       },
       async handleReasonChange(report) {
-        if (report.report_reason_id !== 10) {
-          report.custom_reason = '';
+        if (report.report_reason_id === 10) {
+          // 기타 선택 -> 모달 열기
+          this.selectedReport = report;
+          this.customReasonInput = '';
+          this.showCustomReasonModal = true;
+        } else {
+          // 기타가 아닌 경우 바로 업데이트
           await this.updateReportReason(report);
         }
       },
@@ -136,10 +152,31 @@
           await axios.patch(`http://localhost:3001/reports/${report.id}`, {
             report_reason_id: report.report_reason_id,
           });
-          // 업데이트 성공해도 alert 띄우지 않음
         } catch (error) {
           console.error('Failed to update report reason', error);
         }
+      },
+      async confirmCustomReason() {
+        if (!this.customReasonInput.trim()) {
+          alert('신고 사유를 입력해주세요.');
+          return;
+        }
+        try {
+          await axios.patch(`http://localhost:3001/reports/${this.selectedReport.id}`, {
+            report_reason_id: 10,
+            custom_reason: this.customReasonInput,
+          });
+          this.selectedReport.custom_reason = this.customReasonInput;
+        } catch (error) {
+          console.error('Failed to save custom reason', error);
+        } finally {
+          this.closeCustomReasonModal();
+        }
+      },
+      closeCustomReasonModal() {
+        this.showCustomReasonModal = false;
+        this.selectedReport = null;
+        this.customReasonInput = '';
       }
     },
   };
@@ -163,7 +200,7 @@
   
   .title {
     position: absolute;
-    top:50px;
+    top: 50px;
     left: 20px;
     font-size: 24px;
     font-weight: bold;
@@ -172,7 +209,7 @@
   
   .report-table {
     width: 100%;
-    min-width: 1000px; /* 테이블 넓이 확보 */
+    min-width: 1000px;
     border-collapse: collapse;
   }
   
@@ -226,6 +263,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1000;
   }
   
   .modal {
@@ -237,7 +275,7 @@
   }
   
   .close-button {
-    margin-top: 20px;
+    margin: 10px;
     padding: 5px 10px;
     background: #ccc;
     border: none;
