@@ -128,6 +128,12 @@
   import PostCommentInput from './PostCommentInput.vue';
   import { ref, onMounted } from 'vue';
 
+  const props = defineProps({
+    postId: Number
+  })
+
+
+
   const postType = ref('post')
 
   // 예시 데이터 (props로 바꿔도 되고 API로 받아도 됨)
