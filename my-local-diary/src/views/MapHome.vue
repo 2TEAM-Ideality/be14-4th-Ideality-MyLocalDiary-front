@@ -3,76 +3,119 @@
     <!-- 지도 -->
     <div ref="mapRef" class="map-container" />
 
-    <!-- 검색창 컴포넌트 -->
+    <!-- ✨ 검은색 검색창 -->
     <SearchLocation2
       :query="query"
       @update:query="query = $event"
       @place-selected="selectPlace"
     />
 
-    <!-- 내 위치 버튼 -->
+    <!-- ✨ 오른쪽 유저 아이콘 리스트 -->
+    <div class="user-icon-pagination">
+      <v-btn
+        v-if="userList.length > itemsPerPage"
+        icon
+        class="arrow-btn"
+        @click="prevPage"
+        :disabled="page === 0"
+        size="small"
+      >
+        <v-icon size="40">mdi-menu-up</v-icon>
+      </v-btn>
+
+      <div class="user-icon-list">
+        <div
+          v-for="user in paginatedUsers"
+          :key="user.id"
+          class="user-icon-wrapper"
+          @click="goToUserMap"
+        >
+          <div class="user-icon">
+            <img :src="getUserImage(user.image)" alt="user" />
+            <div class="user-name-tooltip">{{ user.name }}</div>
+          </div>
+        </div>
+      </div>
+
+      <v-btn
+        v-if="userList.length > itemsPerPage"
+        icon
+        class="arrow-btn"
+        @click="nextPage"
+        :disabled="endIndex >= userList.length"
+        size="small"
+      >
+        <v-icon size="40">mdi-menu-down</v-icon>
+      </v-btn>
+    </div>
+
+    <!-- ✨ 내 위치 버튼 -->
     <v-btn class="my-location-btn" @click="moveToMyLocation" icon color="primary">
       📍
     </v-btn>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
-import SearchLocation2 from '@/components/map/SearchLocation2.vue'
-import { useUIStore } from '@/stores/uiStore'
 
-const ui = useUIStore()
+<script setup>
+import { ref, computed, onMounted, h, render } from 'vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+import SearchLocation2 from '@/components/map/SearchLocation2.vue'
+import CustomMarker from '@/components/common/CustomMarker.vue'
+import profileImageDummy from '@/assets/profile/profile.png'
+
+const router = useRouter()
 const query = ref('')
 const mapRef = ref(null)
-let map
-let infoWindow
-let currentMarker = null
+let map, infoWindow, currentMarker
+
+const userList = ref([])
+const places = ref([])
+
+const page = ref(0)
+const itemsPerPage = 6
+const startIndex = computed(() => page.value * itemsPerPage)
+const endIndex = computed(() => startIndex.value + itemsPerPage)
+const paginatedUsers = computed(() => userList.value.slice(startIndex.value, endIndex.value))
+
+function getUserImage(image) {
+  return image && image.trim() !== '' ? image : profileImageDummy
+}
+
+function prevPage() {
+  if (page.value > 0) page.value--
+}
+
+function nextPage() {
+  if (endIndex.value < userList.value.length) page.value++
+}
+
+function moveToMyLocation() {
+  if (!navigator.geolocation) return
+  navigator.geolocation.getCurrentPosition(pos => {
+    const latlng = new naver.maps.LatLng(pos.coords.latitude, pos.coords.longitude)
+    map.setCenter(latlng)
+    map.setZoom(15)
+    renderResult(latlng, '📍 내 위치', '')
+    placeMarker(latlng, '내 위치')
+  })
+}
 
 function initMap() {
   map = new naver.maps.Map(mapRef.value, {
     center: new naver.maps.LatLng(37.3595316, 127.1052133),
-    zoom: 15,
-    mapTypeControl: true,
+    zoom: 15
   })
-
   infoWindow = new naver.maps.InfoWindow({ anchorSkew: true })
-
   map.setCursor('pointer')
-  map.addListener('click', (e) => searchCoordinateToAddress(e.coord))
-
   moveToMyLocation()
-
-  if (query.value.trim()) {
-    searchAddressToCoordinate()
-  }
-}
-
-function moveToMyLocation() {
-  if (!navigator.geolocation) {
-    alert('이 브라우저는 위치 서비스를 지원하지 않습니다.')
-    return
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const latlng = new naver.maps.LatLng(pos.coords.latitude, pos.coords.longitude)
-      map.setCenter(latlng)
-      map.setZoom(15)
-      renderResult(latlng, '내 위치', '')
-      placeMarker(latlng, '내 위치')
-    },
-    (err) => {
-      console.warn('❌ 위치 권한 거부 혹은 오류:', err)
-    }
-  )
 }
 
 function selectPlace(item) {
   const lat = Number(item.mapy) / 1e7
   const lng = Number(item.mapx) / 1e7
   const latlng = new naver.maps.LatLng(lat, lng)
-
   renderResult(latlng, item.title, item.roadAddress || item.address)
   placeMarker(latlng, item.title)
 }
@@ -80,61 +123,174 @@ function selectPlace(item) {
 function renderResult(latlng, title, address) {
   map.setCenter(latlng)
   map.setZoom(15)
-  infoWindow.setContent(`
-    <div style="padding:10px;min-width:200px;">
-      <strong>📍 ${title.replace(/<[^>]*>?/g, '')}</strong><br/>
-      ${address}
-    </div>
-  `)
+  infoWindow.setContent(`<div style="padding:10px;"><strong>${title}</strong><br/>${address}</div>`)
   infoWindow.open(map, latlng)
 }
 
 function placeMarker(latlng, name) {
   if (currentMarker) currentMarker.setMap(null)
-
   currentMarker = new naver.maps.Marker({
     position: latlng,
     map: map,
-    title: name.replace(/<[^>]*>?/g, ''),
+    title: name
   })
 }
 
-function searchCoordinateToAddress(latlng) {
-  infoWindow.close()
-  naver.maps.Service.reverseGeocode({
-    coords: latlng,
-    orders: [naver.maps.Service.OrderType.ADDR, naver.maps.Service.OrderType.ROAD_ADDR].join(','),
-  }, (status, response) => {
-    if (status !== naver.maps.Service.Status.OK) return
-    const addr = response.v2.results[0]
-    const full = addr.region.area1.name + ' ' + addr.region.area2.name + ' ' + addr.region.area3.name
-    renderResult(latlng, '선택한 위치', full)
-    placeMarker(latlng, full)
+async function fetchUserList() {
+  try {
+    const response = await axios.get('/json/following_list.json')
+    userList.value = response.data.following
+      .filter(member => member.status === 'ACTIVE')
+      .map(member => ({
+        id: member.id,
+        name: member.nickname,
+        image: member.profile_image || ''
+      }))
+  } catch (error) {
+    console.error('유저 리스트를 불러오는 데 실패했습니다.', error)
+  }
+}
+
+async function fetchPosts() {
+  try {
+    const response = await axios.get('/json/post.json')
+    const posts = response.data.post
+    posts.forEach(post => {
+      post.places.forEach(place => {
+        places.value.push(place)
+      })
+    })
+  } catch (error) {
+    console.error('포스트 데이터 로드 실패:', error)
+  }
+}
+
+const goToUserMap = () => {
+  router.push('/user-map-home')
+}
+
+function createCustomMarker(place, index) {
+  const vnode = h(CustomMarker, {
+    image: place.thumbnail_image,
+    post_id: place.post_id,
+    name: place.name,
+    onClick: (id) => {
+      console.log(`📌 CustomMarker 클릭됨! post_id=${id}, 장소=${place.name}`)
+    }
+  })
+
+  const container = document.createElement('div')
+  render(vnode, container)
+
+  new naver.maps.Marker({
+    map: map,
+    position: new naver.maps.LatLng(place.latitude, place.longitude),
+    icon: {
+      content: container,
+      size: new naver.maps.Size(70, 80),
+      anchor: new naver.maps.Point(35, 80)
+    }
   })
 }
 
-onMounted(() => {
+onMounted(async () => {
   if (window.naver?.maps) {
     initMap()
+    await fetchUserList()
+    await fetchPosts()
+
+    places.value.forEach((place, index) => {
+      createCustomMarker(place, index)
+    })
   }
 })
 </script>
 
+
 <style scoped>
-.map-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-}
-.map-container {
-  width: 100%;
-  height: 100%;
-}
-.my-location-btn {
-  position: absolute;
-  bottom: 24px;
-  right: 24px;
-  z-index: 10;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-}
+  .map-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+  }
+
+  .map-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  .my-location-btn {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  }
+
+  .user-icon-pagination {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 60px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 0;
+  }
+
+  .user-icon-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 8px 0;
+  }
+
+  .user-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+
+  .user-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .arrow-btn {
+    min-width: 20px;
+    height: 20px;
+    font-size: 16px;
+    padding: 0;
+  }
+
+  .user-icon-wrapper {
+    position: relative;
+  }
+
+  .user-name-tooltip {
+    position: absolute;
+    top: 50%;
+    left: -8px;
+    transform: translateY(-50%) translateX(-100%);
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  .user-icon:hover .user-name-tooltip {
+    opacity: 1;
+  }
 </style>

@@ -1225,4 +1225,19 @@
           "member_id": 5
         }
       ]
+      ,
+      "today-diary": [
+        {
+          "id": 1,
+          "date": "2025.04.27",
+          "title": "오늘 신대방동 돈까스 투어",
+          "thumbnail": "/src/assets/thumbnail/donkkaseu.png",
+          "places": [
+            { "name": "신대방역 돈까스", "latitude": 37.4921, "longitude": 126.9239 },
+            { "name": "보라매 공원", "latitude": 37.4944, "longitude": 126.9214 },
+            { "name": "이마트 신대방점", "latitude": 37.4928, "longitude": 126.9205 },
+            { "name": "서울대입구 카페거리", "latitude": 37.4784, "longitude": 126.9527 }
+          ]
+        }
+      ]
 }

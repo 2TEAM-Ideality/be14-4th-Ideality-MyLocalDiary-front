@@ -1,0 +1,155 @@
+{
+  "post": 
+      [
+        {
+            "id": 1,
+            "title": "서울 종로 서순라길 산책 코스",
+            "post": "종로의 고즈넉한 서순라길부터 청계천, 광화문까지 산책하며 여유를 즐긴 하루.",
+            "diary": "근데 사람 개많음 진짜 인류애 떨어짐",
+            "created_at": "2025-04-23T10:30:00",
+            "updated_at": "2025-04-23T11:15:00",
+            "likes_count": 12,
+            "member_id": 1,
+            "photos": [
+                {
+                    "id": 1,
+                    "image_url": "https://example.com/photos/seosulla_street.jpg",
+                    "orders": 1
+                },
+                {
+                    "id": 2,
+                    "image_url": "https://example.com/photos/artisan_bakery.jpg",
+                    "orders": 2
+                },
+                {
+                    "id": 3,
+                    "image_url": "https://example.com/photos/cheonggyecheon_stream.jpg",
+                    "orders": 3
+                },
+                {
+                    "id": 4,
+                    "image_url": "https://example.com/photos/kyobo_gwanghwamun.jpg",
+                    "orders": 4
+                }
+            ],
+            "places": [
+                {
+                    "id": 1,
+                    "name": "서순라길 산책로",
+                    "latitude": 37.5704,
+                    "longitude": 126.9958,
+                    "orders": 1,
+                    "thumbnail_image": null,
+                    "post_id": 1
+                },
+                {
+                    "id": 2,
+                    "name": "아티장 베이커리",
+                    "latitude": 37.5710,
+                    "longitude": 126.9945,
+                    "orders": 2,
+                    "thumbnail_image": null,
+                    "post_id": 1
+                },
+                {
+                    "id": 3,
+                    "name": "청계천",
+                    "latitude": 37.5685,
+                    "longitude": 126.9976,
+                    "orders": 3,
+                    "thumbnail_image": null,
+                    "post_id": 1
+                },
+                {
+                    "id": 4,
+                    "name": "광화문 교보문고",
+                    "latitude": 37.5700,
+                    "longitude": 126.9769,
+                    "orders": 4,
+                    "thumbnail_image": null,
+                    "post_id": 1
+                }
+            ],
+            "comments": [
+                {
+                    "id": "1",
+                    "content": "오늘 하루가 너무 이쁜 하루시네요!",
+                    "created_at": "2025-04-23T10:30:00",
+                    "updated_at": null,
+                    "post_id": "1"
+                },
+                {
+                    "id": 2,
+                    "content": "사람 너무 많지 않아요? 저번에 갔을 땐 북적북적...",
+                    "created_at": "2025-04-23T12:12:00",
+                    "updated_at": "2025-04-23T12:12:00",
+                    "member_id": 5,
+                    "parent_comment_id": null,
+                    "is_deleted": false
+                },
+                {
+                    "id": 3,
+                    "content": "맞아요 ㅋㅋㅋㅋ 저도 인류애 시험 받았어요",
+                    "created_at": "2025-04-23T12:15:00",
+                    "updated_at": "2025-04-23T12:15:00",
+                    "member_id": 4,
+                    "parent_comment_id": 2,
+                    "is_deleted": false
+                }
+            ],
+            "likes": [
+                {
+                    "id": 1,
+                    "created_at": "2025-04-23T12:00:00",
+                    "member_id": 2,
+                    "type": "POST"
+                },
+                {
+                    "id": 2,
+                    "created_at": "2025-04-23T12:02:00",
+                    "member_id": 7,
+                    "type": "POST"
+                },
+                {
+                    "id": 3,
+                    "created_at": "2025-04-23T12:03:00",
+                    "member_id": 4,
+                    "type": "POST"
+                },
+                {
+                    "id": 4,
+                    "created_at": "2025-04-23T12:05:00",
+                    "member_id": 5,
+                    "type": "POST"
+                },
+                {
+                    "id": 5,
+                    "created_at": "2025-04-23T12:08:00",
+                    "member_id": 6,
+                    "type": "POST"
+                },
+                {
+                    "id": 6,
+                    "created_at": "2025-04-23T12:20:00",
+                    "member_id": 5,
+                    "type": "COMMENT",
+                    "target_id": 1
+                },
+                {
+                    "id": 7,
+                    "created_at": "2025-04-23T12:21:00",
+                    "member_id": 6,
+                    "type": "COMMENT",
+                    "target_id": 2
+                },
+                {
+                    "id": 8,
+                    "created_at": "2025-04-23T12:22:00",
+                    "member_id": 7,
+                    "type": "COMMENT",
+                    "target_id": 2
+                }
+            ]
+        }
+    ]
+}
