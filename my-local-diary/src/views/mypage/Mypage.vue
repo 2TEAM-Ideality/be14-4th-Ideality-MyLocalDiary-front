@@ -37,7 +37,7 @@
 <script setup>
   import { onMounted, ref } from 'vue';
   import MiniMap from '@/components/mypage/MiniMap.vue';
-  import UserProfile from '@/components/common/userprofile.vue';
+  import UserProfile from '@/components/common/UserProfile.vue';
   import { useUserStore } from '/src/stores/userStore.js';
   import TodayDiary from '@/components/mypage/TodayDiary.vue';
   import Temp from '@/components/mypage/Temp.vue';
@@ -55,8 +55,8 @@
 .mypage-container {
   margin-left: 200px;
   height: 100vh;
-  display: flex; /* ✨ 추가 */
-  flex-direction: column; /* ✨ 추가 */
+  display: flex; 
+  flex-direction: column; 
 }
 
 .left-side {

@@ -67,6 +67,8 @@
       searchResults.value = res.data.items || []
       selectedIndex.value = 0
       emit('update:query', localQuery.value)
+      console.log('🔍 검색 결과:', res.data.items) // 추가
+      
     } catch (err) {
       console.error(err)
       alert('검색 오류 발생')
