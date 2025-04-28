@@ -11,7 +11,7 @@
                         <!-- 닉네임, 작성시간 -->
                         <div class="d-flex" style="gap: 20px">
                             <div class="font-weight-medium text-body-2">{{ comment.username }}</div>
-                            <div class="text-body-2 text-grey">{{ comment.timeAgo }}</div>
+                            <div class="text-body-2 text-grey">{{ dayjs(comment.timeAgo).fromNow() }}</div>
                         </div>
                         <!-- 본문 -->
                         <div class="d-flex" style="justify-content: space-between;">
@@ -83,6 +83,17 @@
 import { ref } from 'vue'
 import PostCommentCard from './PostCommentCard.vue'
 import PostLikeIcon from './PostLikeIcon.vue'
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/ko';
+
+// 플러그인 확장
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.locale('ko');
 
     const props = defineProps({
         comment: Object,
@@ -104,7 +115,7 @@ import PostLikeIcon from './PostLikeIcon.vue'
         username: '_one____eno_',
         avatar: 'https://randomuser.me/api/portraits/women/20.jpg',
         text: '맨앞에 반팔셔츠는 공홈에 없나요?',
-        timeAgo: '11시간 전',
+        timeAgo: '2025-04-28T12:52:00+09:00',
         likeCount: 3,
         likedByCurrentUser: false
     },
@@ -113,7 +124,7 @@ import PostLikeIcon from './PostLikeIcon.vue'
         username: 'mmmm.d2',
         avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
         text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
+        timeAgo: '2025-04-21T12:00:00+09:00',
         likeCount: 34,
         likedByCurrentUser: false
     },
@@ -122,7 +133,7 @@ import PostLikeIcon from './PostLikeIcon.vue'
         username: 'mmmm.d2',
         avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
         text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
+        timeAgo: '2025-04-28T13:54:00+09:00',
         likeCount: 23,
         likedByCurrentUser: false
     },
@@ -131,7 +142,7 @@ import PostLikeIcon from './PostLikeIcon.vue'
         username: 'mmmm.d2',
         avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
         text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
+        timeAgo: '2025-03-28T12:00:00+09:00',
         likeCount: 13,
         likedByCurrentUser: true
     },
@@ -140,98 +151,8 @@ import PostLikeIcon from './PostLikeIcon.vue'
         username: 'mmmm.d2',
         avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
         text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
+        timeAgo: '2025-04-23T12:00:00+09:00',
         likeCount: 22,
-        likedByCurrentUser: true
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 11,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 3,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 3,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 37,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 32,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 2,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 3,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 3,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 4,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 34,
         likedByCurrentUser: true
     },
     ]

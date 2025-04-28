@@ -177,7 +177,7 @@
     username: '_one____eno_',
     avatar: 'https://randomuser.me/api/portraits/women/20.jpg',
     text: '맨앞에 반팔셔츠는 공홈에 없나요?',
-    timeAgo: '11시간 전',
+    timeAgo: '2025-04-26T15:00:00+09:00',
     likeCount: 3,
     likedByCurrentUser: false
   },
@@ -186,7 +186,7 @@
     username: 'mmmm.d2',
     avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
     text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
+    timeAgo: '2025-04-28T12:00:00+09:00',
     likeCount: 5,
     likedByCurrentUser: false
   },
@@ -195,125 +195,8 @@
     username: 'mmmm.d2',
     avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
     text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
+    timeAgo: '2025-04-28T12:19:00+09:00',
     likeCount: 4,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 32,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 31,
-    likedByCurrentUser: true
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 21,
-    likedByCurrentUser: true
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 13,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 63,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 23,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 13,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 23,
-    likedByCurrentUser: true
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 38,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 35,
-    likedByCurrentUser: true
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 32,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 33,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 53,
     likedByCurrentUser: false
   },
 ]
