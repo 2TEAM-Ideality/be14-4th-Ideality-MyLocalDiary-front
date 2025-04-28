@@ -9,7 +9,7 @@
                     </v-avatar>
                     <div class="ml-2 flex-grow-1">
                         <!-- 닉네임, 작성시간 -->
-                        <div class="text-body-2 d-flex mb-2" style="gap: 20px; flex-direction: row;">
+                        <div class="d-flex" style="gap: 20px">
                             <div class="font-weight-medium text-body-2">{{ comment.username }}</div>
                             <div class="text-body-2 text-grey">{{ comment.timeAgo }}</div>
                         </div>
@@ -25,14 +25,20 @@
                         </v-btn>
                     </div>
                 </div>
-                <!-- 좋아요 -->
-                <div style="justify-items: center;">
+                <div class="d-flex" style="gap: 3px;">
+                    <v-btn size="x-small" variant="text" class="text-body-2 text-grey" style="font-size:12px">
+                        신고
+                        <!-- 신고 모달창 -->
+                    </v-btn>
                     <!-- 좋아요 -->
-                    <PostLikeIcon
-                        :likedByCurrentUser="comment.likedByCurrentUser"
-                        :likeCount="comment.likeCount"
-                        @toggle="handleTogglecommentLike"
-                    />
+                    <div style="justify-items: center;">
+                        <!-- 좋아요 -->
+                        <PostLikeIcon
+                            :likedByCurrentUser="comment.likedByCurrentUser"
+                            :likeCount="comment.likeCount"
+                            @toggle="handleTogglecommentLike"
+                        />
+                    </div>
                 </div>
             </div>
 

@@ -27,10 +27,10 @@
         class="flex-grow-1 overflow-y-scroll pr-4 pt-4"
         @scroll="onScroll"
       >
-        <div>
+        <div class="d-flex" style="justify-content: space-between;">
           <!-- 작성자 정보 -->
-          <PostAuthorCard :author="author" />
-          <!-- 장소 태그 -->
+          <PostAuthorCard :author="author"/>
+          <MenuToggle/>
         </div>
   
         <!-- 게시글 제목 -->
@@ -93,26 +93,26 @@
             :key="index"
             :comment="comment"/>
         </div>
-        <button 
-        v-show="scrollPosition > 0"
-        @click="scrollToTop"
-        style="
-          position: fixed;
-          bottom: 165px;
-          right: 200px;
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          background-color: #fff5f7;
-          color: #020725;
-          border: none;
-          cursor: pointer;
-          font-size: 16px;
-        "
-      >
-        ↑
-     </button>
       </div>
+      <button 
+      v-show="scrollPosition > 0"
+      @click="scrollToTop"
+      style="
+        position: fixed;
+        bottom: 165px;
+        right: 200px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #fff5f7;
+        color: #020725;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+      "
+      >
+      ↑
+      </button>
       <v-divider class="my-3"/>
       <!-- 댓글 작성 -->
       <PostCommentInput />
@@ -129,6 +129,7 @@
   import PostPhoto from '@/components/post/PostPhoto.vue';
   import PostLikeIcon from './PostLikeIcon.vue';
   import PostCommentInput from './PostCommentInput.vue';
+  import MenuToggle from './MenuToggle.vue';
   import { ref, onMounted } from 'vue';
 
   const postType = ref('post')
