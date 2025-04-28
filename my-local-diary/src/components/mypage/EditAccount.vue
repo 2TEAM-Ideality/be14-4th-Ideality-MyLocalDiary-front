@@ -161,5 +161,6 @@ const submitChanges = () => {
 <style scoped>
 .box {
   padding: 8% 12%;
+  height: 100%;
 }
 </style>

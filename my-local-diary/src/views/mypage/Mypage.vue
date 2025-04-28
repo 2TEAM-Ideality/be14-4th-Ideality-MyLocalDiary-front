@@ -4,11 +4,10 @@
       <div style="display: flex; height: 100vh;">
         <div
           class="left-side"
-          style="flex: 5.6; border-right: 1px solid #E5E7EB; box-shadow: 4px 0 12px -4px rgba(0, 0, 0, 0.1); flex-direction: column;"
+          style="flex: 6; border-right: 1px solid #E5E7EB; box-shadow: 4px 0 12px -4px rgba(0, 0, 0, 0.1); flex-direction: column;"
         >
           <UserProfile  :userData="userStore" />
 
-          
           <div class="mini-map">
             <router-link to="/user-map-home" class="mini-map-link">지도에서 보기 →</router-link>
             <MiniMap/>
@@ -41,7 +40,7 @@
   import UserProfile from '@/components/common/userprofile.vue';
   import { useUserStore } from '/src/stores/userStore.js';
   import TodayDiary from '@/components/mypage/TodayDiary.vue';
-import Temp from '@/components/mypage/Temp.vue';
+  import Temp from '@/components/mypage/Temp.vue';
 
   const userStore = useUserStore();
 
@@ -50,24 +49,26 @@ import Temp from '@/components/mypage/Temp.vue';
     await userStore.restoreUser();
   });
 
-
-
-
 </script>
 
 <style scoped>
 .mypage-container {
-  margin-left: 100px;
+  margin-left: 200px;
+  height: 100vh;
+  display: flex; /* ✨ 추가 */
+  flex-direction: column; /* ✨ 추가 */
 }
 
 .left-side {
-  /* width: 50%; */
   width:50%;
-  height: 100;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: start;
   padding-top: 40px;
+  padding-right: 2%;
+  flex-direction: column; /* ✨ 추가 */
+  overflow-y: auto; /* ✨ 추가: 넘치면 내부만 스크롤 */
 }
 .right-side {
   display: flex;
@@ -85,6 +86,7 @@ import Temp from '@/components/mypage/Temp.vue';
   padding-top: 50px;
   align-items: stretch; 
   padding-bottom: 10px;
+  flex: 0 0 auto;
 }
 .right-downer{
   padding-top: 10px;
@@ -112,7 +114,7 @@ import Temp from '@/components/mypage/Temp.vue';
   margin: 0 auto;
   width: 100%;
   height: 100%;
-  padding: 30px 30px;
+  padding: 0 30px;
   display:flex;
   flex-direction: column;
 }

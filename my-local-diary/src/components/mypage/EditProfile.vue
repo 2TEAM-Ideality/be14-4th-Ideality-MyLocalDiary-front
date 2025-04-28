@@ -90,11 +90,12 @@ onMounted(async () => {
   await userStore.restoreUser()
 
   // ✅ 가져온 유저정보를 세팅
-  nickname.value = userStore.nickname
-  selectedMusic.value = userStore.profile_music
-  isPublic.value = userStore.is_public === 'TRUE'
+  nickname.value = userStore.nickname;
+  selectedMusic.value = getFileNameFromUrl(userStore.profileMusic);
+  isPublic.value = userStore.isPublic === 'TRUE'
   bio.value = userStore.bio
-  localProfileImage.value = userStore.profile_image || '/images/profile/defaultProfile.png'
+  localProfileImage.value = userStore.profileImage || '/images/profile/defaultProfile.png'
+  console.log(userStore.profileMusic)
 })
 
 // 🔥 파일 업로드
@@ -108,9 +109,10 @@ const handleImageUpload = async (event) => {
     try {
       const formData = new FormData()
       formData.append('file', file)
+      formData.append('userId', userStore.id); 
 
       // 1. S3 업로드 요청 보내기
-      const response = await axios.post('/api/s3/upload', formData, {
+      const response = await axios.post('/api/s3/upload/member-profile', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
       
@@ -137,23 +139,33 @@ const resetProfileMusic = () => {
 }
 
 // 🔥 프로필 저장
-const submitProfile = () => {
+const submitProfile = async () => {
   const updated = {
     nickname: nickname.value,
     profile_music: selectedMusic.value,
     is_public: isPublic.value ? 'TRUE' : 'FALSE',
     bio: bio.value,
     profile_image: localProfileImage.value
+  };
+
+  try {
+    await axios.patch('/api/member/profile', updated); // 예시 URL
+    console.log('프로필 업데이트 성공');
+    showModal.value = true;
+    setTimeout(() => {
+      showModal.value = false;
+      router.push('/mypage');
+    }, 2000);
+  } catch (error) {
+    console.error('프로필 업데이트 실패:', error);
   }
+}
 
-  console.log('저장된 값:', updated)
 
-  // 모달 보여주고 이동
-  showModal.value = true
-  setTimeout(() => {
-    showModal.value = false
-    router.push('/mypage')
-  }, 2000)
+
+// 프로필 뮤직 음악 
+function getFileNameFromUrl(url) {
+  return url.split('/').pop().replace(/\.[^/.]+$/, '');
 }
 </script>
 
