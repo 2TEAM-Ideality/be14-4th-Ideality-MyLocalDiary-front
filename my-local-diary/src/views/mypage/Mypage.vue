@@ -3,7 +3,7 @@
     <v-main>
       <div style="display: flex; height: 100vh;">
         <div
-          class="d-flex align-center justify-center left-side"
+          class="left-side"
           style="flex: 5.6; border-right: 1px solid #E5E7EB; box-shadow: 4px 0 12px -4px rgba(0, 0, 0, 0.1); flex-direction: column;"
         >
           <UserProfile  :userData="userStore" />
@@ -16,12 +16,17 @@
         </div>
        
        
-        <div class="right-side" style="flex: 4.4; display: flex; justify-content: center; align-items: center;">
-          <div class="stamp-container">
-           
+        <div class="right-side">
+          <div class="right-upper">
+            <div class="stamp-container">
+              <img src="@/assets/badge/꽐라냥뱃지.png" alt="Badge" class="badge-image" />
+            </div>
+            <div class="today-post">
+              <TodayDiary />
+            </div>
           </div>
-          <div class="today-post">
-            <TodayDiary />
+          <div class="right-downer">
+            <Temp/>
           </div>
         </div>
       </div>
@@ -36,6 +41,7 @@
   import UserProfile from '@/components/common/userprofile.vue';
   import { useUserStore } from '/src/stores/userStore.js';
   import TodayDiary from '@/components/mypage/TodayDiary.vue';
+import Temp from '@/components/mypage/Temp.vue';
 
   const userStore = useUserStore();
 
@@ -51,23 +57,50 @@
 
 <style scoped>
 .mypage-container {
-  margin-left: 200px;
+  margin-left: 100px;
 }
 
 .left-side {
   /* width: 50%; */
-  width:100%;
+  width:50%;
+  height: 100;
   display: flex;
   justify-content: center;
   align-items: start;
   padding-top: 40px;
 }
 .right-side {
-  width: 100%;
+  display: flex;
+  width: 50%;
   padding: 4%;
   height: 100%;
+  flex-direction: column;
   justify-content: flex-start;
+  padding-top: 40px;
 }
+.right-upper {
+  display: flex;
+  flex-direction: row;
+  height: 40%;
+  padding-top: 50px;
+  align-items: stretch; 
+  padding-bottom: 10px;
+}
+.right-downer{
+  padding-top: 10px;
+}
+
+.stamp-container {
+  display: flex;
+  flex-direction: row;
+  /* gap: 15px; */
+  flex: 0 0 auto; 
+}
+
+.today-post {
+  width: 100%;
+}
+
 .mini-map-link {
   color: black;
   text-decoration: none;
@@ -77,24 +110,12 @@
 }
 .mini-map {
   margin: 0 auto;
-  width: 80%;
+  width: 100%;
   height: 100%;
+  padding: 30px 30px;
   display:flex;
   flex-direction: column;
 }
-.stamp {
-  width: 230px;
-  height: 300px;
-  background-color: pink;
-  border-radius: 15px;
-}
-.stamp-container {
-  display:flex; 
-  flex-direction: row;
-  gap: 15px;
-}
-.today-post {
-  width: 100%;
 
-}
+
 </style>
