@@ -21,7 +21,9 @@
       </template>
       <template v-else>
         <div class="header">
-        <span class="chart-title">시원님이 만드신거</span>
+        <span class="chart-title">
+          게시글 목록
+        </span>
         </div>
         <div class="content-box">
           <PostList/>

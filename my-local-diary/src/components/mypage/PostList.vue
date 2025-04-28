@@ -1,5 +1,17 @@
 <template>
     <div>
+        <v-row no-gutters class="search-bar-row">
+            <v-text-field
+                v-model="searchQuery"
+                placeholder="게시글 검색"
+                append-inner-icon="mdi-magnify"
+                hide-details
+                variant="solo-inverted"
+                density="comfortable"
+                class="pill-input"
+                width="400"
+            />
+        </v-row>
         <PostListCard v-for="(post, index) in currentPagePosts"
             :key="index"
             :post="post"
@@ -63,7 +75,10 @@
     import PostListCard from './PostListCard.vue'
     import PostCard from '../post/PostCard.vue'
     import { ref, computed } from 'vue'
+
     const selectedPostId = ref(null)
+    const searchQuery = ref('') // 검색어
+
     function handleCardClick(postId) {
         selectedPostId.value = postId
         console.log(selectedPostId.value)
@@ -102,7 +117,7 @@
     },
     {
     id: '4',
-    postTitle: '제목3',
+    postTitle: '제목4',
     createdAt: '2025.04.23',
     thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
     neighborhoods: [
@@ -113,7 +128,7 @@
   },
   {
     id: '5',
-    postTitle: '제목4',
+    postTitle: '제목5',
     createdAt: '2025.04.22',
     thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
     neighborhoods: [
@@ -123,7 +138,7 @@
   },
   {
     id: '6',
-    postTitle: '제목5',
+    postTitle: '제목6',
     createdAt: '2025.04.21',
     thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
     neighborhoods: [
@@ -133,7 +148,7 @@
   },
   {
     id: '7',
-    postTitle: '제목6',
+    postTitle: '제목7',
     createdAt: '2025.04.20',
     thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
     neighborhoods: [
@@ -143,7 +158,7 @@
   },
   {
     id: '8',
-    postTitle: '제목7',
+    postTitle: '제목8',
     createdAt: '2025.04.19',
     thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
     neighborhoods: [
@@ -153,7 +168,7 @@
   },
   {
     id: '9',
-    postTitle: '제목7',
+    postTitle: '제목9',
     createdAt: '2025.04.19',
     thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
     neighborhoods: [
@@ -164,13 +179,19 @@
 ]
     const postsPerPage = 4 // 한 페이지에 보여줄 게시물 수
     const currentPage = ref(1) // 현재 페이지
-    const totalPages = computed(() => Math.ceil(allPosts.length / postsPerPage)) // 전체 페이지 수
+
+    const filteredPosts = computed(() => {
+        if(!searchQuery.value) return allPosts
+        return allPosts.filter(post => post.postTitle.toLowerCase().includes(searchQuery.value.toLowerCase()))
+    })
+
+    const totalPages = computed(() => Math.ceil(filteredPosts.value.length / postsPerPage)) // 전체 페이지 수
 
     // 현재 페이지에 해당하는 게시물만 반환하는 computed 속성
     const currentPagePosts = computed(() => {
         const startIndex = (currentPage.value - 1) * postsPerPage
         const endIndex = startIndex + postsPerPage
-        return allPosts.slice(startIndex, endIndex)
+        return filteredPosts.value.slice(startIndex, endIndex)
     })
 
     // 페이지 이동 함수
@@ -243,5 +264,55 @@
         padding: 12px;
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+.title-text {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    font-weight: bold;
+    }
+    .search-bar-row {
+    align-items: center; /* ✅ 이걸로 아이콘과 텍스트필드 중앙 정렬 */
+    gap: 12px;
+    margin-bottom: 16px; /* 옵션: 아래 공간 필요할 경우 */
+    padding-top: 12px;
+    }
+    .pill-input ::v-deep(.v-input__control) {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    min-height: 40px !important;
+    }
+    .pill-input ::v-deep(.v-input.v-input--focused .v-field),
+    .pill-input ::v-deep(.v-field--focused),
+    .pill-input ::v-deep(.v-field__overlay) {
+    background-color: #fff !important;
+    border-color: #D9D9D9 !important;
+    box-shadow: none !important;
+    }
+    .pill-input ::v-deep(.v-field) {
+    border-radius: 9999px !important;
+    border: 1px solid #D9D9D9 !important;
+    background-color: #fff !important;
+    box-shadow: none !important;
+    align-items: center;
+    min-height: 40px !important;
+    padding-left: 12px;
+    padding-right: 8px;
+    }
+    .pill-input ::v-deep(.v-field--focused) {
+    border-color: #D9D9D9 !important;
+    background-color: #fff !important;
+    box-shadow: none !important;
+    }
+    .pill-input ::v-deep(input) {
+    color: black !important;
+    font-size: 14px;
+    padding: 0 8px !important;
+    line-height: 40px;
+    }
+    .pill-input ::v-deep(input::placeholder) {
+    color: black !important;
+    opacity: 1 !important;
     }
 </style>
