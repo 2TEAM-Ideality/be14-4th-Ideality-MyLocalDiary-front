@@ -15,8 +15,8 @@
       </v-btn>
   
       <template v-if="showCalendar">
-        <v-date-picker show-adjacent-months class="calendar">
-          <template #title></template>
+        <v-date-picker show-adjacent-months class="calendar" :allowed-dates="allowedDates">
+          <!-- <template #title></template> -->
         </v-date-picker>
       </template>
       <template v-else>
@@ -35,8 +35,18 @@
 
   import { ref } from 'vue'
   
-  
-  const showCalendar = ref(false)
+  const allowedList = [
+  '2025-04-01',
+  '2025-04-05',
+  '2025-04-10'
+]
+
+const allowedDates = (date) => {
+    const formatted = new Date(date).toISOString().slice(0, 10)
+  return allowedList.includes(formatted)
+}
+
+  const showCalendar = ref(true)
   
   function toggleView() {
     showCalendar.value = !showCalendar.value
