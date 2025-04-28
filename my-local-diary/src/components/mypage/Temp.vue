@@ -21,10 +21,12 @@
       </template>
       <template v-else>
         <div class="header">
-        <span class="chart-title">시원님이 만드신거</span>
+        <span class="chart-title">
+          게시글 목록
+        </span>
         </div>
         <div class="content-box">
-          
+          <PostList/>
         </div>
       </template>
     </v-card>
@@ -34,8 +36,7 @@
   <script setup>
 
   import { ref } from 'vue'
-  
-  
+  import PostList from './PostList.vue'
   const showCalendar = ref(false)
   
   function toggleView() {
@@ -66,12 +67,7 @@
     height: 100%;
   }
   
-  .content-box {
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    align-content: center;
-  }
+
   
   /* Vuetify 내부 타이틀 제거 */
   :deep(.v-picker-title) {

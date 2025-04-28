@@ -9,9 +9,9 @@
                     </v-avatar>
                     <div class="ml-2 flex-grow-1">
                         <!-- 닉네임, 작성시간 -->
-                        <div class="text-body-2 d-flex mb-2" style="gap: 20px; flex-direction: row;">
+                        <div class="d-flex" style="gap: 20px">
                             <div class="font-weight-medium text-body-2">{{ comment.username }}</div>
-                            <div class="text-body-2 text-grey">{{ comment.timeAgo }}</div>
+                            <div class="text-body-2 text-grey">{{ dayjs(comment.timeAgo).fromNow() }}</div>
                         </div>
                         <!-- 본문 -->
                         <div class="d-flex" style="justify-content: space-between;">
@@ -25,14 +25,63 @@
                         </v-btn>
                     </div>
                 </div>
-                <!-- 좋아요 -->
-                <div style="justify-items: center;">
+                <div class="d-flex" style="gap: 3px;">
+                    <!-- <v-btn size="x-small" variant="text" class="text-body-2 text-grey" style="font-size:12px">
+                        신고
+                    </v-btn> -->
+                    <v-menu
+                        v-model="menuVisible"
+                        :close-on-content-click="false"
+                        offset-y
+                    >
+                        <template #activator="{ props }">
+                            <v-btn
+                            size="x-small"
+                            variant="text"
+                            class="text-body-2 text-grey"
+                            style="font-size:12px"
+                            v-bind="props"
+                            >
+                                <v-icon>mdi-dots-horizontal</v-icon>
+                            </v-btn>
+                        </template>
+                        
+                        <!-- 메뉴 항목들 -->
+                        <v-list dense style="padding: 0; margin: 0;">
+                            <v-list-item @click="handleEdit" class="menu-item">
+                            <v-list-item-title class="menu-list">수정</v-list-item-title>
+                            </v-list-item>
+                            <v-list-item @click="confirmDelete" class="menu-item">
+                            <v-list-item-title class="menu-list">삭제</v-list-item-title>
+                            </v-list-item>
+                            <v-list-item @click="handleReport" class="menu-item">
+                            <v-list-item-title class="menu-list">신고</v-list-item-title>
+                            </v-list-item>
+                            <v-list-item @click="handleCloseMenu" class="menu-item">
+                            <v-list-item-title class="menu-list">닫기</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                    <v-dialog v-model="confirmDialog" max-width="400px">
+                    <v-card>
+                        <v-card-title class="text-h6">삭제 확인</v-card-title>
+                        <v-card-text>정말 삭제하시겠습니까?</v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="red" text @click="deleteItem">삭제</v-btn>
+                                <v-btn color="grey" text @click="confirmDialog = false">취소</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
                     <!-- 좋아요 -->
-                    <PostLikeIcon
-                        :likedByCurrentUser="comment.likedByCurrentUser"
-                        :likeCount="comment.likeCount"
-                        @toggle="handleTogglecommentLike"
-                    />
+                    <div style="justify-items: center;">
+                        <!-- 좋아요 -->
+                        <PostLikeIcon
+                            :likedByCurrentUser="comment.likedByCurrentUser"
+                            :likeCount="comment.likeCount"
+                            @toggle="handleTogglecommentLike"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -77,6 +126,17 @@
 import { ref } from 'vue'
 import PostCommentCard from './PostCommentCard.vue'
 import PostLikeIcon from './PostLikeIcon.vue'
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/ko';
+
+// 플러그인 확장
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.locale('ko');
 
     const props = defineProps({
         comment: Object,
@@ -98,7 +158,7 @@ import PostLikeIcon from './PostLikeIcon.vue'
         username: '_one____eno_',
         avatar: 'https://randomuser.me/api/portraits/women/20.jpg',
         text: '맨앞에 반팔셔츠는 공홈에 없나요?',
-        timeAgo: '11시간 전',
+        timeAgo: '2025-04-28T12:52:00+09:00',
         likeCount: 3,
         likedByCurrentUser: false
     },
@@ -107,7 +167,7 @@ import PostLikeIcon from './PostLikeIcon.vue'
         username: 'mmmm.d2',
         avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
         text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
+        timeAgo: '2025-04-21T12:00:00+09:00',
         likeCount: 34,
         likedByCurrentUser: false
     },
@@ -116,7 +176,7 @@ import PostLikeIcon from './PostLikeIcon.vue'
         username: 'mmmm.d2',
         avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
         text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
+        timeAgo: '2025-04-28T13:54:00+09:00',
         likeCount: 23,
         likedByCurrentUser: false
     },
@@ -125,7 +185,7 @@ import PostLikeIcon from './PostLikeIcon.vue'
         username: 'mmmm.d2',
         avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
         text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
+        timeAgo: '2025-03-28T12:00:00+09:00',
         likeCount: 13,
         likedByCurrentUser: true
     },
@@ -134,98 +194,8 @@ import PostLikeIcon from './PostLikeIcon.vue'
         username: 'mmmm.d2',
         avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
         text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
+        timeAgo: '2025-04-23T12:00:00+09:00',
         likeCount: 22,
-        likedByCurrentUser: true
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 11,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 3,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 3,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 37,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 32,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 2,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 3,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 3,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 4,
-        likedByCurrentUser: false
-    },
-    {
-        id: '3',
-        username: 'mmmm.d2',
-        avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
-        timeAgo: '1일 전',
-        likeCount: 34,
         likedByCurrentUser: true
     },
     ]
@@ -263,4 +233,43 @@ import PostLikeIcon from './PostLikeIcon.vue'
     }
     props.comment.likedByCurrentUser = !props.comment.likedByCurrentUser
     }
+
+    const menuVisible = ref(false);
+    const confirmDialog = ref(false)
+    // 해당 댓글 id에 대하여
+    function handleEdit() {
+        console.log("수정 클릭");
+        // 수정 로직 처리
+    }
+
+    function handleReport() {
+        console.log("신고 클릭");
+        // 신고 로직 처리
+    }
+
+    function handleCloseMenu() {
+        menuVisible.value = false;
+        console.log("닫기 클릭");
+        // 메뉴 닫기
+    }
+
+    function deleteItem() {
+        confirmDialog.value = false
+        console.log('삭제 실행!')
+        // 여기에 실제 삭제 로직
+    }
+
+    function confirmDelete() {
+        menuVisible.value = false
+        confirmDialog.value = true
+    }
 </script>
+<style scoped>
+    .menu-list {
+        font-size: 12px;
+    }
+    .menu-item {
+        display: flex;
+        min-height: 30px;
+    }
+</style>
