@@ -18,6 +18,7 @@
       class="right-pane d-flex"
       style="flex: 4.4;
         display: flex; 
+        position: relative;
         flex-direction: column; 
         padding-left: 30px;
         padding-right: 30px;
@@ -95,12 +96,12 @@
         </div>
       </div>
       <button 
-      v-show="scrollPosition > 0"
+      v-show="scrollPosition > 300"
       @click="scrollToTop"
       style="
-        position: fixed;
-        bottom: 165px;
-        right: 200px;
+        position: absolute;
+        top: 74%;
+        right: 50%;
         width: 32px;
         height: 32px;
         border-radius: 50%;
@@ -116,7 +117,6 @@
       <v-divider class="my-3"/>
       <!-- 댓글 작성 -->
       <PostCommentInput />
-      
     </div>
   </div>
 </template>
