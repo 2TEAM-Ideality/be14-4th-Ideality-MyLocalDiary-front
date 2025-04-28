@@ -8,9 +8,10 @@ import PostCreate from '@/components/post/PostCreate.vue'
 import TestMarker from '@/views/TestMarker.vue';
 import EditProfile from '@/components/mypage/EditProfile.vue'
 import EditAccount from '@/components/mypage/EditAccount.vue';
-
+import ReportManagement from '@/views/ReportManagement.vue'; 
 import TempLoadingModalParent from '@/components/common/TempLoadingModalParent.vue';
 import EditPage from '@/views/mypage/EditPage.vue';
+
 
 const routes = [
     {
@@ -83,7 +84,12 @@ const routes = [
         path: '/loadingmodal',
         name: 'LoadingModal',
         component: TempLoadingModalParent
-      }
+      },
+      {
+        path: '/admin/reports',
+        name: 'ReportManagement',
+        component: ReportManagement
+    }
 ]
 
 const router = createRouter({
