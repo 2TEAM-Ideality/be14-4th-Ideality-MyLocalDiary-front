@@ -26,10 +26,53 @@
                     </div>
                 </div>
                 <div class="d-flex" style="gap: 3px;">
-                    <v-btn size="x-small" variant="text" class="text-body-2 text-grey" style="font-size:12px">
+                    <!-- <v-btn size="x-small" variant="text" class="text-body-2 text-grey" style="font-size:12px">
                         신고
-                        <!-- 신고 모달창 -->
-                    </v-btn>
+                    </v-btn> -->
+                    <v-menu
+                        v-model="menuVisible"
+                        :close-on-content-click="false"
+                        offset-y
+                    >
+                        <template #activator="{ props }">
+                            <v-btn
+                            size="x-small"
+                            variant="text"
+                            class="text-body-2 text-grey"
+                            style="font-size:12px"
+                            v-bind="props"
+                            >
+                                <v-icon>mdi-dots-horizontal</v-icon>
+                            </v-btn>
+                        </template>
+                        
+                        <!-- 메뉴 항목들 -->
+                        <v-list dense style="padding: 0; margin: 0;">
+                            <v-list-item @click="handleEdit" class="menu-item">
+                            <v-list-item-title class="menu-list">수정</v-list-item-title>
+                            </v-list-item>
+                            <v-list-item @click="confirmDelete" class="menu-item">
+                            <v-list-item-title class="menu-list">삭제</v-list-item-title>
+                            </v-list-item>
+                            <v-list-item @click="handleReport" class="menu-item">
+                            <v-list-item-title class="menu-list">신고</v-list-item-title>
+                            </v-list-item>
+                            <v-list-item @click="handleCloseMenu" class="menu-item">
+                            <v-list-item-title class="menu-list">닫기</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                    <v-dialog v-model="confirmDialog" max-width="400px">
+                    <v-card>
+                        <v-card-title class="text-h6">삭제 확인</v-card-title>
+                        <v-card-text>정말 삭제하시겠습니까?</v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="red" text @click="deleteItem">삭제</v-btn>
+                                <v-btn color="grey" text @click="confirmDialog = false">취소</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
                     <!-- 좋아요 -->
                     <div style="justify-items: center;">
                         <!-- 좋아요 -->
@@ -190,4 +233,43 @@ dayjs.locale('ko');
     }
     props.comment.likedByCurrentUser = !props.comment.likedByCurrentUser
     }
+
+    const menuVisible = ref(false);
+    const confirmDialog = ref(false)
+    // 해당 댓글 id에 대하여
+    function handleEdit() {
+        console.log("수정 클릭");
+        // 수정 로직 처리
+    }
+
+    function handleReport() {
+        console.log("신고 클릭");
+        // 신고 로직 처리
+    }
+
+    function handleCloseMenu() {
+        menuVisible.value = false;
+        console.log("닫기 클릭");
+        // 메뉴 닫기
+    }
+
+    function deleteItem() {
+        confirmDialog.value = false
+        console.log('삭제 실행!')
+        // 여기에 실제 삭제 로직
+    }
+
+    function confirmDelete() {
+        menuVisible.value = false
+        confirmDialog.value = true
+    }
 </script>
+<style scoped>
+    .menu-list {
+        font-size: 12px;
+    }
+    .menu-item {
+        display: flex;
+        min-height: 30px;
+    }
+</style>
