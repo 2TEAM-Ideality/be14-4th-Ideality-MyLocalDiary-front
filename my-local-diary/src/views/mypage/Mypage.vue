@@ -55,41 +55,46 @@
 .mypage-container {
   margin-left: 200px;
   height: 100vh;
-  display: flex; 
-  flex-direction: column; 
+  display: flex;
+  flex-direction: column;
 }
 
 .left-side {
-  width:50%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: start;
-  padding-top: 40px;
-  padding-right: 2%;
-  flex-direction: column; /* ✨ 추가 */
-  overflow-y: auto; /* ✨ 추가: 넘치면 내부만 스크롤 */
-}
-.right-side {
-  display: flex;
   width: 50%;
-  padding: 4%;
   height: 100%;
+  display: flex;
   flex-direction: column;
   justify-content: flex-start;
   padding-top: 40px;
+  padding-right: 2%;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
-.right-upper {
+
+.right-side {
+  width: 50%;
+  height: 100%;
   display: flex;
-  flex-direction: row;
-  height: 40%;
-  padding-top: 50px;
-  align-items: stretch; 
-  padding-bottom: 10px;
-  flex: 0 0 auto;
+  flex-direction: column;
+  padding: 40px 4% 40px 4%;
+  gap: 10px;
+  box-sizing: border-box;
+  justify-content: space-around;
 }
-.right-downer{
-  padding-top: 10px;
+
+.right-upper {
+  flex: 3.5; /* 4 + 6 = 10 기준으로 40% */
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.right-downer {
+  flex: 6.5; /* 4 + 6 = 10 기준으로 60% */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .stamp-container {

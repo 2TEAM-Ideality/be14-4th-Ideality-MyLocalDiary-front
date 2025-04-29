@@ -7,10 +7,10 @@
           class="left-side"
           style="flex: 6; border-right: 1px solid #E5E7EB; box-shadow: 4px 0 12px -4px rgba(0, 0, 0, 0.1); flex-direction: column;"
         >
-        <UserProfile :userData="userStore" 
-          @open-follower="isFollowerModalOpen = true"
-          @open-following="isFollowingModalOpen = true"
-        />
+          <UserProfile :userData="userStore" 
+            @open-follower="isFollowerModalOpen = true"
+            @open-following="isFollowingModalOpen = true"
+          />
         <Badge />
       </div>
 
@@ -160,18 +160,21 @@ onMounted(async () => {
 
 .right-side {
   width: 50%;
-  background-color: #fff5f7;
-  padding: 20px;
-  overflow-y: auto;
+  height: 100%;
   display: flex;
+  background-color: yellow;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  padding: 40px 4% 40px 4%;
+  /* gap: 10px; */
+  /* box-sizing: border-box; */
+  /* justify-content: space-around; */
 }
+
 
 .stamps {
   padding-top: 20px;
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
