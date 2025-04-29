@@ -59,9 +59,9 @@
       zoom: 15,
       customStyleId: 'ae8bf51c-899d-4773-9851-1f670d719a19',
       gl: true,
-      mapTypeControl: true,
-      scaleControl: true,
-      zoomControl: true
+      mapTypeControl: false,
+      scaleControl: false,
+      zoomControl: false
     })
 
     // 마커 생성

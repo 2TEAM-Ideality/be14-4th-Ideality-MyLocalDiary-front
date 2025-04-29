@@ -27,20 +27,21 @@
           </div>
         </v-list-item>
 
-        <!-- 메뉴 항목 -->
-        <v-list-item @click="goToHome">
-          <div class="menu-item">
-            <v-img src="/src/assets/sidebar/Map.png" class="menu-icon" />
-            <span v-if="ui.showText">지도 홈</span>
-          </div>
-        </v-list-item>
+        <!-- ✨ 메뉴 항목 -->
+        <template v-if="!isAdmin">
+          <v-list-item @click="goToHome">
+            <div class="menu-item">
+              <v-img src="/src/assets/sidebar/Map.png" class="menu-icon" />
+              <span v-if="ui.showText">지도 홈</span>
+            </div>
+          </v-list-item>
 
-        <v-list-item @click="openUserSearch">
-          <div class="menu-item">
-            <v-img src="/src/assets/sidebar/Search.png" alt="search" class="menu-icon" />
-            <span v-if="ui.showText">검색</span>
-          </div>
-        </v-list-item>
+          <v-list-item @click="openUserSearch">
+            <div class="menu-item">
+              <v-img src="/src/assets/sidebar/Search.png" class="menu-icon" />
+              <span v-if="ui.showText">검색</span>
+            </div>
+          </v-list-item>
 
         <v-list-item @click="goToMypage">
           <div class="menu-item">
@@ -49,28 +50,58 @@
           </div>
         </v-list-item>
 
-        <v-list-item @click="goToCreateDiary">
-          <div class="menu-item">
-            <v-img src="/src/assets/sidebar/Pen.png" alt="pen" class="menu-icon" />
-            <span v-if="ui.showText">글쓰기</span>
-          </div>
-        </v-list-item>
+          <v-list-item @click="goToMypage">
+            <div class="menu-item">
+              <v-img src="/src/assets/sidebar/person.png" class="menu-icon" />
+              <span v-if="ui.showText">마이페이지</span>
+            </div>
+          </v-list-item>
 
-        <v-list-item @click="goToStamp">
-          <div class="menu-item">
-            <v-img src="/src/assets/sidebar/stamp.png" alt="stamp" class="stamp-icon ml-n1" />
-            <span v-if="ui.showText">스탬프 목록</span>
-          </div>
-        </v-list-item>
+          <v-list-item @click="goToCreateDiary">
+            <div class="menu-item">
+              <v-img src="/src/assets/sidebar/Pen.png" class="menu-icon" />
+              <span v-if="ui.showText">글쓰기</span>
+            </div>
+          </v-list-item>
 
-        <v-list-item @click="openAlarm">
-  <div class="menu-item" style="position: relative;">
-    <v-img src="/src/assets/sidebar/notifications.png" alt="notifications" class="menu-icon" />
-    <span v-if="unreadCount > 0" class="badge">{{ unreadCount }}</span> <!-- 🔥 추가 -->
-    <span v-if="ui.showText">알림</span>
-  </div>
-</v-list-item>
+          <v-list-item @click="goToStamp">
+            <div class="menu-item">
+              <v-img src="/src/assets/sidebar/stamp.png" class="stamp-icon ml-n1" />
+              <span v-if="ui.showText">스탬프 목록</span>
+            </div>
+          </v-list-item>
 
+          <v-list-item @click="openAlarm">
+            <div class="menu-item">
+              <v-img src="/src/assets/sidebar/notifications.png" class="menu-icon" />
+              <span v-if="ui.showText">알림</span>
+            </div>
+          </v-list-item>
+        </template>
+
+        <!-- ✨ 관리자 메뉴 -->
+        <template v-else>
+          <v-list-item @click="goToRegulationHistory">
+            <div class="menu-item">
+              <v-icon>mdi-file-document</v-icon>
+              <span v-if="ui.showText" class="ml-2">규제 히스토리</span>
+            </div>
+          </v-list-item>
+
+          <v-list-item @click="goToReportHistory">
+            <div class="menu-item">
+              <v-icon>mdi-alert-circle-outline</v-icon>
+              <span v-if="ui.showText" class="ml-2">신고 내역</span>
+            </div>
+          </v-list-item>
+
+          <v-list-item @click="goToAdminMyPage">
+            <div class="menu-item">
+              <v-img src="/src/assets/sidebar/person.png" class="menu-icon" />
+              <span v-if="ui.showText">대시보드</span>
+            </div>
+          </v-list-item>
+        </template>
       </div>
 
       <!-- 더보기 -->
@@ -103,12 +134,18 @@
   />
 </template>
 
+
 <script setup>
+
 import { ref, computed ,onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUIStore } from '@/stores/uiStore'
 import NotificationPopup from '@/components/common/NotificationPopup.vue'
 import axios from 'axios'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUIStore } from '@/stores/uiStore'
+import { useUserStore } from '@/stores/userStore';
 
 const router = useRouter()
 const drawer = ref(true)
@@ -117,7 +154,17 @@ const showMoreMenu = ref(false)
 
 const isAlarmOpen = ref(false) // 알림창 열리는지 여부
 const notificationList = ref([]) // 초기에는 비어있음
+const isAdmin = ref(true)  // 관리자 테스트용
+const userStore = useUserStore();
 
+onMounted(async () => {
+  const userStore = useUserStore();
+  await userStore.restoreUser();
+
+  // isAdmin.value = userStore.role === 'ADMIN' // 관리자 여부 판별 
+})
+
+// 라우팅 
 const goToHome = () => router.push('/home')
 const goToMypage = () => router.push('/mypage')
 const goToCreateDiary = () => router.push('/post/create')
@@ -201,10 +248,14 @@ const confirmLogout = () => {
     router.push('/')
   }
 }
-
 onMounted(() => {
   fetchNotifications()
 })
+
+// 관리자용 라우팅
+const goToRegulationHistory = () => router.push('/admin/regulations')
+const goToReportHistory = () => router.push('/admin/reports')
+const goToAdminMyPage = () => router.push('/admin/mypage')
 </script>
 
 <style scoped>

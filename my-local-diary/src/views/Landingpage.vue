@@ -49,7 +49,7 @@
 </v-row>
 
   
-              <v-btn block color="yellow" class="text-black font-weight-bold" height="48">
+              <v-btn block color="yellow" class="text-black font-weight-bold" height="48" @click="redirectToKakao">
                 <v-img src="/src/assets/logo/kakao_logo.png" width="40" class="mr-2" />
                 카카오로 로그인
               </v-btn>
@@ -77,6 +77,10 @@
   import AuthModal from '@/components/auth/AuthModal.vue'
   const showModal = ref(false)
   // Vuetify 설치 및 플러그인 구성 필요
+
+  function redirectToKakao() {
+    window.location.href = 'http://localhost:8080/login/kakao';
+  }
   </script>
   
   <style scoped>
