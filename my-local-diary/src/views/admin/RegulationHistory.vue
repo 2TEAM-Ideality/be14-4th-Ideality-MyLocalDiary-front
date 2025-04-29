@@ -21,13 +21,19 @@
           <tbody>
             <tr v-for="regulation in pagedRegulations" :key="regulation.id">
               <td>{{ regulation.id }}</td>
-              <td>{{ regulation.start_date }}</td>
-              <td>{{ regulation.end_date }}</td>
-              <td>{{ regulation.target_member_id }}</td>
+              <td>{{ regulation.suspensionStartDate }}</td>
+              <td>{{ regulation.suspensionEndDate }}</td>
+              <td>{{ regulation.memberId }}</td>
               <td>
-                <button class="status-button" :class="statusClass(calcStatus(regulation.start_date, regulation.end_date))">
-                    {{ calcStatus(regulation.start_date, regulation.end_date) }}
-                </button>
+                <select
+                  :value="calcStatus(regulation.suspensionStartDate, regulation.suspensionEndDate)"
+                  @change="confirmStatusChange($event, regulation.id)"
+                  :disabled="calcStatus(regulation.suspensionStartDate, regulation.suspensionEndDate) === '해제됨'"
+                  :class="statusClass(calcStatus(regulation.suspensionStartDate, regulation.suspensionEndDate))"
+                >
+                  <option value="정지중">정지중</option>
+                  <option value="해제됨">해제됨</option>
+                </select>
               </td>
             </tr>
           </tbody>
@@ -83,10 +89,14 @@ export default {
   methods: {
     async fetchRegulations() {
       try {
-        const response = await axios.get('http://localhost:3001/regulations');
-        this.regulations = response.data;
+        // const response = await axios.get('http://localhost:3001/suspensions');
+        const response = await axios.get('/api/admin/suspensions');
+        console.log('규제 내역 리스트 요청됨')
+        console.log(response)
+        this.regulations = response.data.data;
+        console.log(regulations)
       } catch (error) {
-        console.error('Failed to fetch regulations', error);
+        console.error('Failed to fetch suspensions', error);
       }
     },
     nextPage() {
@@ -109,7 +119,8 @@ export default {
         const now = new Date();
         return new Date(endDate) < now ? '해제됨' : '정지중';
     }
-  },
+    ,
+  }
 };
 </script>
 
@@ -202,4 +213,25 @@ export default {
   background-color: #FF9A9A;
   font-weight: bold;
 }
+select {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  appearance: none; /* 기본 브라우저 스타일 제거 */
+  font-size: 12px;
+  text-align: center;
+  cursor: pointer;
+  min-width: 100px;
+}
+select:hover {
+  background-color: rgb(203, 203, 203);
+}
+
+/* select:focus {
+  outline: none;
+  border-color: #FF9A9A;
+  box-shadow: 0 0 5px rgba(255, 154, 154, 0.5);
+} */
+
 </style>

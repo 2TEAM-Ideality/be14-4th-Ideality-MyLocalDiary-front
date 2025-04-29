@@ -25,28 +25,31 @@
         <tbody>
           <tr v-for="report in pagedReports" :key="report.id">
             <td>{{ report.id }}</td>
-            <td>{{ report.created_at }}</td>
-            <td>{{ report.report_type }}</td>
-            <td>{{ report.reported_id }}</td>
+            <td>{{ report.createdAt }}</td>
+            <td>{{ report.reportType }}</td>
+            <td>{{ report.reportReasonId }}</td>
             <td>
               <button class="detail-button" @click="openContentModal(report.content)">자세히보기</button>
             </td>
             <td>
-              <select v-model="report.status" @change="updateReportStatus(report)">
-                <option value="처리중">처리중</option>
-                <option value="처리완료">처리완료</option>
-                <option value="반려">반려</option>
+              <select v-model="report.status" @change="updateReportStatus(report)" :disabled="report.status === 'RESOLVED' || report.status === 'REJECTED'">
+                <option value="WAITING">처리중</option>
+                <option value="RESOLVED">처리완료</option>
+                <option value="REJECTED">반려</option>
               </select>
             </td>
-            <td>{{ report.member_id }}</td>
             <td>
-              <div class="reason-select">
+              {{ report.memberId  }}
+            </td>
+            <td>
+              {{ report.reportReasonId }}
+              <!-- <div class="reason-select">
                 <select v-model="report.report_reason_id" @change="handleReasonChange(report)" disabled>
                   <option v-for="reason in reportReasons" :key="reason.id" :value="reason.id">
-                    {{ reason.reason }}
+                    {{ reason.reportReasons }}
                   </option>
                 </select>
-              </div>
+              </div> -->
             </td>
             <td>
               <div class="report-link">
@@ -144,8 +147,11 @@ export default {
   methods: {
     async fetchReports() {
       try {
-        const response = await axios.get('http://localhost:3001/reports');
-        this.reports = response.data.map(report => ({ ...report }));
+        // const response = await axios.get('http://localhost:3001/reports');
+        const response = await axios.get('/api/admin/reports');
+        console.log("신고 내역 리스트 요청됨")
+        console.log(response)
+        this.reports = response.data.data.map(report => ({ ...report }));
       } catch (error) {
         console.error('Failed to fetch reports', error);
       }
