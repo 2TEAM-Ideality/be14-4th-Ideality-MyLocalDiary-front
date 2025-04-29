@@ -125,6 +125,14 @@
     :notifications="notificationList"
     @close="closeAlarm"
   />
+
+  <SearchUserModal
+  v-if="searchPanelOpen"
+  class="search-user-modal"
+  :style="{ left: ui.isHover ? '200px' : '80px' }"
+  @close="searchPanelOpen = false"
+  />
+
 </template>
 
 <script setup>
@@ -135,15 +143,20 @@ import { useUserStore } from '@/stores/userStore'
 import NotificationPopup from '@/components/common/NotificationPopup.vue'
 import axios from 'axios'
 
+import SearchUserModal from '../search/SearchUserModal.vue'
+
 const router = useRouter()
 const drawer = ref(true)
 const ui = useUIStore()
 const userStore = useUserStore()
 const showMoreMenu = ref(false)
+const searchPanelOpen = ref(false)
 
 const isAlarmOpen = ref(false)
 const notificationList = ref([])
-const isAdmin = ref(false)
+
+const isAdmin = ref(false)  // 관리자 테스트용
+
 
 onMounted(async () => {
   await userStore.restoreUser()
@@ -155,7 +168,6 @@ const goToHome = () => router.push('/home')
 const goToMypage = () => router.push('/mypage')
 const goToCreateDiary = () => router.push('/post/create')
 const goToStamp = () => router.push('/stamp')
-const openUserSearch = () => console.log('유저 검색 창 뜨기')
 
 const unreadCount = computed(() =>
   notificationList.value.filter(n => !n.isRead).length
@@ -200,6 +212,7 @@ const splitContent = (content) => {
   return match ? [match[1], `님${match[2]}`] : ['알 수 없음', content]
 }
 
+const openUserSearch = () => searchPanelOpen.value = !searchPanelOpen.value
 const goToSettings = () => router.push('/settings')
 const goToActivities = () => router.push('/activities')
 const reportProblem = () => console.log('문제 신고 창 열기')
@@ -216,43 +229,43 @@ const goToAdminMyPage = () => router.push('/admin/mypage')
 </script>
 
 <style scoped>
-:deep(.v-navigation-drawer) {
-  transition: width 0.3s ease;
-  overflow: hidden;
-  z-index: 1000;
-}
+  :deep(.v-navigation-drawer) {
+    transition: width 0.3s ease;
+    overflow: hidden;
+    z-index: 1000;
+  }
 
-.menu-item {
-  display: flex;
-  align-items: center;
-}
+  .menu-item {
+    display: flex;
+    align-items: center;
+  }
 
-.menu-icon {
-  width: 25px;
-  height: 25px;
-  min-width: 25px;
-  max-width: 25px;
-  flex-shrink: 0;
-  margin-right: 8px;
-  object-fit: contain;
-}
+  .menu-icon {
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+    max-width: 25px;
+    flex-shrink: 0;
+    margin-right: 8px;
+    object-fit: contain;
+  }
 
-.stamp-icon {
-  width: 35px;
-  height: 35px;
-  min-width: 35px;
-  max-width: 35px;
-  flex-shrink: 0;
-  margin-right: 8px;
-  object-fit: contain;
-}
+  .stamp-icon {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    max-width: 35px;
+    flex-shrink: 0;
+    margin-right: 8px;
+    object-fit: contain;
+  }
 
-.logo-container {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  .logo-container {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
 .fade-enter-active,
 .fade-leave-active {
