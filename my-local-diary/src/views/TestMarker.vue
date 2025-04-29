@@ -26,8 +26,8 @@
                 <button class="pr-3 pl-3" @click="selectedPostId = null">X</button>
             </div>
             <PostCard/>
+        </div>
     </div>
-</div>
 
 </template>
 
@@ -39,8 +39,8 @@
 
     const selectedPostId = ref(null)
     function handleMarkerClick(postId) {
-    selectedPostId.value = postId
-}
+        selectedPostId.value = postId
+    }
 
     
 
