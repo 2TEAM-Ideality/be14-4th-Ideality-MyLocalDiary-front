@@ -17,9 +17,9 @@
        
         <div class="right-side">
           <div class="right-upper">
-            <div class="stamp-container">
+            <!-- <div class="stamp-container">
               <img src="@/assets/badge/꽐라냥뱃지.png" alt="Badge" class="badge-image" />
-            </div>
+            </div> -->
             <div class="today-post">
               <TodayDiary />
             </div>
