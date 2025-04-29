@@ -93,16 +93,13 @@ const routes = [
         path: '/admin/reports',
         name: 'ReportManagement',
         component: ReportManagement
-<<<<<<< HEAD
     },
     {
       path: '/profile/:id',
       name: 'Profile',
       component: Mypage // 🔥 임시로(팔로우기능중...)
-    }
+    },
     
-=======
-      },
       {
         path: '/admin/regulations',
         name: 'RegulationHistory',
@@ -113,7 +110,6 @@ const routes = [
         name: 'AdminMyPage',
         component: AdminMyPage
       },
->>>>>>> fd783846d762cc212e676d8a2e712c910fdf32c4
 ]
 
 const router = createRouter({
