@@ -494,6 +494,36 @@
         "role": "MEMBER",
         "profile_image": null
       }
+    },
+    {
+      "id": "204c",
+      "following_member_id": "5",
+      "follower_target_member_id": "1",
+      "status": "wait"
+    },
+    {
+      "id": "10f6",
+      "following_member_id": "5",
+      "follower_target_member_id": "4",
+      "status": "wait"
+    },
+    {
+      "id": "8610",
+      "following_member_id": "5",
+      "follower_target_member_id": "6",
+      "status": "wait"
+    },
+    {
+      "id": "112d",
+      "following_member_id": "5",
+      "follower_target_member_id": "7",
+      "status": "wait"
+    },
+    {
+      "id": "de1e",
+      "following_member_id": "5",
+      "follower_target_member_id": "8",
+      "status": "wait"
     }
   ],
   "member_stamp": [
@@ -1744,5 +1774,4 @@
       "target_member_id": 7
     }
   ]
-
 }
