@@ -141,8 +141,8 @@ const router = useRouter()
 const drawer = ref(true)
 const ui = useUIStore()
 const showMoreMenu = ref(false)
-
 const searchPanelOpen = ref(false)
+
 
 const isAdmin = ref(false)  // 관리자 테스트용
 const userStore = useUserStore();
