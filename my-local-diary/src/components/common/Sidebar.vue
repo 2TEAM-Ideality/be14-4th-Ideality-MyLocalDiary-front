@@ -45,7 +45,7 @@
 
           <v-list-item @click="goToMypage">
             <div class="menu-item">
-              <v-img src="/src/assets/sidebar/person.png" class="menu-icon" />
+              <v-img src="/src/assets/sidebar/person.png" alt="mypage" class="menu-icon" />
               <span v-if="ui.showText">마이페이지</span>
             </div>
           </v-list-item>
@@ -65,8 +65,9 @@
           </v-list-item>
 
           <v-list-item @click="openAlarm">
-            <div class="menu-item">
+            <div class="menu-item" style="position: relative;">
               <v-img src="/src/assets/sidebar/notifications.png" class="menu-icon" />
+              <span v-if="unreadCount > 0" class="badge">{{ unreadCount }}</span>
               <span v-if="ui.showText">알림</span>
             </div>
           </v-list-item>
@@ -119,6 +120,12 @@
     </v-list>
   </VNavigationDrawer>
 
+  <NotificationPopup
+    :isOpen="isAlarmOpen"
+    :notifications="notificationList"
+    @close="closeAlarm"
+  />
+
   <SearchUserModal
   v-if="searchPanelOpen"
   class="search-user-modal"
@@ -128,52 +135,94 @@
 
 </template>
 
-
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUIStore } from '@/stores/uiStore'
-import { useUserStore } from '@/stores/userStore';
+import { useUserStore } from '@/stores/userStore'
+import NotificationPopup from '@/components/common/NotificationPopup.vue'
+import axios from 'axios'
 
 import SearchUserModal from '../search/SearchUserModal.vue'
 
 const router = useRouter()
 const drawer = ref(true)
 const ui = useUIStore()
+const userStore = useUserStore()
 const showMoreMenu = ref(false)
-
 const searchPanelOpen = ref(false)
 
+const isAlarmOpen = ref(false)
+const notificationList = ref([])
+
 const isAdmin = ref(false)  // 관리자 테스트용
-const userStore = useUserStore();
+
 
 onMounted(async () => {
-  const userStore = useUserStore();
-  await userStore.restoreUser();
-
-  // isAdmin.value = userStore.role === 'ADMIN' // 관리자 여부 판별 
+  await userStore.restoreUser()
+  isAdmin.value = userStore.role === 'ADMIN'
+  fetchNotifications()
 })
 
-// 라우팅 
 const goToHome = () => router.push('/home')
 const goToMypage = () => router.push('/mypage')
 const goToCreateDiary = () => router.push('/post/create')
 const goToStamp = () => router.push('/stamp')
-const openUserSearch = () => searchPanelOpen.value = !searchPanelOpen.value
-const openAlarm = () => console.log('알림 창 뜨기')
 
+const unreadCount = computed(() =>
+  notificationList.value.filter(n => !n.isRead).length
+)
+
+const fetchNotifications = async () => {
+  try {
+    const token = localStorage.getItem('accessToken')
+    const res = await axios.get('http://localhost:8080/api/notifications', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    notificationList.value = res.data.map(noti => {
+      const [nickname, action] = splitContent(noti.content)
+      return {
+        id: noti.id,
+        nickname,
+        action,
+        createdAt: noti.createdAt,
+        isRead: noti.isRead,
+        targetId: noti.targetId
+      }
+    })
+  } catch (error) {
+    console.error('알림 불러오기 실패:', error)
+  }
+}
+
+const openAlarm = async () => {
+  drawer.value = false
+  isAlarmOpen.value = true
+  await fetchNotifications()
+}
+
+const closeAlarm = () => {
+  isAlarmOpen.value = false
+  drawer.value = true
+}
+
+const splitContent = (content) => {
+  const match = content.match(/(.+?)님(.*)/)
+  return match ? [match[1], `님${match[2]}`] : ['알 수 없음', content]
+}
+
+const openUserSearch = () => searchPanelOpen.value = !searchPanelOpen.value
 const goToSettings = () => router.push('/settings')
 const goToActivities = () => router.push('/activities')
 const reportProblem = () => console.log('문제 신고 창 열기')
 const confirmLogout = () => {
   if (confirm('정말 로그아웃 하시겠습니까?')) {
-    // 실제 로그아웃 로직 추가할 자리
-    console.log('로그아웃 완료')
+    localStorage.removeItem('accessToken')
     router.push('/')
   }
 }
 
-// 관리자용 라우팅
 const goToRegulationHistory = () => router.push('/admin/regulations')
 const goToReportHistory = () => router.push('/admin/reports')
 const goToAdminMyPage = () => router.push('/admin/mypage')
@@ -225,5 +274,17 @@ const goToAdminMyPage = () => router.push('/admin/mypage')
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.badge {
+  position: absolute;
+  top: 0px;
+  right: 2px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: bold;
 }
 </style>

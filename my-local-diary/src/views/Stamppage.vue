@@ -48,7 +48,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import CatStampBar from '/src/components/stamp/stamp.vue';
-import UserProfile from '/src/components/common/UserProfile.vue';
+import UserProfile from '/src/components/common/userprofile.vue';
 import { useUserStore } from '/src/stores/userStore.js';
 import Badge from '/src/components/stamp/badge.vue';
 import Follower from '/src/components/follow/Follower.vue';

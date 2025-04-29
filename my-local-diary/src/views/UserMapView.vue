@@ -2,7 +2,7 @@
   <div class="map-container">
     <!-- 📌 지도 위에 떠 있는 모달 -->
     <div class="floating-modal">
-      <UserProfileModal />
+      <ReportModal />
     </div>
 
     <!-- 지도 -->
@@ -21,6 +21,7 @@ import { onMounted, h, render } from 'vue'
 import UserProfileModal from '@/components/mypage/UserProfileModal.vue'
 import CustomMarker from '@/components/common/CustomMarker.vue' 
 import SearchLocation2 from '@/components/map/SearchLocation2.vue'
+import ReportModal from '@/components/report/ReportModal.vue'
 
 // 더미 마커들 (CustomMarker로 표시될 데이터)
 const postLocations = [
