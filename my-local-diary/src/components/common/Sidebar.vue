@@ -118,6 +118,14 @@
       </v-menu>
     </v-list>
   </VNavigationDrawer>
+
+  <SearchUserModal
+  v-if="searchPanelOpen"
+  class="search-user-modal"
+  :style="{ left: ui.isHover ? '200px' : '80px' }"
+  @close="searchPanelOpen = false"
+  />
+
 </template>
 
 
@@ -127,12 +135,16 @@ import { useRouter } from 'vue-router'
 import { useUIStore } from '@/stores/uiStore'
 import { useUserStore } from '@/stores/userStore';
 
+import SearchUserModal from '../search/SearchUserModal.vue'
+
 const router = useRouter()
 const drawer = ref(true)
 const ui = useUIStore()
 const showMoreMenu = ref(false)
 
-const isAdmin = ref(true)  // 관리자 테스트용
+const searchPanelOpen = ref(false)
+
+const isAdmin = ref(false)  // 관리자 테스트용
 const userStore = useUserStore();
 
 onMounted(async () => {
@@ -147,7 +159,7 @@ const goToHome = () => router.push('/home')
 const goToMypage = () => router.push('/mypage')
 const goToCreateDiary = () => router.push('/post/create')
 const goToStamp = () => router.push('/stamp')
-const openUserSearch = () => console.log('유저 검색 창 뜨기')
+const openUserSearch = () => searchPanelOpen.value = !searchPanelOpen.value
 const openAlarm = () => console.log('알림 창 뜨기')
 
 const goToSettings = () => router.push('/settings')
@@ -168,43 +180,43 @@ const goToAdminMyPage = () => router.push('/admin/mypage')
 </script>
 
 <style scoped>
-:deep(.v-navigation-drawer) {
-  transition: width 0.3s ease;
-  overflow: hidden;
-  z-index: 1000;
-}
+  :deep(.v-navigation-drawer) {
+    transition: width 0.3s ease;
+    overflow: hidden;
+    z-index: 1000;
+  }
 
-.menu-item {
-  display: flex;
-  align-items: center;
-}
+  .menu-item {
+    display: flex;
+    align-items: center;
+  }
 
-.menu-icon {
-  width: 25px;
-  height: 25px;
-  min-width: 25px;
-  max-width: 25px;
-  flex-shrink: 0;
-  margin-right: 8px;
-  object-fit: contain;
-}
+  .menu-icon {
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+    max-width: 25px;
+    flex-shrink: 0;
+    margin-right: 8px;
+    object-fit: contain;
+  }
 
-.stamp-icon {
-  width: 35px;
-  height: 35px;
-  min-width: 35px;
-  max-width: 35px;
-  flex-shrink: 0;
-  margin-right: 8px;
-  object-fit: contain;
-}
+  .stamp-icon {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    max-width: 35px;
+    flex-shrink: 0;
+    margin-right: 8px;
+    object-fit: contain;
+  }
 
-.logo-container {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  .logo-container {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
 .fade-enter-active,
 .fade-leave-active {
