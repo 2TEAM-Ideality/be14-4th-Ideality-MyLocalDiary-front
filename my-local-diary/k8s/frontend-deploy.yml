@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deploy
+
+spec:
+  selector:
+    matchLabels:
+      app: frontend-kube
+
+  template:
+    metadata:
+      labels:
+        app: frontend-kube
+
+    spec:
+      containers:
+      - name: frontend-container
+        image: astraze/k8s_frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80

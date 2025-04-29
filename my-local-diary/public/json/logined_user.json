@@ -1,0 +1,15 @@
+{
+    "id": "1",
+    "login_id": "test01",
+    "password": "pass01",
+    "email": "test01@example.com",
+    "name": "권응애",
+    "birth": "1997-11-11",
+    "nickname": "유저01",
+    "status": "ACTIVE",
+    "is_public": "TRUE",
+    "bio": "여행 좋아",
+    "role": "MEMBER",
+    "profile_image": null,
+    "profile_music": "https://rococo-cocada-2c23e0.netlify.app/audio/aespa - Supernova.mp3"
+}

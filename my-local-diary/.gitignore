@@ -1,0 +1,70 @@
+##### custom start #####
+
+# 환경변수
+.env
+
+# 시스템/IDE 캐시 추가
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.AppleDouble
+.LSOverride
+
+# 빌드/패키지 관련
+.vite
+.npm
+.pnpm-store
+
+# 테스트 도구 커버리지 (다른 툴 쓸 경우 대비)
+*.lcov
+*.lcov.info
+
+# 임시/백업 파일
+*.tmp
+*.bak
+*.old
+*.swp
+*.swo
+
+# JetBrains IDE
+*.iml
+out/
+
+# TypeScript 프로젝트 캐시
+.cache/
+
+# Vue SFC Playground (사용 시)
+*.playground.*
+
+##### custom end #####
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+.DS_Store
+dist
+dist-ssr
+coverage
+*.local
+
+/cypress/videos/
+/cypress/screenshots/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+*.tsbuildinfo
