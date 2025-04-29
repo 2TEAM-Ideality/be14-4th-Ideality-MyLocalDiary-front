@@ -44,7 +44,7 @@
         <v-btn color=" gray" variant="flat" @click="editProfile">프로필 편집</v-btn>
         <v-btn color=" gray" variant="flat" @click="editAccount">개인 정보 설정</v-btn>
       </div>
-      <button v-else class="follow-button" @click="handleFollow">팔로우</button>
+      <button v-else class="follow-button">팔로우</button>
     </div>
 
     <!-- 오디오 플레이어 -->
@@ -64,34 +64,8 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter }from 'vue-router';
 import { useUserStore } from '@/stores/userStore'
 import { waveform } from 'ldrs'
-import axios from 'axios'
 
 waveform.register()  // 배경음악 재생 중 표시 
-
-const handleFollow = async () => {
-  const token = localStorage.getItem('accessToken')
-  if (!token) {
-    alert('로그인이 필요합니다.')
-    return
-  }
-
-  try {
-    await axios.post('http://localhost:8080/api/follow', null, {
-      params: {
-        fromMemberId: userStore.id,
-        toMemberId: props.userData.id,
-        fromMemberName: userStore.nickname
-      },
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-    alert('팔로우 성공!')
-  } catch (error) {
-    console.error('팔로우 실패:', error)
-    alert('팔로우 실패!')
-  }
-}
 
 
 const props = defineProps({
@@ -102,7 +76,7 @@ const props = defineProps({
 })
 const router = useRouter();
 const userStore = useUserStore()
-const isMyProfile = computed(() => false)
+const isMyProfile = computed(() => props.userData.id === userStore.id)
 
 const audioPlayer = ref(null)
 const isPlaying = ref(false)
