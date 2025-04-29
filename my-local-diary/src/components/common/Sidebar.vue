@@ -64,11 +64,13 @@
         </v-list-item>
 
         <v-list-item @click="openAlarm">
-          <div class="menu-item">
-            <v-img src="/src/assets/sidebar/notifications.png" alt="notifications" class="menu-icon" />
-            <span v-if="ui.showText">알림</span>
-          </div>
-        </v-list-item>
+  <div class="menu-item" style="position: relative;">
+    <v-img src="/src/assets/sidebar/notifications.png" alt="notifications" class="menu-icon" />
+    <span v-if="unreadCount > 0" class="badge">{{ unreadCount }}</span> <!-- 🔥 추가 -->
+    <span v-if="ui.showText">알림</span>
+  </div>
+</v-list-item>
+
       </div>
 
       <!-- 더보기 -->
@@ -102,7 +104,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed ,onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUIStore } from '@/stores/uiStore'
 import NotificationPopup from '@/components/common/NotificationPopup.vue'
@@ -122,6 +124,34 @@ const goToCreateDiary = () => router.push('/post/create')
 const goToStamp = () => router.push('/stamp')
 const openUserSearch = () => console.log('유저 검색 창 뜨기')
 
+const unreadCount = computed(() => {
+  return notificationList.value.filter(n => !n.isRead).length
+})
+
+// 🔥 fetchNotifications 함수 만들기
+const fetchNotifications = async () => {
+  try {
+    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ0ZXN0QGVtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzQ1ODkzODQ3LCJleHAiOjE3NDU5MzcwNDd9.NFobldMYwGB7Lm6R85hKpF61GsbomgtSNasnTcaikJjw7zhrXLiZ337WRgNYUWMpYv6XM97tB4RytKkMtCvI2Q'; // 여기도 나중에 localStorage로 교체 가능
+
+    const res = await axios.get('http://localhost:8080/api/notifications', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    notificationList.value = res.data.map(noti => {
+      const [nickname, action] = splitContent(noti.content)
+      return {
+        id: noti.id,
+        nickname,
+        action,
+        createdAt: noti.createdAt,
+        isRead: noti.isRead,
+        targetId: noti.targetId
+      }
+    })
+  } catch (error) {
+    console.error('알림 불러오기 실패:', error)
+  }
+}
 const openAlarm = async () => {
   drawer.value = false;  // 사이드바 닫기
   isAlarmOpen.value = true; // 알림창 열기
@@ -171,6 +201,10 @@ const confirmLogout = () => {
     router.push('/')
   }
 }
+
+onMounted(() => {
+  fetchNotifications()
+})
 </script>
 
 <style scoped>
@@ -220,4 +254,17 @@ const confirmLogout = () => {
 .fade-leave-to {
   opacity: 0;
 }
+
+.badge {
+  position: absolute;
+  top: 0px;
+  right:2px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
 </style>
