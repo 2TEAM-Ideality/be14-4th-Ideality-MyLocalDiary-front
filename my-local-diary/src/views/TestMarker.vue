@@ -15,19 +15,19 @@
     <!-- 모달 예시 -->
     <div v-if="selectedPostId !== null" class="modal-overlay" @click="selectedPostId = null">
         <div class="modal-content d-flex flex-column" @click.stop     style="
-      width: 1000px;
-      height: 90%;
-      background-color: white;
-      border-radius: 12px;
-      overflow: hidden;
-      display: flex;
-    ">
+            width: 1000px;
+            height: 90%;
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+        ">
             <div class="d-flex justify-end">
                 <button class="pr-3 pl-3" @click="selectedPostId = null">X</button>
             </div>
             <PostCard/>
+        </div>
     </div>
-</div>
 
 </template>
 
@@ -39,8 +39,8 @@
 
     const selectedPostId = ref(null)
     function handleMarkerClick(postId) {
-    selectedPostId.value = postId
-}
+        selectedPostId.value = postId
+    }
 
     
 

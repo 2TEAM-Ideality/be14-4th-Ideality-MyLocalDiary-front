@@ -1,14 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Mypage from '@/views/Mypage.vue'
+import Mypage from '@/views/mypage/Mypage.vue'
 import Landingpage from '@/views/Landingpage.vue';
 import MapHome from '@/views/MapHome.vue'; 
-import Stamppage from '@/views/Stamppage.vue';
-import CreateDiary from '@/views/CreateDiary.vue';
+import StampPage from '@/views/Stamppage.vue';
 import UserMapView from '@/views/UserMapView.vue';
 import PostCreate from '@/components/post/PostCreate.vue'
 import TestMarker from '@/views/TestMarker.vue';
-
+import EditProfile from '@/components/mypage/EditProfile.vue'
+import EditAccount from '@/components/mypage/EditAccount.vue';
 import TempLoadingModalParent from '@/components/common/TempLoadingModalParent.vue';
+import EditPage from '@/views/mypage/EditPage.vue';
+import ReportManagement from '@/views/admin/ReportManagement.vue';
+import RegulationHistory from '@/views/admin/RegulationHistory.vue';
+import AdminMyPage from '@/views/admin/AdminMyPage.vue';
+
 
 const routes = [
     {
@@ -44,19 +49,28 @@ const routes = [
         component : TestMarker
       },
       {
-        path: '/create-diary',
-        name: 'CreateDiary',
-        component : CreateDiary
-      },
-      {
         path: '/mypage',
         name: 'Mypage',
         component: Mypage,
       },
       {
+        path: '/edit',
+        component: EditPage,  // EditPage 내부에서 분기
+        children: [
+          {
+            path: 'profile',
+            component: EditProfile
+          },
+          {
+            path: 'account',
+            component: EditAccount
+          }
+        ]
+      },
+      {
         path: '/stamp',
         name: 'Stamp',
-        component: Stamppage,
+        component: StampPage,
       },
       {
         path: '/user-map-home',
@@ -72,7 +86,24 @@ const routes = [
         path: '/loadingmodal',
         name: 'LoadingModal',
         component: TempLoadingModalParent
-      }
+      },
+
+      // 관리자용 
+      {
+        path: '/admin/reports',
+        name: 'ReportManagement',
+        component: ReportManagement
+      },
+      {
+        path: '/admin/regulations',
+        name: 'RegulationHistory',
+        component: RegulationHistory
+      },
+      {
+        path: '/admin/mypage',
+        name: 'AdminMyPage',
+        component: AdminMyPage
+      },
 ]
 
 const router = createRouter({

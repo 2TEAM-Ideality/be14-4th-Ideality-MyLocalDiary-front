@@ -36,7 +36,7 @@ export const useUserStore = defineStore('user', () => {
     status.value = memberData.status
     isPublic.value = memberData.is_public === 'TRUE'
     bio.value = memberData.bio
-    profileImage.value = memberData.profile_image
+    profileImage.value = memberData.profile_image || '/images/profile/defaultProfile.png';
     profileMusic.value = memberData.profile_music
 
     await fetchProfileStats()
@@ -132,7 +132,8 @@ export const useUserStore = defineStore('user', () => {
       status.value = 'ACTIVE';
       isPublic.value = true;
       bio.value = '소도시의 숨은 매력을 발굴하는 여행 에디터.';
-      profileImage.value = '/images/profile/profile.png';
+      // profileImage.value = '/images/profile/profile.png';
+      profileImage.value ='https://my-local-diary-prod.s3.ap-northeast-2.amazonaws.com/member/profile_images/445a50e3-8d7f-4997-949f-fa3fc1ca1741_image%20(2).webp';
       profileMusic.value = 'https://rococo-cocada-2c23e0.netlify.app/audio/잔나비 (JANNABI) - 주저하는 연인들을 위해.mp3';
   
       await fetchProfileStats();

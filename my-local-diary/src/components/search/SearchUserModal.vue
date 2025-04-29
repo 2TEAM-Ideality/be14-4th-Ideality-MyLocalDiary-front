@@ -1,7 +1,20 @@
 <template>
     <div ref="modalRef" class="search-user-modal">
         <v-card>
-            <div class="title-text">검색</div>
+            <div class="search-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="title-text">검색</div>
+
+                <v-btn
+                    icon
+                    variant="text"
+                    @click="emit('close')"
+                    style="margin-left: auto; margin-top: -20px;" 
+                    width="32"
+                    height="32"
+                >
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+                </div>
             <v-row no-gutters class="search-bar-row">
                 <!-- 왼쪽 동그란 아이콘 -->
                 <v-icon size="48">mdi-account-circle</v-icon>
@@ -185,19 +198,6 @@
     if (timeoutId) clearTimeout(timeoutId);
     });
 
-    function handleClickOutside(event) {
-        if (modalRef.value && !modalRef.value.contains(event.target)) {
-            emit('close')
-        }
-    }
-
-    onMounted(() => {
-        window.addEventListener('mousedown', handleClickOutside)
-    })
-
-    onBeforeUnmount(() => {
-        window.removeEventListener('mousedown', handleClickOutside)
-    })
 </script>
 
 <style scoped>

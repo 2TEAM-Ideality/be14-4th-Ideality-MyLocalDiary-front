@@ -1,0 +1,44 @@
+{
+    "following": [
+    {
+      "id": "1",
+      "nickname": "유저01",
+      "status": "ACTIVE",
+      "bio": "여행 좋아",
+      "role": "MEMBER",
+      "profile_image": null
+    },
+    {
+      "id": "4",
+      "nickname": "유저04",
+      "status": "ACTIVE",
+      "bio": "공개는 부끄렁",
+      "role": "MEMBER",
+      "profile_image": null
+    },
+    {
+      "id": "5",
+      "nickname": "Madara Uchiha",
+      "status": "ACTIVE",
+      "bio": "소도시의 숨은 매력을 발굴하는 여행 에디터.",
+      "role": "MEMBER",
+      "profile_image": "/images/profile/profile.png"
+    },
+    {
+      "id": "6",
+      "nickname": "유저06",
+      "status": "ACTIVE",
+      "bio": "하이여",
+      "role": "MEMBER",
+      "profile_image": null
+    },
+    {
+      "id": "7",
+      "nickname": "유저07",
+      "status": "ACTIVE",
+      "bio": "석현님 커피 왜 안사줌",
+      "role": "MEMBER",
+      "profile_image": null
+    }
+  ]
+}
