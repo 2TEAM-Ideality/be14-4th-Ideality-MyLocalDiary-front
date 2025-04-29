@@ -1,9 +1,16 @@
 <template>
     <div class="report-management">
-      <!-- 고양이 그림 + 제목 -->
-      <div class="header">
-        <img src="/src/assets/stamp_pic/cat_bar.png" alt="고양이" class="cat-image" />
-        <div class="title">규제 내역</div>
+      <div style="display:flex; flex-direction: row; justify-content: space-between; align-items: flex-end;">
+        <!-- 고양이 그림 + 제목 -->
+        <div class="header">
+          <img src="/src/assets/stamp_pic/cat_bar.png" alt="고양이" class="cat-image" />
+          <div class="title">규제 내역</div>
+        </div>
+        <div class="filter-buttons">
+          <button @click="filterByStatus('ALL')" :class="{ active: selectedStatus === 'ALL' }">전체</button>
+          <button @click="filterByStatus('정지중')" :class="{ active: selectedStatus === '정지중' }">정지중</button>
+          <button @click="filterByStatus('해제됨')" :class="{ active: selectedStatus === '해제됨' }">해제됨</button>
+        </div>
       </div>
   
       <!-- 테이블 -->
@@ -28,9 +35,11 @@
                 <select
                   :value="calcStatus(regulation.suspensionStartDate, regulation.suspensionEndDate)"
                   @change="confirmStatusChange($event, regulation.id)"
-                  :disabled="calcStatus(regulation.suspensionStartDate, regulation.suspensionEndDate) === '해제됨'"
+                  disabled
                   :class="statusClass(calcStatus(regulation.suspensionStartDate, regulation.suspensionEndDate))"
                 >
+                <!-- :disabled="calcStatus(regulation.suspensionStartDate, regulation.suspensionEndDate) === '해제됨'" -->
+
                   <option value="정지중">정지중</option>
                   <option value="해제됨">해제됨</option>
                 </select>
@@ -71,17 +80,26 @@ export default {
       regulations: [],
       currentPage: 1,
       pageSize: 10,
+      selectedStatus: 'ALL',
     };
   },
   computed: {
     totalPages() {
-      return Math.ceil(this.regulations.length / this.pageSize);
+    return Math.ceil(this.filteredRegulations.length / this.pageSize);
     },
     pagedRegulations() {
       const start = (this.currentPage - 1) * this.pageSize;
       const end = start + this.pageSize;
-      return this.regulations.slice(start, end);
+      return this.filteredRegulations.slice(start, end);
     },
+    filteredRegulations() {
+      if (this.selectedStatus === 'ALL') {
+        return this.regulations;
+      }
+      return this.regulations.filter(regulation => 
+        this.calcStatus(regulation.suspensionStartDate, regulation.suspensionEndDate) === this.selectedStatus
+      );
+    }
   },
   created() {
     this.fetchRegulations();
@@ -118,8 +136,11 @@ export default {
     calcStatus (startDate, endDate)  {
         const now = new Date();
         return new Date(endDate) < now ? '해제됨' : '정지중';
-    }
-    ,
+    },
+    filterByStatus(status) {
+      this.selectedStatus = status;
+      this.currentPage = 1; // 버튼 클릭하면 페이지 초기화
+    },
   }
 };
 </script>
@@ -233,5 +254,28 @@ select:hover {
   border-color: #FF9A9A;
   box-shadow: 0 0 5px rgba(255, 154, 154, 0.5);
 } */
+.filter-buttons {
+  height: fit-content;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  /* margin-left: 220px; */
+  justify-content: flex-end;
+}
+
+.filter-buttons button {
+  padding: 6px 12px;
+  border: none;
+  background-color: #eee;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.filter-buttons button.active {
+  background-color: #FF9A9A;
+  font-weight: bold;
+  color: white;
+}
+
 
 </style>

@@ -1,10 +1,22 @@
 <template>
   <div class="report-management">
-    <!-- 고양이 그림 + 제목 -->
-    <div class="header">
-      <img src="/src/assets/stamp_pic/cat_bar.png" alt="고양이" class="cat-image" />
-      <div class="title">신고 관리</div>
+    <div style="display:flex; flex-direction: row; justify-content: space-between; align-items: flex-end;">
+      <!-- 고양이 그림 + 제목 -->
+      <div class="header">
+        <img src="/src/assets/stamp_pic/cat_bar.png" alt="고양이" class="cat-image" />
+        <div class="title">신고 관리</div>
+      </div>
+
+      <!-- 필터링 버튼 -->
+      <!-- 상태별 필터 버튼 -->
+      <div class="filter-buttons">
+        <button @click="filterStatus('ALL')" :class="{ active: selectedStatus === 'ALL' }">전체</button>
+        <button @click="filterStatus('WAITING')" :class="{ active: selectedStatus === 'WAITING' }">처리중</button>
+        <button @click="filterStatus('RESOLVED')" :class="{ active: selectedStatus === 'RESOLVED' }">처리완료</button>
+        <button @click="filterStatus('REJECTED')" :class="{ active: selectedStatus === 'REJECTED' }">반려</button>
+      </div>
     </div>
+    
 
     <!-- 테이블 -->
     <div class="table-container">
@@ -128,17 +140,24 @@ export default {
       customReasonInput: '',
       currentPage: 1,
       pageSize: 10,
+      selectedStatus: 'ALL', 
     };
   },
   computed: {
     totalPages() {
-      return Math.ceil(this.reports.length / this.pageSize);
+    return Math.ceil(this.filteredReports.length / this.pageSize);
     },
     pagedReports() {
       const start = (this.currentPage - 1) * this.pageSize;
       const end = start + this.pageSize;
-      return this.reports.slice(start, end);
+      return this.filteredReports.slice(start, end);
     },
+    filteredReports() {
+      if (this.selectedStatus === 'ALL') {
+        return this.reports;
+      }
+      return this.reports.filter(report => report.status === this.selectedStatus);
+    }
   },
   created() {
     this.fetchReports();
@@ -155,6 +174,10 @@ export default {
       } catch (error) {
         console.error('Failed to fetch reports', error);
       }
+    },
+    filterStatus(status) {   //  상태 필터링 메소드
+      this.selectedStatus = status;
+      this.currentPage = 1; // 필터 바꿀 때 페이지도 1로 초기화
     },
     async fetchReportReasons() {
       try {
@@ -397,6 +420,29 @@ select {
 .link-button:hover {
   background-color: #9f9f9f;
 }
+.filter-buttons {
+  height: fit-content;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  /* margin-left: 220px; */
+  justify-content: flex-end;
+}
+
+.filter-buttons button {
+  padding: 6px 12px;
+  border: none;
+  background-color: #eee;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.filter-buttons button.active {
+  background-color: #FF9A9A;
+  font-weight: bold;
+  color: white;
+}
+
 
 
 </style>
