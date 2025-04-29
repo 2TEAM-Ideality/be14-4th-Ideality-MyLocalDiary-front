@@ -15,13 +15,13 @@
           <div class="logo-container">
             <v-img
               v-if="!ui.isHover"
-              src="/src/assets/cursor/슈크림붕어빵1.png"
+              src="@/assets/cursor/슈크림붕어빵1.png"
               width="40"
             />
             <transition name="fade">
               <v-img
                 v-if="ui.showImage"
-                src="/src/assets/logo/My_Local_Diary.png"
+                src="@/assets/logo/My_Local_Diary.png"
               />
             </transition>
           </div>
@@ -30,28 +30,28 @@
         <!-- 메뉴 항목 -->
         <v-list-item @click="goToHome">
           <div class="menu-item">
-            <v-img src="/src/assets/sidebar/Map.png" class="menu-icon" />
+            <v-img src="@/assets/sidebar/Map.png" class="menu-icon" />
             <span v-if="ui.showText">지도 홈</span>
           </div>
         </v-list-item>
 
         <v-list-item @click="openUserSearch">
           <div class="menu-item">
-            <v-img src="/src/assets/sidebar/Search.png" alt="search" class="menu-icon" />
+            <v-img src="@/assets/sidebar/Search.png" alt="search" class="menu-icon" />
             <span v-if="ui.showText">검색</span>
           </div>
         </v-list-item>
 
         <v-list-item @click="goToMypage" class="clickable">
           <div class="menu-item">
-            <v-img src="/src/assets/sidebar/person.png" alt="mypage" class="menu-icon" />
+            <v-img src="@/assets/sidebar/person.png" alt="mypage" class="menu-icon" />
             <span v-if="ui.showText">마이페이지</span>
           </div>
         </v-list-item>
 
         <v-list-item @click="goToCreateDiary">
           <div class="menu-item">
-            <v-img src="/src/assets/sidebar/Pen.png" alt="pen" class="menu-icon" />
+            <v-img src="@/assets/sidebar/Pen.png" alt="pen" class="menu-icon" />
             <span v-if="ui.showText">글쓰기</span>
           </div>
         </v-list-item>
@@ -60,14 +60,14 @@
 
         <v-list-item @click="goToStamp">
           <div class="menu-item">
-            <v-img src="/src/assets/sidebar/stamp.png" alt="stamp" class="stamp-icon ml-n1" />
+            <v-img src="@/assets/sidebar/stamp.png" alt="stamp" class="stamp-icon ml-n1" />
             <span v-if="ui.showText">스탬프 목록</span>
           </div>
         </v-list-item>
 
         <v-list-item @click="openAlarm">
           <div class="menu-item">
-            <v-img src="/src/assets/sidebar/notifications.png" alt="notifications" class="menu-icon" />
+            <v-img src="@/assets/sidebar/notifications.png" alt="notifications" class="menu-icon" />
             <span v-if="ui.showText">알림</span>
           </div>
         </v-list-item>

@@ -40,22 +40,22 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import CatStampBar from '/src/components/stamp/stamp.vue';
-import UserProfile from '/src/components/common/UserProfile.vue';
-import { useUserStore } from '/src/stores/userStore.js';
-import Badge from '/src/components/stamp/badge.vue';
-import Follower from '/src/components/follow/Follower.vue';
-import Following from '/src/components/follow/Following.vue';
+import CatStampBar from '@/components/stamp/stamp.vue';
+import UserProfile from '@/components/common/UserProfile.vue';
+import { useUserStore } from '@/stores/userStore.js';
+import Badge from '@/components/stamp/badge.vue';
+import Follower from '@/components/follow/Follower.vue';
+import Following from '@/components/follow/Following.vue';
 
 const userStore = useUserStore();
 
 const BASE_STAMPS = [
-  { title: '카페냥', stampImage: '/src/assets/stamp_pic/카페냥.png' },
-  { title: '산책냥', stampImage: '/src/assets/stamp_pic/산책냥.png' },
-  { title: '꽐라냥', stampImage: '/src/assets/stamp_pic/꽐라냥.png' },
-  { title: '독서냥', stampImage: '/src/assets/stamp_pic/독서냥.png' },
-  { title: '맛집냥', stampImage: '/src/assets/stamp_pic/맛집냥.png' },
-  { title: '영화냥', stampImage: '/src/assets/stamp_pic/영화냥.png' }
+  { title: '카페냥', stampImage: '@/assets/stamp_pic/카페냥.png' },
+  { title: '산책냥', stampImage: '@/assets/stamp_pic/산책냥.png' },
+  { title: '꽐라냥', stampImage: '@/assets/stamp_pic/꽐라냥.png' },
+  { title: '독서냥', stampImage: '@/assets/stamp_pic/독서냥.png' },
+  { title: '맛집냥', stampImage: '@/assets/stamp_pic/맛집냥.png' },
+  { title: '영화냥', stampImage: '@/assets/stamp_pic/영화냥.png' }
 ];
 
 // 상태 관리

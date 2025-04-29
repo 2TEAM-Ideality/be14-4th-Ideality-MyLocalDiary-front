@@ -2,7 +2,7 @@
     <div class="report-management">
       <!-- 고양이 그림 + 제목 -->
       <div class="header">
-        <img src="/src/assets/stamp_pic/cat_bar.png" alt="고양이" class="cat-image" />
+        <img src="@/assets/stamp_pic/cat_bar.png" alt="고양이" class="cat-image" />
         <div class="title">신고 관리</div>
       </div>
   

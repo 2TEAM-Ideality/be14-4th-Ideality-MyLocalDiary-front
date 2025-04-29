@@ -2,7 +2,7 @@
   <div class="cat-stamp-container">
     <div class="category-bar">
       <img
-        src="/src/assets/stamp_pic/cat_bar.png"
+        src="@/assets/stamp_pic/cat_bar.png"
         alt="카테고리 바"
         class="category-img"
       />
