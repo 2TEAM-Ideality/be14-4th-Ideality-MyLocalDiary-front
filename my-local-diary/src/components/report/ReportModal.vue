@@ -1,6 +1,6 @@
 <template>
   <div class="common-report">
-    <v-dialog v-model="dialog" max-width="600" class="custom-dialog">
+    <v-dialog v-model="internalDialog" max-width="600" class="custom-dialog">
       <v-card class="custom-card">
         <v-card-text class="custom-card-text">
 
@@ -37,15 +37,37 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch, defineEmits, defineProps } from 'vue'
 import reportImg from '@/assets/report/report.svg'
 
-const dialog = ref(true)
+const emit = defineEmits(['update:modelValue', 'close'])
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    required: true
+  }
+})
+
+// 내부용 dialog 상태
+const internalDialog = ref(props.modelValue)
+
+// props 바뀌면 내부 dialog도 반영
+watch(() => props.modelValue, (newVal) => {
+  internalDialog.value = newVal
+})
+
+// dialog 상태가 변할 때 부모에게 알려줌
+watch(internalDialog, (newVal) => {
+  emit('update:modelValue', newVal)
+})
+
 const reason = ref('')
 
 const submitReport = () => {
   console.log('신고 내용:', reason.value)
   reason.value = ''
+  internalDialog.value = false
+  emit('close')
 }
 </script>
 

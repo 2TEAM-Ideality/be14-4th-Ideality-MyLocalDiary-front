@@ -132,7 +132,7 @@ const drawer = ref(true)
 const ui = useUIStore()
 const showMoreMenu = ref(false)
 
-const isAdmin = ref(true)  // 관리자 테스트용
+const isAdmin = ref(false)  // 관리자 테스트용
 const userStore = useUserStore();
 
 onMounted(async () => {
