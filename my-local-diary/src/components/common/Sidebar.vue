@@ -1,4 +1,4 @@
-<template>
+<template> 
   <VNavigationDrawer
     v-model="drawer"
     app
@@ -42,7 +42,7 @@
           </div>
         </v-list-item>
 
-        <v-list-item @click="goToMypage" class="clickable">
+        <v-list-item @click="goToMypage">
           <div class="menu-item">
             <v-img src="/src/assets/sidebar/person.png" alt="mypage" class="menu-icon" />
             <span v-if="ui.showText">마이페이지</span>
@@ -55,8 +55,6 @@
             <span v-if="ui.showText">글쓰기</span>
           </div>
         </v-list-item>
-
-
 
         <v-list-item @click="goToStamp">
           <div class="menu-item">
@@ -94,31 +92,81 @@
       </v-menu>
     </v-list>
   </VNavigationDrawer>
+
+  <!-- 🔥 알림창 컴포넌트 추가 -->
+  <NotificationPopup
+    :isOpen="isAlarmOpen"
+    :notifications="notificationList"
+    @close="closeAlarm"
+  />
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUIStore } from '@/stores/uiStore'
+import NotificationPopup from '@/components/common/NotificationPopup.vue'
+import axios from 'axios'
 
 const router = useRouter()
 const drawer = ref(true)
 const ui = useUIStore()
 const showMoreMenu = ref(false)
 
+const isAlarmOpen = ref(false) // 알림창 열리는지 여부
+const notificationList = ref([]) // 초기에는 비어있음
+
 const goToHome = () => router.push('/home')
 const goToMypage = () => router.push('/mypage')
 const goToCreateDiary = () => router.push('/post/create')
 const goToStamp = () => router.push('/stamp')
 const openUserSearch = () => console.log('유저 검색 창 뜨기')
-const openAlarm = () => console.log('알림 창 뜨기')
+
+const openAlarm = async () => {
+  drawer.value = false;  // 사이드바 닫기
+  isAlarmOpen.value = true; // 알림창 열기
+
+  try {
+    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ0ZXN0QGVtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzQ1ODkzODQ3LCJleHAiOjE3NDU5MzcwNDd9.NFobldMYwGB7Lm6R85hKpF61GsbomgtSNasnTcaikJjw7zhrXLiZ337WRgNYUWMpYv6XM97tB4RytKkMtCvI2Q'; // 🔥 토큰 복붙하기// 🔥 토큰 꺼내기
+    const res = await axios.get('http://localhost:8080/api/notifications', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    notificationList.value = res.data.map(noti => {
+      const [nickname, action] = splitContent(noti.content)
+      return {
+        id: noti.id,
+        nickname,
+        action,
+        createdAt: noti.createdAt,
+        isRead: noti.isRead,
+        targetId: noti.targetId
+      }
+    })
+  } catch (error) {
+    console.error('알림 불러오기 실패:', error)
+  }
+}
+
+const closeAlarm = () => {
+  isAlarmOpen.value = false; // 알림창 닫기
+  drawer.value = true; // 사이드바 다시 열기
+}
+
+const splitContent = (content) => {
+  const match = content.match(/(.+?)님(.*)/)
+  if (match) {
+    return [match[1], `님${match[2]}`]
+  }
+  return ['알 수 없음', content]
+}
 
 const goToSettings = () => router.push('/settings')
 const goToActivities = () => router.push('/activities')
 const reportProblem = () => console.log('문제 신고 창 열기')
 const confirmLogout = () => {
   if (confirm('정말 로그아웃 하시겠습니까?')) {
-    // 실제 로그아웃 로직 추가할 자리
     console.log('로그아웃 완료')
     router.push('/')
   }

@@ -2,6 +2,7 @@
   <VApp>
     <Sidebar v-if="route.path !== '/'" />
     <VMain class="main-content">
+      <SSEConnect /> 
       <RouterView />
     </VMain>
   </VApp>
@@ -10,6 +11,7 @@
 <script setup>
 import Sidebar from './components/common/Sidebar.vue'
 import { useRoute } from 'vue-router'
+import SSEConnect from './components/common/SSEconnect.vue'
 
 
 const route = useRoute()
