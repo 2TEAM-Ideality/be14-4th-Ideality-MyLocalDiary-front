@@ -82,7 +82,6 @@
   const visible = ref(true) 
   const onImageLoad = () => {
     visible.value = false
-    console.log(visible.value)
     hoverLeft.value = false;
     hoverRight.value = false;
     const img = imageEl.value

@@ -18,6 +18,7 @@
       class="right-pane d-flex"
       style="flex: 4.4;
         display: flex; 
+        position: relative;
         flex-direction: column; 
         padding-left: 30px;
         padding-right: 30px;
@@ -27,17 +28,21 @@
         class="flex-grow-1 overflow-y-scroll pr-4 pt-4"
         @scroll="onScroll"
       >
-        <div>
+        <div class="d-flex" style="justify-content: space-between;">
           <!-- 작성자 정보 -->
-          <PostAuthorCard :author="author" />
-          <!-- 장소 태그 -->
+          <PostAuthorCard :author="author"/>
+          <MenuToggle/>
         </div>
   
+        <!-- 게시글 제목 -->
+        <div class="pt-2">
+          {{ postTitle }}
+        </div>
         <!-- 게시글 내용 -->
         <!-- post/diary 타입 선택 -->
         <div
           class="d-inline-flex align-center rounded-pill px-3 py-1 mb-2"
-          style="background-color: #C8E6C9; font-size: 14px; user-select: none; width: fit-content; margin-top: 24px"
+          style="background-color: #fecccc; font-size: 14px; user-select: none; width: fit-content; margin-top: 16px"
         >
           <span
             @click="postType = 'post'"
@@ -59,9 +64,8 @@
             Diary
           </span>
         </div>
-        <div>
+        <div class="pb-5">
           <PostContentCard 
-            :postType="postType"
             :content="postType === 'post' ? postContent : diaryContent"
           />
         </div>
@@ -82,7 +86,7 @@
               {{ commentCount }}
           </div>
         </div>
-        <div style="padding-left: 20px; font-size: 14px; color:grey">{{ createdAt }}</div>
+        <div style="font-size: 14px; color:grey">{{ createdAt }}</div>
         <v-divider class="my-3"/>
         <!-- 댓글 목록 -->
         <div v-if="isCommentVisible" class="comment-container">
@@ -90,30 +94,29 @@
             :key="index"
             :comment="comment"/>
         </div>
-        <button 
-        v-show="scrollPosition > 0"
-        @click="scrollToTop"
-        style="
-          position: fixed;
-          bottom: 165px;
-          right: 200px;
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          background-color: #fff5f7;
-          color: #020725;
-          border: none;
-          cursor: pointer;
-          font-size: 16px;
-        "
-      >
-        ↑
-     </button>
       </div>
+      <button 
+      v-show="scrollPosition > 300"
+      @click="scrollToTop"
+      style="
+        position: absolute;
+        top: 74%;
+        right: 50%;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #fff5f7;
+        color: #020725;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+      "
+      >
+      ↑
+      </button>
       <v-divider class="my-3"/>
       <!-- 댓글 작성 -->
       <PostCommentInput />
-      
     </div>
   </div>
 </template>
@@ -126,6 +129,7 @@
   import PostPhoto from '@/components/post/PostPhoto.vue';
   import PostLikeIcon from './PostLikeIcon.vue';
   import PostCommentInput from './PostCommentInput.vue';
+  import MenuToggle from './MenuToggle.vue';
   import { ref, onMounted } from 'vue';
 
   const postType = ref('post')
@@ -135,6 +139,8 @@
     name: 'Madara Uchiha',
     avatar: 'https://randomuser.me/api/portraits/men/85.jpg',
   } 
+
+  const postTitle = `제목`
 
   const postContent = `일본 여행때 다녀온 오타루.
     후카이도에 있는 소도시.
@@ -171,7 +177,7 @@
     username: '_one____eno_',
     avatar: 'https://randomuser.me/api/portraits/women/20.jpg',
     text: '맨앞에 반팔셔츠는 공홈에 없나요?',
-    timeAgo: '11시간 전',
+    timeAgo: '2025-04-26T15:00:00+09:00',
     likeCount: 3,
     likedByCurrentUser: false
   },
@@ -180,7 +186,7 @@
     username: 'mmmm.d2',
     avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
     text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
+    timeAgo: '2025-04-28T12:00:00+09:00',
     likeCount: 5,
     likedByCurrentUser: false
   },
@@ -189,125 +195,8 @@
     username: 'mmmm.d2',
     avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
     text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
+    timeAgo: '2025-04-28T12:19:00+09:00',
     likeCount: 4,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 32,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 31,
-    likedByCurrentUser: true
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 21,
-    likedByCurrentUser: true
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 13,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 63,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 23,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 13,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 23,
-    likedByCurrentUser: true
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 38,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 35,
-    likedByCurrentUser: true
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 32,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 33,
-    likedByCurrentUser: false
-  },
-  {
-    id: '3',
-    username: 'mmmm.d2',
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-    text: '여름 셔츠 발매는 언제인가요',
-    timeAgo: '1일 전',
-    likeCount: 53,
     likedByCurrentUser: false
   },
 ]

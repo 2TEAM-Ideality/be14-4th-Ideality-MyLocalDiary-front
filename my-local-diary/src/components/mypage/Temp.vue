@@ -13,6 +13,7 @@
             <v-icon color="black">{{ showCalendar ? 'mdi-magnify' : 'mdi-calendar' }}</v-icon>
         </v-btn>
 
+
         <template v-if="showCalendar">
             <v-date-picker
                 show-adjacent-months
@@ -25,12 +26,15 @@
         </template>
         <template v-else>
             <div class="header">
-                <span class="chart-title">시원님이 만드신거</span>
-            </div>
-            <div class="content-box">
-                <!-- 게시글 등 들어갈 자리 -->
-            </div>
+        <span class="chart-title">
+          게시글 목록
+        </span>
+        </div>
+        <div class="content-box">
+          <PostList/>
+        </div>
         </template>
+
     </v-card>
 
     <div v-if="selectedPostId !== null" class="modal-overlay" @click="selectedPostId = null">
@@ -52,6 +56,7 @@
 
 <script setup>
 import PostCard from '../post/PostCard.vue';
+import PostList from './PostList.vue'
 import { ref } from 'vue'
 import axios from 'axios'
 
@@ -120,6 +125,7 @@ async function handleDateClick(date) {
     align-items: center;
     align-content: center;
 }
+
 
 :deep(.v-picker-title) {
     display: none !important;
