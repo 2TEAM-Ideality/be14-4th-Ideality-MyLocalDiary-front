@@ -8,9 +8,12 @@ import PostCreate from '@/components/post/PostCreate.vue'
 import TestMarker from '@/views/TestMarker.vue';
 import EditProfile from '@/components/mypage/EditProfile.vue'
 import EditAccount from '@/components/mypage/EditAccount.vue';
-
 import TempLoadingModalParent from '@/components/common/TempLoadingModalParent.vue';
 import EditPage from '@/views/mypage/EditPage.vue';
+import ReportManagement from '@/views/admin/ReportManagement.vue';
+import RegulationHistory from '@/views/admin/RegulationHistory.vue';
+import AdminMyPage from '@/views/admin/AdminMyPage.vue';
+
 
 const routes = [
     {
@@ -83,7 +86,24 @@ const routes = [
         path: '/loadingmodal',
         name: 'LoadingModal',
         component: TempLoadingModalParent
-      }
+      },
+
+      // 관리자용 
+      {
+        path: '/admin/reports',
+        name: 'ReportManagement',
+        component: ReportManagement
+      },
+      {
+        path: '/admin/regulations',
+        name: 'RegulationHistory',
+        component: RegulationHistory
+      },
+      {
+        path: '/admin/mypage',
+        name: 'AdminMyPage',
+        component: AdminMyPage
+      },
 ]
 
 const router = createRouter({

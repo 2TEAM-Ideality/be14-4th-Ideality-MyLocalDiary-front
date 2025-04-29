@@ -157,7 +157,7 @@ const editAccount = () => {
 .user-profile {
   width:100%;
   /* max-width: 768px; */
-  margin: 40px auto;
+  margin: 15px auto;
   padding: 32px;
   display: flex;
   align-items: flex-start; 

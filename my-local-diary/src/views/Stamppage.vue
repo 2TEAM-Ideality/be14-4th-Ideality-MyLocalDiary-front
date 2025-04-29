@@ -1,31 +1,38 @@
 <template>
-  <div class="container">
-    <!-- 유저 프로필 -->
-    <div class="left-side">
-      <UserProfile :userData="userStore" 
-        @open-follower="isFollowerModalOpen = true"
-        @open-following="isFollowingModalOpen = true"
-      />
-      <Badge />
-    </div>
-
-    <!-- 스탬프 영역 -->
-    <div class="right-side">
-      <div class="stamps">
-        <CatStampBar
-          v-for="(stamp, index) in paginatedStamps"
-          :key="index"
-          :title="stamp.title"
-          :stampImage="stamp.stampImage"
-          :count="stamp.count"
+  <v-app class="mypage-container">
+    <v-main>
+      <div style="display: flex; height: 100vh;">
+      <!-- 유저 프로필 -->
+      <div
+          class="left-side"
+          style="flex: 6; border-right: 1px solid #E5E7EB; box-shadow: 4px 0 12px -4px rgba(0, 0, 0, 0.1); flex-direction: column;"
+        >
+        <UserProfile :userData="userStore" 
+          @open-follower="isFollowerModalOpen = true"
+          @open-following="isFollowingModalOpen = true"
         />
-        <div class="button-row">
-          <button v-if="currentPage > 0" @click="previousPage" class="prev-button">이전장으로</button>
-          <button v-if="currentPage < totalPages - 1" @click="nextPage" class="next-button">다음장으로 넘기기</button>
+        <Badge />
+      </div>
+
+      <!-- 스탬프 영역 -->
+      <div class="right-side">
+        <div class="stamps">
+          <CatStampBar
+            v-for="(stamp, index) in paginatedStamps"
+            :key="index"
+            :title="stamp.title"
+            :stampImage="stamp.stampImage"
+            :count="stamp.count"
+          />
+          <div class="button-row">
+            <button v-if="currentPage > 0" @click="previousPage" class="prev-button">이전장으로</button>
+            <button v-if="currentPage < totalPages - 1" @click="nextPage" class="next-button">다음장으로 넘기기</button>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
+      </div>
+    </v-main>
+  </v-app>
 
   <Follower
     v-if="isFollowerModalOpen"
@@ -128,26 +135,27 @@ onMounted(async () => {
   padding: 0;
 }
 
-.container {
+.mypage-container {
   display: flex;
   height: 100vh;
   width: 100vw;
   min-width: 100vw;
-  margin: 0;
+  margin-left: 200px;
+  height: 100vh;
+  
 }
 
 .left-side {
-  width: 50%;
+  width:50%;
+  height: 100%;
   display: flex;
   justify-content: flex-start;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 0;
-  margin-top: 0;
-  position: relative;
-  top: -20px;
-  align-self: flex-start;
-  margin-left: 100px;
+  align-items: start;
+  padding-top: 40px;
+  padding-right: 2%;
+  flex-direction: column; /* ✨ 추가 */
+  overflow-y: auto; /* ✨ 추가: 넘치면 내부만 스크롤 */
+
 }
 
 .right-side {

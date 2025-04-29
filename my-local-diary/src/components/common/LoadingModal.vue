@@ -4,7 +4,7 @@
             <p class="date">
                 {{ formattedDate }}
             </p>
-            <p class="text">다이어리 등록중</p>
+            <p class="text">{{ props.message }}</p>
             <l-bouncy size="60" speed="1.75" color="#FF9090" />
         </div>
     </div>
@@ -19,6 +19,11 @@ const props = defineProps({
     today: {
         type: Date,
         required: true
+    },
+    message: {
+        type: String,
+        required: true,
+        default: '로딩중입니다...' 
     }
 })
 

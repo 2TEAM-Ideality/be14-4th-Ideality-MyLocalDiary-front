@@ -49,14 +49,16 @@
 </v-row>
 
   
-              <v-btn block color="yellow" class="text-black font-weight-bold" height="48">
+              <v-btn block color="yellow" class="text-black font-weight-bold" height="48" @click="redirectToKakao">
                 <v-img src="/src/assets/logo/kakao_logo.png" width="40" class="mr-2" />
                 카카오로 로그인
               </v-btn>
   
               <div class="text-center mt-6 text-grey-lighten-1 text-caption">
                 아직 계정이 없으신가요?
-                <a href="#" class="text-white font-weight-bold ml-1">회원가입 하기</a>
+                <a href="#" @click.prevent="showModal = true" class="text-white font-weight-bold ml-1">
+                    회원가입 하기
+                </a>
                 <br>
                 비밀번호를 잊어버리셨나요?
                 <a href="#" class="text-white font-weight-bold ml-1">비밀번호 찾기</a>
@@ -66,11 +68,19 @@
           </v-card>
         </v-col>
       </v-row>
+      <AuthModal v-if="showModal" @close="showModal = false" />
     </v-container>
   </template>
   
   <script setup>
+  import { ref } from 'vue'
+  import AuthModal from '@/components/auth/AuthModal.vue'
+  const showModal = ref(false)
   // Vuetify 설치 및 플러그인 구성 필요
+
+  function redirectToKakao() {
+    window.location.href = 'http://localhost:8080/login/kakao';
+  }
   </script>
   
   <style scoped>

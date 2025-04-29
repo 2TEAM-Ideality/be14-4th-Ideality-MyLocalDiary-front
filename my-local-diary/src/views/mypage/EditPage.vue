@@ -48,12 +48,14 @@ const navigate = (path) => {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100vh;
 }
 
 .wrapper {
   width: 100%;
   display: flex;
   justify-content: center;
+  height: 100vh;
 }
 
 .index-list {
@@ -82,7 +84,7 @@ const navigate = (path) => {
   max-width: 60%;
   background-color: white;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  height: 100vh;
-  overflow-y: auto;
+  height: fit-content;
+  min-height: 100vh;
 }
 </style>
