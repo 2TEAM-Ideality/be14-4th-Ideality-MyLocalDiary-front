@@ -37,7 +37,7 @@
 <script setup>
   import { onMounted, ref } from 'vue';
   import MiniMap from '@/components/mypage/MiniMap.vue';
-  import UserProfile from '@/components/common/UserProfile.vue';
+  import UserProfile from '@/components/common/userprofile.vue';
   import { useUserStore } from '/src/stores/userStore.js';
   import TodayDiary from '@/components/mypage/TodayDiary.vue';
   import Temp from '@/components/mypage/Temp.vue';
