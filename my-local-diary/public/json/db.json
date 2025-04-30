@@ -1292,7 +1292,7 @@
       "report_type": "게시글",
       "reported_id": 1,
       "content": "이 게시글은 부적절한 내용을 포함하고 있습니다.",
-      "status": "처리완료",
+      "status": "RESOLVED",
       "member_id": 3,
       "report_reason_id": "9"
     },
@@ -1302,7 +1302,7 @@
       "report_type": "댓글",
       "reported_id": 5,
       "content": "댓글에 욕설이 포함되어 있습니다.",
-      "status": "반려",
+      "status": "처리중",
       "member_id": 4,
       "report_reason_id": "1"
     },

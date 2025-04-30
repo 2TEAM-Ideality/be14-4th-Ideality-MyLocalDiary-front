@@ -1,10 +1,19 @@
 <template>
   <v-dialog v-model="internalDialog" max-width="500" persistent>
     <v-card class="pa-6 rounded-xl" style="border-radius: 24px;">
+      <v-btn
+        icon
+        size="small"
+        class="close-btn"
+        @click="internalDialog = false"
+      >
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
       <div class="text-center mb-6">
         <img src="/src/assets/logo/My_Local_Diary.png" alt="logo" width="100" class="mb-2" />
         <h2 class="text-h5 font-weight-bold">My local Diary</h2>
       </div>
+     
 
       <v-form>
         <v-text-field label="아이디" variant="outlined" dense class="mb-3" />
@@ -166,8 +175,9 @@ function switchToLogin() {
 }
 .close-btn {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
 }
 .text-green {
   color: #4caf50;

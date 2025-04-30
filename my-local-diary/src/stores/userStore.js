@@ -25,39 +25,57 @@ export const useUserStore = defineStore('user', () => {
     return nickname.value ? `안녕하세요, ${nickname.value}님!` : ''
   })
 
-  async function login(memberData) {
-    id.value = memberData.id
-    loginId.value = memberData.login_id
-    name.value = memberData.name
-    nickname.value = memberData.nickname
-    email.value = memberData.email
-    birth.value = memberData.birth
-    role.value = memberData.role
-    status.value = memberData.status
-    isPublic.value = memberData.is_public === 'TRUE'
-    bio.value = memberData.bio
-    profileImage.value = memberData.profile_image || '/images/profile/defaultProfile.png';
-    profileMusic.value = memberData.profile_music
+  async function login(token) {
+    // 1. 토큰 저장
+    localStorage.setItem("accessToken", token);
 
-    await fetchProfileStats()
+    // try {
+      // 2. 토큰으로 사용자 정보 요청
+      // const response = await axios.get("http://localhost:8080/api/auth/me", {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`
+      //   }
+      // });
 
-    localStorage.setItem('user', JSON.stringify({
-      id: id.value,
-      loginId: loginId.value,
-      name: name.value,
-      nickname: nickname.value,
-      email: email.value,
-      birth: birth.value,
-      role: role.value,
-      status: status.value,
-      isPublic: isPublic.value,
-      bio: bio.value,
-      profileImage: profileImage.value,
-      profileMusic: profileMusic.value
-    }))
+    // const memberData = response.data;
+    
+    // id.value = memberData.id
+    // loginId.value = memberData.login_id
+    // name.value = memberData.name
+    // nickname.value = memberData.nickname
+    // email.value = memberData.email
+    // birth.value = memberData.birth
+    // role.value = memberData.role
+    // status.value = memberData.status
+    // isPublic.value = memberData.is_public === 'TRUE'
+    // bio.value = memberData.bio
+    // profileImage.value = memberData.profile_image || '/images/profile/defaultProfile.png';
+    // profileMusic.value = memberData.profile_music
+
+    // await fetchProfileStats()
+
+    // localStorage.setItem('user', JSON.stringify({
+    //   id: id.value,
+    //   loginId: loginId.value,
+    //   name: name.value,
+    //   nickname: nickname.value,
+    //   email: email.value,
+    //   birth: birth.value,
+    //   role: role.value,
+    //   status: status.value,
+    //   isPublic: isPublic.value,
+    //   bio: bio.value,
+    //   profileImage: profileImage.value,
+    //   profileMusic: profileMusic.value
+    // }))
+  // }catch (error) {
+  //   console.error("사용자 정보 조회 실패:", error);
+  //   throw error;
+  // }
   }
 
   function logout() {
+    // 1. 상태 초기화
     id.value = null
     loginId.value = ''
     name.value = ''
@@ -73,9 +91,12 @@ export const useUserStore = defineStore('user', () => {
     followers.value = 0
     following.value = 0
     posts.value = 0
-
+  
+    // 2. localStorage 정리
     localStorage.removeItem('user')
+    localStorage.removeItem('accessToken')  // 토큰 없애기 
   }
+  
 
   async function fetchProfileStats() {
     if (!id.value) {
