@@ -28,16 +28,16 @@ const routes = [
         // },
         component: Landingpage, // 처음 화면을 랜딩페이지로 보이게 하려면 이거!
       },
-    {
-      path: '/mypage',
-      name: 'Mypage',
-      component: Mypage,
-    },
-    {
-      path: '/map-home',
-      name: 'MapHome',
-      component : MapHome
-    },
+      {
+        path: '/mypage',
+        name: 'Mypage',
+        component: Mypage,
+      },
+      {
+        path: '/map-home',
+        name: 'MapHome',
+        component : MapHome
+      },
       {
         path: '/home',
         name: 'MapHome',
@@ -49,10 +49,12 @@ const routes = [
         component : TestMarker
       },
       {
-        path: '/mypage',
+        path: '/mypage/:id',      
         name: 'Mypage',
         component: Mypage,
+        props: true
       },
+      
       {
         path: '/edit',
         component: EditPage,  // EditPage 내부에서 분기
@@ -68,9 +70,10 @@ const routes = [
         ]
       },
       {
-        path: '/stamp',
+        path: '/stamp/:id',      
         name: 'Stamp',
         component: StampPage,
+        props: true
       },
       {
         path: '/user-map-home',

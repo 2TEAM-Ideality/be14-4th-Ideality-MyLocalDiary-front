@@ -146,28 +146,43 @@ import axios from 'axios'
 import SearchUserModal from '../search/SearchUserModal.vue'
 
 const router = useRouter()
-const drawer = ref(true)
+
 const ui = useUIStore()
 const userStore = useUserStore()
+console.log(userStore.$id)
+console.log(userStore.token)
+const drawer = ref(true)
 const showMoreMenu = ref(false)
 const searchPanelOpen = ref(false)
 
 const isAlarmOpen = ref(false)
 const notificationList = ref([])
 
-const isAdmin = ref(false)  // 관리자 테스트용
+const isAdmin = ref(userStore.isAdmin)  // 관리자 테스트용
 
 
 onMounted(async () => {
-  await userStore.restoreUser()
+  // await userStore.restoreUser()
   isAdmin.value = userStore.role === 'ADMIN'
   fetchNotifications()
 })
 
 const goToHome = () => router.push('/home')
-const goToMypage = () => router.push('/mypage')
+const goToMypage = () => {
+  if (userStore.id) {
+    router.push(`/mypage/${userStore.id}`)
+  } else {
+    console.warn('로그인된 사용자 ID가 없습니다.')
+  }
+}
 const goToCreateDiary = () => router.push('/post/create')
-const goToStamp = () => router.push('/stamp')
+const goToStamp = () => {
+  if (userStore.id) {
+    router.push(`/stamp/${userStore.id}`)
+  } else {
+    console.warn('로그인된 사용자 ID가 없습니다.')
+  }
+}
 
 const unreadCount = computed(() =>
   notificationList.value.filter(n => !n.isRead).length
@@ -216,10 +231,27 @@ const openUserSearch = () => searchPanelOpen.value = !searchPanelOpen.value
 const goToSettings = () => router.push('/settings')
 const goToActivities = () => router.push('/activities')
 const reportProblem = () => console.log('문제 신고 창 열기')
-const confirmLogout = () => {
-  if (confirm('정말 로그아웃 하시겠습니까?')) {
-    localStorage.removeItem('accessToken')
-    router.push('/')
+
+// 로그아웃
+async function confirmLogout() {
+  // if (!accessToken) {
+  //   console.warn('⚠️ 토큰 없음 → 바로 로그아웃');
+  //   userStore.logout();
+  //   router.push('/');
+  //   return;
+  // }
+  console.log('logout accessToken:', userStore.token);
+  try {
+    await axios.post('http://localhost:8080/api/member/logout', null, {
+      headers: {
+        Authorization: `Bearer ${userStore.token}`
+      }
+    });
+
+    userStore.logout(); // 상태 초기화
+    router.push('/');
+  } catch (err) {
+    console.error('❌ 로그아웃 실패', err);
   }
 }
 
