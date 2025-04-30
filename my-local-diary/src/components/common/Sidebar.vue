@@ -149,7 +149,8 @@ const router = useRouter()
 
 const ui = useUIStore()
 const userStore = useUserStore()
-
+console.log(userStore.$id)
+console.log(userStore.token)
 const drawer = ref(true)
 const showMoreMenu = ref(false)
 const searchPanelOpen = ref(false)
@@ -161,7 +162,7 @@ const isAdmin = ref(userStore.isAdmin)  // 관리자 테스트용
 
 
 onMounted(async () => {
-  await userStore.restoreUser()
+  // await userStore.restoreUser()
   isAdmin.value = userStore.role === 'ADMIN'
   fetchNotifications()
 })
@@ -232,33 +233,27 @@ const goToActivities = () => router.push('/activities')
 const reportProblem = () => console.log('문제 신고 창 열기')
 
 // 로그아웃
-const confirmLogout = async () => {
-  const accessToken = localStorage.getItem('accessToken');
-
-  if (!accessToken) {
-    console.warn('⚠️ 토큰 없음 → 로그아웃 스킵');
-    userStore.logout();
-    router.push('/');
-    return;
-  }
-
+async function confirmLogout() {
+  // if (!accessToken) {
+  //   console.warn('⚠️ 토큰 없음 → 바로 로그아웃');
+  //   userStore.logout();
+  //   router.push('/');
+  //   return;
+  // }
+  console.log('logout accessToken:', userStore.token);
   try {
-    const res = await axios.post('http://localhost:8080/api/member/logout', null, {
+    await axios.post('http://localhost:8080/api/member/logout', null, {
       headers: {
-        Authorization: `Bearer ${accessToken}`
+        Authorization: `Bearer ${userStore.token}`
       }
     });
-    console.log(res.data)
-    userStore.logout();
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+
+    userStore.logout(); // 상태 초기화
     router.push('/');
   } catch (err) {
-    console.error('❌ 로그아웃 실패', err.response?.data || err.message);
+    console.error('❌ 로그아웃 실패', err);
   }
-};
-
-
+}
 
 const goToRegulationHistory = () => router.push('/admin/regulations')
 const goToReportHistory = () => router.push('/admin/reports')

@@ -45,10 +45,10 @@
               </v-btn>
   
               <v-row class="align-center my-4">
-  <v-col><v-divider color="white" thickness="1"></v-divider></v-col>
-  <span class="text-grey-lighten-1 px-4">또는</span>
-  <v-col><v-divider color="white" thickness="1"></v-divider></v-col>
-</v-row>
+                <v-col><v-divider color="white" thickness="1"></v-divider></v-col>
+                <span class="text-grey-lighten-1 px-4">또는</span>
+                <v-col><v-divider color="white" thickness="1"></v-divider></v-col>
+              </v-row>
 
   
               <v-btn block color="yellow" class="text-black font-weight-bold" height="48" @click="redirectToKakao">
@@ -93,6 +93,7 @@
   // 
   onMounted(async () => {
     const token = localStorage.getItem('accessToken');
+    
     if (token) {
       try {
         await userStore.login(token);

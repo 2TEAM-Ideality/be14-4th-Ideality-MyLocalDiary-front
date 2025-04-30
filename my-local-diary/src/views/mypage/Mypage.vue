@@ -6,7 +6,7 @@
           class="left-side"
           style="flex: 6; border-right: 1px solid #E5E7EB; box-shadow: 4px 0 12px -4px rgba(0, 0, 0, 0.1); flex-direction: column;"
         >
-          <UserProfile  :userData="userStore" />
+          <UserProfile :userData="userStore" />
 
           <div class="mini-map">
             <router-link to="/user-map-home" class="mini-map-link">지도에서 보기 →</router-link>
@@ -38,9 +38,16 @@
   import { onMounted, ref } from 'vue';
   import MiniMap from '@/components/mypage/MiniMap.vue';
   import UserProfile from '@/components/common/userprofile.vue';
-  import { useUserStore } from '/src/stores/userStore.js';
+  import { useUserStore } from '@/stores/userStore.js';
   import TodayDiary from '@/components/mypage/TodayDiary.vue';
   import Temp from '@/components/mypage/Temp.vue';
+  import { useRoute } from 'vue-router'
+
+  const route = useRoute()
+  const currentPage = route.params.id;
+  console.log(currentPage)
+
+  
 
   const userStore = useUserStore();
 

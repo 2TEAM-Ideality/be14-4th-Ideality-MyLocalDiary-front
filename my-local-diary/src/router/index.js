@@ -28,16 +28,16 @@ const routes = [
         // },
         component: Landingpage, // 처음 화면을 랜딩페이지로 보이게 하려면 이거!
       },
-    {
-      path: '/mypage',
-      name: 'Mypage',
-      component: Mypage,
-    },
-    {
-      path: '/map-home',
-      name: 'MapHome',
-      component : MapHome
-    },
+      {
+        path: '/mypage',
+        name: 'Mypage',
+        component: Mypage,
+      },
+      {
+        path: '/map-home',
+        name: 'MapHome',
+        component : MapHome
+      },
       {
         path: '/home',
         name: 'MapHome',

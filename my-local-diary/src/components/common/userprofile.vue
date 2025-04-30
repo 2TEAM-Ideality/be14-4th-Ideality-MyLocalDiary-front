@@ -61,7 +61,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRouter }from 'vue-router';
+import { useRouter, useRoute }from 'vue-router';
 import { useUserStore } from '@/stores/userStore'
 import { waveform } from 'ldrs'
 import axios from 'axios'
@@ -93,6 +93,9 @@ const handleFollow = async () => {
   }
 }
 
+// TODO. isMine 으로 내 프로필 or 남의 프로필 비교 
+
+
 
 const props = defineProps({
   userData: {
@@ -100,9 +103,15 @@ const props = defineProps({
     required: true
   }
 })
+
+const route = useRoute()
+const currentParam = route.params.id;
+console.log(currentParam)
+
 const router = useRouter();
 const userStore = useUserStore()
-const isMyProfile = computed(() => false)
+
+const isMyProfile = computed(() =>  Number(currentParam) === userStore.id)
 
 const audioPlayer = ref(null)
 const isPlaying = ref(false)

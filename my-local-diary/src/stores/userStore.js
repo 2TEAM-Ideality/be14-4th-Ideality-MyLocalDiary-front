@@ -6,6 +6,7 @@ import axios from 'axios';
 export const useUserStore = defineStore('user', () => {
   // ✅ state
   const id = ref(null)
+  const token = ref(null)
   const loginId = ref('')
   const name = ref('')
   const nickname = ref('')
@@ -22,6 +23,7 @@ export const useUserStore = defineStore('user', () => {
   const posts = ref(0)
 
   const isLoggedIn = computed(() => !!id.value)
+
   const welcomeMessage = computed(() => {
     return nickname.value ? `안녕하세요, ${nickname.value}님!` : ''
   })
@@ -31,8 +33,9 @@ export const useUserStore = defineStore('user', () => {
 
 
     // 1. 액세스 토큰, 리프레시 토큰 저장
-    localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
+    token.value = accessToken;
+    console.log(token.value)
 
     try {
       // 2. 토큰으로 사용자 정보 요청
@@ -109,9 +112,8 @@ export const useUserStore = defineStore('user', () => {
     posts.value = 0
   
     // 2. localStorage 정리
-    localStorage.removeItem('user')
-    localStorage.removeItem('accessToken')  // 토큰 없애기 
-    localStorage.removeItem('refreshToken')  // 토큰 없애기 
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
   }
   
 
@@ -167,6 +169,7 @@ export const useUserStore = defineStore('user', () => {
 
   return {
     id,
+    token,
     loginId,
     name,
     nickname,
