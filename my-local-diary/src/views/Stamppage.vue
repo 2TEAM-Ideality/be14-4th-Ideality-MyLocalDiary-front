@@ -1,38 +1,31 @@
 <template>
-  <v-app class="mypage-container">
-    <v-main>
-      <div style="display: flex; height: 100vh;">
-      <!-- 유저 프로필 -->
-      <div
-          class="left-side"
-          style="flex: 6; border-right: 1px solid #E5E7EB; box-shadow: 4px 0 12px -4px rgba(0, 0, 0, 0.1); flex-direction: column;"
-        >
-          <UserProfile :userData="userStore" 
-            @open-follower="isFollowerModalOpen = true"
-            @open-following="isFollowingModalOpen = true"
-          />
-        <Badge />
-      </div>
+  <div class="container">
+    <!-- 유저 프로필 -->
+    <div class="left-side">
+      <UserProfile :userData="userStore" 
+        @open-follower="isFollowerModalOpen = true"
+        @open-following="isFollowingModalOpen = true"
+      />
+      <Badge />
+    </div>
 
-      <!-- 스탬프 영역 -->
-      <div class="right-side">
-        <div class="stamps">
-          <CatStampBar
-            v-for="(stamp, index) in paginatedStamps"
-            :key="index"
-            :title="stamp.title"
-            :stampImage="stamp.stampImage"
-            :count="stamp.count"
-          />
-          <div class="button-row">
-            <button v-if="currentPage > 0" @click="previousPage" class="prev-button">이전장으로</button>
-            <button v-if="currentPage < totalPages - 1" @click="nextPage" class="next-button">다음장으로 넘기기</button>
-          </div>
+    <!-- 스탬프 영역 -->
+    <div class="right-side">
+      <div class="stamps">
+        <CatStampBar
+          v-for="(stamp, index) in paginatedStamps"
+          :key="index"
+          :title="stamp.title"
+          :stampImage="stamp.stampImage"
+          :count="stamp.count"
+        />
+        <div class="button-row">
+          <button v-if="currentPage > 0" @click="previousPage" class="prev-button">이전장으로</button>
+          <button v-if="currentPage < totalPages - 1" @click="nextPage" class="next-button">다음장으로 넘기기</button>
         </div>
       </div>
-      </div>
-    </v-main>
-  </v-app>
+    </div>
+  </div>
 
   <Follower
     v-if="isFollowerModalOpen"
@@ -48,7 +41,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import CatStampBar from '/src/components/stamp/stamp.vue';
-import UserProfile from '/src/components/common/userprofile.vue';
+import UserProfile from '/src/components/common/UserProfile.vue';
 import { useUserStore } from '/src/stores/userStore.js';
 import Badge from '/src/components/stamp/badge.vue';
 import Follower from '/src/components/follow/Follower.vue';
@@ -135,46 +128,42 @@ onMounted(async () => {
   padding: 0;
 }
 
-.mypage-container {
+.container {
   display: flex;
   height: 100vh;
   width: 100vw;
   min-width: 100vw;
-  margin-left: 200px;
-  height: 100vh;
-  
+  margin: 0;
 }
 
 .left-side {
-  width:50%;
-  height: 100%;
+  width: 50%;
   display: flex;
   justify-content: flex-start;
-  align-items: start;
-  padding-top: 40px;
-  padding-right: 2%;
-  flex-direction: column; /* ✨ 추가 */
-  overflow-y: auto; /* ✨ 추가: 넘치면 내부만 스크롤 */
-
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0;
+  margin-top: 0;
+  position: relative;
+  top: -20px;
+  align-self: flex-start;
+  margin-left: 100px;
 }
 
 .right-side {
   width: 50%;
-  height: 100%;
+  background-color: #fff5f7;
+  padding: 20px;
+  overflow-y: auto;
   display: flex;
-  background-color: yellow;
   flex-direction: column;
-  padding: 40px 4% 40px 4%;
-  /* gap: 10px; */
-  /* box-sizing: border-box; */
-  /* justify-content: space-around; */
+  align-items: center;
+  justify-content: center;
 }
-
 
 .stamps {
   padding-top: 20px;
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
