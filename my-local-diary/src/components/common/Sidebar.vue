@@ -129,8 +129,8 @@
   <SearchUserModal
   v-if="searchPanelOpen"
   class="search-user-modal"
-  :style="{ left: ui.isHover ? '200px' : '80px' }"
-  @close="searchPanelOpen = false"
+   :style="{ left: '0px' }"
+  @close="handleSearchClose"
   />
 
 </template>
@@ -184,6 +184,18 @@ const goToStamp = () => {
   }
 }
 
+const handleSearchClose = () => {
+  console.log('🔴 SearchUserModal 닫힘');
+  searchPanelOpen.value = false;
+
+  // 약간의 지연을 줘야 렌더 타이밍 문제 피할 수 있음
+  setTimeout(() => {
+    drawer.value = true;
+    console.log('✅ drawer 다시 열림');
+  }, 50);
+}
+
+
 const unreadCount = computed(() =>
   notificationList.value.filter(n => !n.isRead).length
 )
@@ -228,7 +240,11 @@ const splitContent = (content) => {
   return match ? [match[1], `님${match[2]}`] : ['알 수 없음', content]
 }
 
-const openUserSearch = () => searchPanelOpen.value = !searchPanelOpen.value
+const openUserSearch = () => {
+  drawer.value = false // 사이드바 닫기
+  searchPanelOpen.value = true
+}
+
 const goToSettings = () => router.push('/settings')
 const goToActivities = () => router.push('/activities')
 const reportProblem = () => console.log('문제 신고 창 열기')
