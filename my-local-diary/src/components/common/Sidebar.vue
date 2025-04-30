@@ -167,9 +167,21 @@ onMounted(async () => {
 })
 
 const goToHome = () => router.push('/home')
-const goToMypage = () => router.push('/mypage')
+const goToMypage = () => {
+  if (userStore.id) {
+    router.push(`/mypage/${userStore.id}`)
+  } else {
+    console.warn('로그인된 사용자 ID가 없습니다.')
+  }
+}
 const goToCreateDiary = () => router.push('/post/create')
-const goToStamp = () => router.push('/stamp')
+const goToStamp = () => {
+  if (userStore.id) {
+    router.push(`/stamp/${userStore.id}`)
+  } else {
+    console.warn('로그인된 사용자 ID가 없습니다.')
+  }
+}
 
 const unreadCount = computed(() =>
   notificationList.value.filter(n => !n.isRead).length

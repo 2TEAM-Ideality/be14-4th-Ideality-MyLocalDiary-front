@@ -49,10 +49,12 @@ const routes = [
         component : TestMarker
       },
       {
-        path: '/mypage',
+        path: '/mypage/:id',      
         name: 'Mypage',
         component: Mypage,
+        props: true
       },
+      
       {
         path: '/edit',
         component: EditPage,  // EditPage 내부에서 분기
@@ -68,9 +70,10 @@ const routes = [
         ]
       },
       {
-        path: '/stamp',
+        path: '/stamp/:id',      
         name: 'Stamp',
         component: StampPage,
+        props: true
       },
       {
         path: '/user-map-home',
