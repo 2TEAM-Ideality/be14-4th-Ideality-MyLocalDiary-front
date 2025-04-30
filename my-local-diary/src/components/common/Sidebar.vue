@@ -190,7 +190,7 @@ const unreadCount = computed(() =>
 
 const fetchNotifications = async () => {
   try {
-    const token = localStorage.getItem('accessToken')
+    const token = userStore.token      
     const res = await axios.get('http://localhost:8080/api/notifications', {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -206,6 +206,7 @@ const fetchNotifications = async () => {
         targetId: noti.targetId
       }
     })
+    console.log('알람읽어옴');
   } catch (error) {
     console.error('알림 불러오기 실패:', error)
   }

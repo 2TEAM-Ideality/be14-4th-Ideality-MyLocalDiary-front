@@ -1,26 +1,19 @@
-<template>
-  <div></div> <!-- UI 요소는 없어도 됨 -->
-</template>
 <script setup>
 import { watch } from 'vue'
 import { onBeforeUnmount } from 'vue'
 import { useUserStore } from '@/stores/userStore'
+import { useNotificationStore } from '@/stores/notificationStore' // 추가
 
 const userStore = useUserStore()
+const notificationStore = useNotificationStore() // store 인스턴스
+
 let eventSource = null
 
 watch(
   () => userStore.token,
   (token) => {
-    if (!token) {
-      console.warn('⏳ accessToken 없음. SSE 연결 대기 중')
-      return
-    }
-
-    if (eventSource) {
-      console.log('⚠️ SSE 이미 연결됨')
-      return
-    }
+    if (!token) return
+    if (eventSource) return
 
     console.log('📡 SSE 연결 시도...')
     eventSource = new EventSource(`http://localhost:8080/api/follow/stream?token=${token}`)
@@ -30,7 +23,10 @@ watch(
     })
 
     eventSource.addEventListener('follow', (event) => {
-      console.log('🔔 팔로우 알림 도착:', event.data)
+      const noti = JSON.parse(event.data) // ← 백엔드에서 보낸 Notification 객체
+      console.log('🔔 팔로우 알림 도착:', noti)
+
++     notificationStore.addNotification(noti) // 🟢 알림 store에 추가!
     })
 
     eventSource.onerror = (error) => {
@@ -49,7 +45,3 @@ onBeforeUnmount(() => {
   }
 })
 </script>
-
-<style scoped>
-/* 스타일은 필요 없으면 비워두자 */
-</style>
