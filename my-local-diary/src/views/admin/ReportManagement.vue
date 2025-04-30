@@ -19,7 +19,7 @@
     
 
     <!-- 테이블 -->
-    <div class="table-container">
+    <div  v-if="reports.length > 0" class="table-container">
       <table class="report-table" v-if="pagedReports.length">
         <thead>
           <tr>
@@ -35,11 +35,12 @@
           </tr>
         </thead>
         <tbody>
+          
           <tr v-for="report in pagedReports" :key="report.id">
             <td>{{ report.id }}</td>
             <td>{{ report.createdAt }}</td>
             <td>{{ report.reportType }}</td>
-            <td>{{ report.reportReasonId }}</td>
+            <td>{{ report.reportedId }}</td>
             <td>
               <button class="detail-button" @click="openContentModal(report.content)">자세히보기</button>
             </td>
@@ -85,7 +86,9 @@
       </table>
 
       <div v-else>
-        <LoadingModal />
+        <div style="padding: 5%;">
+          해당 상태의 신고 내역이 없습니다.
+        </div>
       </div>
     </div>
 
@@ -167,6 +170,7 @@ export default {
       currentPage: 1,
       pageSize: 10,
       selectedStatus: 'ALL', 
+      
       // 신고 처리 확인 모달 
       showConfirmModal: false,
       confirmAction: null,
@@ -208,15 +212,6 @@ export default {
       this.selectedStatus = status;
       this.currentPage = 1; // 필터 바꿀 때 페이지도 1로 초기화
     },
-
-    // async fetchReportReasons() {
-    //   try {
-    //     const response = await axios.get('http://localhost:3001/report_reasons');
-    //     this.reportReasons = response.data;
-    //   } catch (error) {
-    //     console.error('Failed to fetch report reasons', error);
-    //   }
-    // },
     openContentModal(content) {
       this.selectedContent = content;
       this.showContentModal = true;
@@ -247,22 +242,14 @@ export default {
     async confirmStatusChange() {
       const report = this.confirmTargetReport;
       const status = this.confirmAction;
-      if(report.reportType == "MEMBER"){
-        const memberId = report.reportedId;
-        console.log(memberId)
-      }else if(report.reportType == "POST"){
-
-      }
-
-      
-
+      console.log(report)
+      console.log(status)
       try {
         if (status === 'RESOLVED') {
           await axios.patch(`/api/admin/report/${report.id}/resolve`);
         } else if (status === 'REJECTED') {
           await axios.patch(`/api/admin/report/${report.id}/reject`);
         }
-
         report.status = status;
         this.closeConfirmModal();
       } catch (error) {

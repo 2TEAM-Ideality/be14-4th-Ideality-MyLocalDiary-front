@@ -131,37 +131,73 @@
   import PostCommentInput from './PostCommentInput.vue';
   import MenuToggle from './MenuToggle.vue';
   import { ref, onMounted } from 'vue';
+  import axios from 'axios';
 
   const props = defineProps({
     postId: Number
   })
 
+  const postId=props.postId;
+  const memberId=1;
+
+  const author=ref({});
+  const postTitle=ref('')
+  const postContent=ref('')
+  const diaryContent=ref('')
+  const createdAt=ref('')
+  const photoList=ref([])
+
+  // const photoList = [
+  //   { id: 1, url: 'https://randomuser.me/api/portraits/men/2.jpg', orders: 1, post_id: 10 },
+  //   { id: 2, url: 'https://img.news-wa.com/img/upload/2024/09/10/NWC_20240910205105.png', orders: 2, post_id: 10 },
+  //   { id: 3, url: 'https://photo.newsen.com/news_photo/2023/08/02/202308021551233510_1.jpg', orders: 3, post_id: 10 },
+  //   { id: 4, url: 'https://i.namu.wiki/i/uJdm1UUvAU1I3_zo4zC-FBg5t4tA6kT-FQ9HiFbPs7fMl7pacQfaSXlkTZla69iuwCx0vwwTlulboMyPPTpb5g.webp', orders:4, post_id:10}
+  // ]
+
+  const postData=ref(null);
+  onMounted(async ()=>{
+    await fetchPostDetail()
+    loadMore()
+  })
+
+  const fetchPostDetail=async ()=>{
+    try{
+      const res=await axios.get(`/api/posts/my/${postId}`,{
+        params: { memberId }
+      })
+      postData.value=res.data
+      initializeFromResponse(postData.value)
+    }catch(err){
+      console.error(`Failed to fetch post detail`, err)
+    }
+  }
+
+  
+
+  const initializeFromResponse=(data)=>{
+    author.value={
+      name: data.nickname,
+      avatar: data.profileImage,
+    }
+    postTitle.value = data.title
+    postContent.value=data.post
+    diaryContent.value=data.diary
+    createdAt.value=data.createdAt
+    photoList.value=data.photos.map(photo => ({
+      id: photo.id,
+      url: photo.url,
+      orders: photo.orders,
+      post_id: data.postId
+    }))
+  }
+
 
 
   const postType = ref('post')
 
-  // 예시 데이터 (props로 바꿔도 되고 API로 받아도 됨)
-  const author = {
-    name: 'Madara Uchiha',
-    avatar: 'https://randomuser.me/api/portraits/men/85.jpg',
-  } 
-
-  const postTitle = `제목`
-
-  const postContent = `일본 여행때 다녀온 오타루.
-    후카이도에 있는 소도시.
-    샤프르에서 JR 열차로 한시간 거리.
-    오타루 운하가 유명합니다.
-    오타루 운하는 낮에도 예쁘고 밤에도 예쁨
-    유명한 맛집들이 많지는 않습니다.`
-
-  const diaryContent = `다 좋았는데 여자친구랑 대판 싸움
-    아직도 내가 뭘 잘못했는지 모르겠음. 개빡침`
-
   // 좋아요 날짜 부분도 컴포넌트로 빼자
   const postLikeCount = ref(777)
   const postLikedByCurrentUser = ref(false)
-  const createdAt = '2025년 4월 25일'
 
   const handleTogglePostLike = () => {
     if (postLikedByCurrentUser.value) {
@@ -253,13 +289,6 @@
       el.scrollTop = 0  // 스크롤을 맨 위로 이동
     }
   }
-
-  const photoList = [
-    { id: 1, url: 'https://randomuser.me/api/portraits/men/2.jpg', orders: 1, post_id: 10 },
-    { id: 2, url: 'https://img.news-wa.com/img/upload/2024/09/10/NWC_20240910205105.png', orders: 2, post_id: 10 },
-    { id: 3, url: 'https://photo.newsen.com/news_photo/2023/08/02/202308021551233510_1.jpg', orders: 3, post_id: 10 },
-    { id: 4, url: 'https://i.namu.wiki/i/uJdm1UUvAU1I3_zo4zC-FBg5t4tA6kT-FQ9HiFbPs7fMl7pacQfaSXlkTZla69iuwCx0vwwTlulboMyPPTpb5g.webp', orders:4, post_id:10}
-  ]
 </script>
 
 <style scoped>

@@ -8,15 +8,6 @@ import 'swiper/css/pagination';
 
 import '@mdi/font/css/materialdesignicons.css'  // 아이콘
 
-// main.js 또는 App.vue의 setup이나 onMounted 등에서
-
-
-// localStorage.removeItem('accessToken'); // 먼저 제거<< 브라우저에 남아있는 경우 허다하다!! 무조건 먼저 제거!!!
-// if (!localStorage.getItem('accessToken')) {
-//   localStorage.setItem('accessToken', TEMP_TOKEN);
-// }
-
-
 // ⭐ Naver Maps API 스크립트 동적 로딩
 const loadNaverMapsScript = () => {
   return new Promise((resolve, reject) => {

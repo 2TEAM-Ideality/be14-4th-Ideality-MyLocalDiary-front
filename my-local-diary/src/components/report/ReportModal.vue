@@ -48,6 +48,8 @@ const props = defineProps({
   }
 })
 
+
+
 // 내부용 dialog 상태
 const internalDialog = ref(props.modelValue)
 
@@ -63,8 +65,10 @@ watch(internalDialog, (newVal) => {
 
 const reason = ref('')
 
+// 신고 신청
 const submitReport = () => {
   console.log('신고 내용:', reason.value)
+  
   reason.value = ''
   internalDialog.value = false
   emit('close')

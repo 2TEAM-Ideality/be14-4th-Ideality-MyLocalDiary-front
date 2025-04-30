@@ -45,10 +45,10 @@
               </v-btn>
   
               <v-row class="align-center my-4">
-  <v-col><v-divider color="white" thickness="1"></v-divider></v-col>
-  <span class="text-grey-lighten-1 px-4">또는</span>
-  <v-col><v-divider color="white" thickness="1"></v-divider></v-col>
-</v-row>
+                <v-col><v-divider color="white" thickness="1"></v-divider></v-col>
+                <span class="text-grey-lighten-1 px-4">또는</span>
+                <v-col><v-divider color="white" thickness="1"></v-divider></v-col>
+              </v-row>
 
   
               <v-btn block color="yellow" class="text-black font-weight-bold" height="48" @click="redirectToKakao">
@@ -92,27 +92,20 @@
 
   // 
   onMounted(async () => {
-    const token = localStorage.getItem('accessToken')
+    const token = localStorage.getItem('accessToken');
+    
     if (token) {
       try {
-        // //서버에 토큰으로 사용자 정보 요청
-        // const res = await axios.get('', {
-        //   headers: {
-        //     Authorization: `Bearer ${token}`
-        //   }
-        // })
-
-        // ✅ 사용자 정보 Pinia에 저장
-        await userStore.login(token)
-
-        // ✅ 자동으로 홈으로 이동
-        router.push('/home')
-      } catch (e) {
-        console.warn('❌ 토큰 유효하지 않음 → 로그인 필요')
-        localStorage.removeItem('accessToken')
+        await userStore.login(token);
+        router.push('/home');
+      } catch (err) {
+        console.warn("⛔ 유효하지 않은 토큰, 자동 로그인 실패");
+        userStore.logout();
+        router.push('/');
       }
     }
-  })
+  });
+
 
   // 로그인 처리 
   function redirectToKakao() {
@@ -131,11 +124,15 @@
           'Content-Type': 'application/json'
         }
       });
+      console.log('로그인 성공', response.data)
 
-      const token = response.data.data.accessToken;
-      console.log('✅ JWT Token 확인 테스트:', token);
+      const accessToken = response.data.data.accessToken;
+      const refreshToken = response.data.data.refreshToken;
 
-      await userStore.login(token); 
+      console.log('✅ JWT Token 확인 테스트:', accessToken);
+      console.log('✅ Refresh Token 확인 테스트:', refreshToken);
+
+      await userStore.login(accessToken, refreshToken); 
 
       router.push('/home');  // 메인 홈으로 이동
 
