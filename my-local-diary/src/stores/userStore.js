@@ -1,6 +1,7 @@
 // src/stores/userStore.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import axios from 'axios';
 
 export const useUserStore = defineStore('user', () => {
   // ✅ state
@@ -25,53 +26,68 @@ export const useUserStore = defineStore('user', () => {
     return nickname.value ? `안녕하세요, ${nickname.value}님!` : ''
   })
 
-  async function login(token) {
-    // 1. 토큰 저장
-    localStorage.setItem("accessToken", token);
+  async function login(accessToken, refreshToken) {
+    console.log('로그인하러 넘어 옴')
 
-    // try {
+
+    // 1. 액세스 토큰, 리프레시 토큰 저장
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+
+    try {
       // 2. 토큰으로 사용자 정보 요청
-      // const response = await axios.get("http://localhost:8080/api/auth/me", {
-      //   headers: {
-      //     Authorization: `Bearer ${token}`
-      //   }
-      // });
+      console.log('사용자 정보 요청');
+      const response = await axios.get('http://localhost:8080/api/member/info', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
 
-    // const memberData = response.data;
-    
-    // id.value = memberData.id
-    // loginId.value = memberData.login_id
-    // name.value = memberData.name
-    // nickname.value = memberData.nickname
-    // email.value = memberData.email
-    // birth.value = memberData.birth
-    // role.value = memberData.role
-    // status.value = memberData.status
-    // isPublic.value = memberData.is_public === 'TRUE'
-    // bio.value = memberData.bio
-    // profileImage.value = memberData.profile_image || '/images/profile/defaultProfile.png';
-    // profileMusic.value = memberData.profile_music
+      console.log("✅ 전체 응답 확인", response);
+      console.log("✅ 데이터 확인", response.data);
 
-    // await fetchProfileStats()
+      const memberData = response.data.data;
+      console.log("👤 memberData", memberData);
 
-    // localStorage.setItem('user', JSON.stringify({
-    //   id: id.value,
-    //   loginId: loginId.value,
-    //   name: name.value,
-    //   nickname: nickname.value,
-    //   email: email.value,
-    //   birth: birth.value,
-    //   role: role.value,
-    //   status: status.value,
-    //   isPublic: isPublic.value,
-    //   bio: bio.value,
-    //   profileImage: profileImage.value,
-    //   profileMusic: profileMusic.value
-    // }))
-  // }catch (error) {
-  //   console.error("사용자 정보 조회 실패:", error);
-  //   throw error;
-  // }
+      // 상태 갱신 주석 해제
+      id.value = memberData.memberId;
+      loginId.value = memberData.loginId;
+      name.value = memberData.name;
+      nickname.value = memberData.nickname;
+      email.value = memberData.email;
+      birth.value = ''; // 생일 없음
+      role.value = memberData.role;
+      status.value = memberData.status;
+      isPublic.value = memberData.isPublic;
+      bio.value = memberData.bio;
+      profileImage.value = memberData.profileImage || '/images/profile/defaultProfile.png';
+      profileMusic.value = memberData.profileMusic;
+
+      await fetchProfileStats();
+
+      localStorage.setItem('user', JSON.stringify({
+        id: id.value,
+        loginId: loginId.value,
+        name: name.value,
+        nickname: nickname.value,
+        email: email.value,
+        birth: birth.value,
+        role: role.value,
+        status: status.value,
+        isPublic: isPublic.value,
+        bio: bio.value,
+        profileImage: profileImage.value,
+        profileMusic: profileMusic.value
+      }));
+    } catch (error) {
+      console.error("❌ 사용자 정보 조회 실패:", error);
+      if (error.response) {
+        console.error("❗ 응답 상태:", error.response.status);
+        console.error("❗ 응답 데이터:", error.response.data);
+      } else {
+        console.error("❗ 응답 없음 또는 네트워크 에러:", error.message);
+      }
+    }
   }
 
   function logout() {
@@ -95,6 +111,7 @@ export const useUserStore = defineStore('user', () => {
     // 2. localStorage 정리
     localStorage.removeItem('user')
     localStorage.removeItem('accessToken')  // 토큰 없애기 
+    localStorage.removeItem('refreshToken')  // 토큰 없애기 
   }
   
 
@@ -125,6 +142,7 @@ export const useUserStore = defineStore('user', () => {
   }
   async function restoreUser() {
     const savedUser = localStorage.getItem('user');
+    
     if (savedUser) {
       const user = JSON.parse(savedUser);
   
@@ -142,23 +160,8 @@ export const useUserStore = defineStore('user', () => {
       profileMusic.value = user.profileMusic;
   
       await fetchProfileStats();
-    } else {
-      id.value = '5';
-      loginId.value = 'test05';
-      name.value = '사륜안';
-      nickname.value = 'Madara Uchiha';
-      email.value = 'test05@example.com';
-      birth.value = '1995-02-11';
-      role.value = 'MEMBER';
-      status.value = 'ACTIVE';
-      isPublic.value = true;
-      bio.value = '소도시의 숨은 매력을 발굴하는 여행 에디터.';
-      // profileImage.value = '/images/profile/profile.png';
-      profileImage.value ='https://my-local-diary-prod.s3.ap-northeast-2.amazonaws.com/member/profile_images/445a50e3-8d7f-4997-949f-fa3fc1ca1741_image%20(2).webp';
-      profileMusic.value = 'https://rococo-cocada-2c23e0.netlify.app/audio/잔나비 (JANNABI) - 주저하는 연인들을 위해.mp3';
-  
-      await fetchProfileStats();
     }
+
   }
   
 

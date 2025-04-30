@@ -146,16 +146,18 @@ import axios from 'axios'
 import SearchUserModal from '../search/SearchUserModal.vue'
 
 const router = useRouter()
-const drawer = ref(true)
+
 const ui = useUIStore()
 const userStore = useUserStore()
+
+const drawer = ref(true)
 const showMoreMenu = ref(false)
 const searchPanelOpen = ref(false)
 
 const isAlarmOpen = ref(false)
 const notificationList = ref([])
 
-const isAdmin = ref(false)  // 관리자 테스트용
+const isAdmin = ref(userStore.isAdmin)  // 관리자 테스트용
 
 
 onMounted(async () => {
@@ -216,12 +218,35 @@ const openUserSearch = () => searchPanelOpen.value = !searchPanelOpen.value
 const goToSettings = () => router.push('/settings')
 const goToActivities = () => router.push('/activities')
 const reportProblem = () => console.log('문제 신고 창 열기')
-const confirmLogout = () => {
-  if (confirm('정말 로그아웃 하시겠습니까?')) {
-    localStorage.removeItem('accessToken')
-    router.push('/')
+
+// 로그아웃
+const confirmLogout = async () => {
+  const accessToken = localStorage.getItem('accessToken');
+
+  if (!accessToken) {
+    console.warn('⚠️ 토큰 없음 → 로그아웃 스킵');
+    userStore.logout();
+    router.push('/');
+    return;
   }
-}
+
+  try {
+    const res = await axios.post('http://localhost:8080/api/member/logout', null, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    console.log(res.data)
+    userStore.logout();
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    router.push('/');
+  } catch (err) {
+    console.error('❌ 로그아웃 실패', err.response?.data || err.message);
+  }
+};
+
+
 
 const goToRegulationHistory = () => router.push('/admin/regulations')
 const goToReportHistory = () => router.push('/admin/reports')
