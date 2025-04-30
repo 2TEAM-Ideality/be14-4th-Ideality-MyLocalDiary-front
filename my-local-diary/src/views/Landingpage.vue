@@ -19,6 +19,7 @@
 
               <v-text-field
                 label="아이디"
+                v-model="inputId"
                 variant="filled"
                 color="white"
                 class="mb-4"
@@ -29,6 +30,7 @@
   
               <v-text-field
                 label="비밀번호"
+                v-model="inputPw"
                 type="password"
                 variant="filled"
                 color="white"
@@ -38,7 +40,7 @@
                 style="background-color: #333; color:white;"
               ></v-text-field>
   
-              <v-btn block color="white" class="text-black font-weight-bold mb-6" height="48">
+              <v-btn  @click="login" block color="white" class="text-black font-weight-bold mb-6" height="48">
                 로그인
               </v-btn>
   
@@ -73,17 +75,80 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
+  import axios from 'axios';
+  import { useRouter } from 'vue-router';
   import AuthModal from '@/components/auth/AuthModal.vue'
-  const showModal = ref(false)
-  // Vuetify 설치 및 플러그인 구성 필요
+  import { useUserStore } from '@/stores/userStore'
+  
+  const userStore = useUserStore();
 
+  const showModal = ref(false)
+
+  const router = useRouter();
+
+  const inputId = ref("");
+  const inputPw = ref("");
+
+  // 
+  onMounted(async () => {
+    const token = localStorage.getItem('accessToken')
+    if (token) {
+      try {
+        // // 👉 서버에 토큰으로 사용자 정보 요청 (예시: /api/auth/me)
+        // const res = await axios.get('http://localhost:8080/api/auth/me', {
+        //   headers: {
+        //     Authorization: `Bearer ${token}`
+        //   }
+        // })
+
+        // ✅ 사용자 정보 Pinia에 저장
+        // await userStore.login(token)
+
+        // ✅ 자동으로 홈으로 이동
+        router.push('/home')
+      } catch (e) {
+        console.warn('❌ 토큰 유효하지 않음 → 로그인 필요')
+        localStorage.removeItem('accessToken')
+      }
+    }
+  })
+
+  // 로그인 처리 
   function redirectToKakao() {
     window.location.href = 'http://localhost:8080/login/kakao';
+  }
+
+  async function login()  {
+    try {
+      console.log(inputId.value, inputPw.value)
+
+      const response = await axios.post('http://localhost:8080/api/auth/login', {
+        loginId: inputId.value,
+        password: inputPw.value 
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const token = response.data.data.accessToken;
+      console.log('✅ JWT Token 확인 테스트:', token);
+
+      await userStore.login(token); 
+
+      router.push('/home');  // 메인 홈으로 이동
+
+    } catch (error) {
+      if (error.response) {
+        console.error('에러 응답:', error.response.data);
+      } else {
+        console.error('요청 실패:', error.message);
+      }
+    }
   }
   </script>
   
   <style scoped>
-  /* 추가적인 커스터마이징은 여기에 */
   </style>
   
