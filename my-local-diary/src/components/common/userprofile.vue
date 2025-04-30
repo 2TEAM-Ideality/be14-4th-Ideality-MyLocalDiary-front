@@ -90,7 +90,7 @@ const musicTitle = computed(() => {
 })
 
 // 본인 프로필인지 여부
-const isMyProfile = props.isMine
+const isMyProfile = computed(() => props.isMine)
 
 // LDRS 로딩 이펙트 등록
 waveform.register()
@@ -145,6 +145,7 @@ watch(() => props.userData.profileMusic, (newVal) => {
       })
   }
 })
+
 
 // 프로필 수정 이동
 const editProfile = () => router.push('/edit/profile')
