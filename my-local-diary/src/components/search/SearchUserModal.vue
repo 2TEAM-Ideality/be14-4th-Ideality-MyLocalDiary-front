@@ -37,8 +37,8 @@
                             <div class="name-icon">
                                 <span class="user-name">{{ user.name }}</span>
                                 <!-- 공개 계정이면 user.icon 출력 -->
-                                <v-icon v-if="user.icon && user.is_public" size="16" class="ml-1">
-                                    {{ user.icon }}
+                                <v-icon v-if="user.is_public" size="16" class="ml-1">
+                                    mdi-web
                                 </v-icon>
 
                                 <!-- 비공개 계정이면 잠금 아이콘 출력 -->
@@ -90,33 +90,58 @@ const statusClass = (followStatus) => {
 
 // ✅ 팔로우 버튼 클릭 처리
 async function handleClick(user) {
-    try {
-        const res = await fetch('http://localhost:8080/api/follow', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                followingMemberId: userId,
-                followTargetMemberId: user.id,
-                status: user.is_public ? true : false
-            })
-        });
+  if (user.followStatus === 'wait') return; // 수락 대기는 비활성화 상태
 
-        if (!res.ok) throw new Error('팔로우 실패');
+  try {
+    if (user.followStatus === 'following') {
+      // 👉 언팔로우 요청 (DELETE)
+      const res = await fetch(`http://localhost:8080/api/follow`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userStore.token}`
+        },
+        body: JSON.stringify({
+          followingMemberId: userStore.id,
+          followTargetMemberId: user.id
+        })
+      });
 
-        if (user.is_public) {
-            user.followStatus = 'following';
-            user.statusText = '팔로잉';
-        } else {
-            user.followStatus = 'wait';
-            user.statusText = '수락 대기';
-        }
-    } catch (err) {
-        console.error('팔로우 요청 실패:', err);
+      if (!res.ok) throw new Error('언팔로우 실패');
+
+      // 🔄 UI 반영
+      user.followStatus = null;
+      user.statusText = '팔로우';
+    } else {
+      // 👉 팔로우 요청 (POST)
+      const res = await fetch(`http://localhost:8080/api/follow`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userStore.token}`
+        },
+        body: JSON.stringify({
+          followingMemberId: userStore.id,
+          followTargetMemberId: user.id,
+          status: user.is_public ? true : false
+        })
+      });
+
+      if (!res.ok) throw new Error('팔로우 실패');
+
+      if (user.is_public) {
+        user.followStatus = 'following';
+        user.statusText = '팔로잉';
+      } else {
+        user.followStatus = 'wait';
+        user.statusText = '수락 대기';
+      }
     }
+  } catch (err) {
+    console.error('팔로우/언팔로우 요청 실패:', err);
+  }
 }
+
 
 // ✅ 실서버에서 유저 검색 및 follow 상태 받아오기
 async function fetchSearchResults() {
