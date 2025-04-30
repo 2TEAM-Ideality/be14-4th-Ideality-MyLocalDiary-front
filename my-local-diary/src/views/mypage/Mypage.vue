@@ -9,7 +9,7 @@
           <UserProfile
             v-if="profileUserData"
             :userData="profileUserData"
-            :isMyProfile="isMyProfile"
+            :isMine="isMine"
           />
 
           <div class="mini-map">
