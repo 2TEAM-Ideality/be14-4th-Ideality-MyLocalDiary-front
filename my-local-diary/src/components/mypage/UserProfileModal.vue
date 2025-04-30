@@ -180,6 +180,8 @@
   background-color: #2C2C2C;
   border-radius: 8px;
   color: white;
+  width: fit-content !important;
+  float:right;
 }
 
 .stats {

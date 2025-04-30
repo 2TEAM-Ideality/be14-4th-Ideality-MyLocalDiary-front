@@ -116,7 +116,7 @@ async function handleDateClick(date) {
     display: flex;
     flex-direction: column;
     padding: 24px;
-    height: 100%;
+    height:100%;
 }
 
 .floating-toggle {
@@ -131,7 +131,11 @@ async function handleDateClick(date) {
 
 .calendar {
     width: 100%;
-    height: 100%;
+    height: auto; /* ✨ auto로 바꿔 */
+    /* min-height: 500px; */
+    /*min-height: 400px;*/
+     /* ✨ 너무 줄어들지 않게 최소 높이 보장 */
+    box-sizing: border-box;
 }
 
 .content-box {
