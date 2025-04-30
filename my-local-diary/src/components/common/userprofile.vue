@@ -98,10 +98,8 @@ const handleFollow = async () => {
 
 
 const props = defineProps({
-  userData: {
-    type: Object,
-    required: true
-  }
+  userData: Object,
+  isMine: Boolean
 })
 
 const route = useRoute()
@@ -111,7 +109,8 @@ console.log(currentParam)
 const router = useRouter();
 const userStore = useUserStore()
 
-const isMyProfile = computed(() =>  Number(currentParam) === userStore.id)
+// const isMyProfile = computed(() =>  Number(currentParam) === userStore.id)
+const isMyProfile = props.isMine;
 
 const audioPlayer = ref(null)
 const isPlaying = ref(false)

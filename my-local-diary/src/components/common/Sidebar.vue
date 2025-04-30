@@ -17,15 +17,22 @@
               v-if="!ui.isHover"
               src="/src/assets/cursor/슈크림붕어빵1.png"
               width="40"
+              height="40"
+              aspect-ratio="1"
             />
             <transition name="fade">
-              <v-img
-                v-if="ui.showImage"
-                src="/src/assets/logo/My_Local_Diary.png"
-              />
+              <div v-if="ui.showImage">
+                <v-img
+                  src="/src/assets/logo/My_Local_Diary.png"
+                  width="120"
+                  height="40"
+                  aspect-ratio="3"
+                />
+              </div>
             </transition>
           </div>
         </v-list-item>
+
 
         <!-- ✨ 메뉴 항목 -->
         <template v-if="!isAdmin">
@@ -162,7 +169,7 @@ const isAdmin = ref(userStore.isAdmin)  // 관리자 테스트용
 
 
 onMounted(async () => {
-  // await userStore.restoreUser()
+  await userStore.restoreUser()
   isAdmin.value = userStore.role === 'ADMIN'
   fetchNotifications()
 })
@@ -190,7 +197,7 @@ const unreadCount = computed(() =>
 
 const fetchNotifications = async () => {
   try {
-    const token = localStorage.getItem('accessToken')
+    const token = userStore.token;
     const res = await axios.get('http://localhost:8080/api/notifications', {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -234,12 +241,6 @@ const reportProblem = () => console.log('문제 신고 창 열기')
 
 // 로그아웃
 async function confirmLogout() {
-  // if (!accessToken) {
-  //   console.warn('⚠️ 토큰 없음 → 바로 로그아웃');
-  //   userStore.logout();
-  //   router.push('/');
-  //   return;
-  // }
   console.log('logout accessToken:', userStore.token);
   try {
     await axios.post('http://localhost:8080/api/member/logout', null, {
