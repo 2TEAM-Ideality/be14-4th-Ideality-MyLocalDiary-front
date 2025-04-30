@@ -20,24 +20,35 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import { useNotificationStore } from '@/stores/notificationStore' // ✅ 추가
+import { useNotificationStore } from '@/stores/notificationStore'
+import { useUserStore } from '@/stores/userStore'
 
 const props = defineProps({ isOpen: Boolean })
 const emit = defineEmits(['close'])
 const router = useRouter()
-const notificationStore = useNotificationStore() // ✅ 알림 store 연결
+const notificationStore = useNotificationStore()
+const userStore = useUserStore()
+
+// ✅ 알림창 열릴 때 알림 목록 불러오기
+watch(() => props.isOpen, async (newVal) => {
+  if (newVal) {
+    console.log('🔔 알림창 열림, 알림 불러오는 중...')
+    await notificationStore.fetchNotifications(userStore.token)
+    console.log('📬 알림 목록:', notificationStore.notifications)
+  }
+})
 
 const handleNotificationClick = async (id, targetId) => {
   try {
-    const token = localStorage.getItem('access_token')
+    const token = userStore.token
     await axios.patch(`http://localhost:8080/api/notifications/${id}/read`, {}, {
       headers: { Authorization: `Bearer ${token}` }
     })
 
-    notificationStore.markAsRead(id) // ✅ 읽음 상태 변경
+    notificationStore.markAsRead(id)
     router.push(`/profile/${targetId}`)
     emit('close')
   } catch (error) {
