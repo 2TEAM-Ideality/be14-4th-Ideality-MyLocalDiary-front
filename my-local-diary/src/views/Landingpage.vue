@@ -95,15 +95,15 @@
     const token = localStorage.getItem('accessToken')
     if (token) {
       try {
-        // // 👉 서버에 토큰으로 사용자 정보 요청 (예시: /api/auth/me)
-        // const res = await axios.get('http://localhost:8080/api/auth/me', {
+        // //서버에 토큰으로 사용자 정보 요청
+        // const res = await axios.get('', {
         //   headers: {
         //     Authorization: `Bearer ${token}`
         //   }
         // })
 
         // ✅ 사용자 정보 Pinia에 저장
-        // await userStore.login(token)
+        await userStore.login(token)
 
         // ✅ 자동으로 홈으로 이동
         router.push('/home')
