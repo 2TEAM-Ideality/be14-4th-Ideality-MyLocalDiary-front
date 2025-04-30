@@ -1,41 +1,51 @@
 <template>
   <div></div> <!-- UI 요소는 없어도 됨 -->
 </template>
-
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue'
+import { watch } from 'vue'
+import { onBeforeUnmount } from 'vue'
+import { useUserStore } from '@/stores/userStore'
 
+const userStore = useUserStore()
 let eventSource = null
 
-onMounted(() => {
-  const token = localStorage.getItem('accessToken') // ✅ localStorage에서 토큰 가져오기
+watch(
+  () => userStore.token,
+  (token) => {
+    if (!token) {
+      console.warn('⏳ accessToken 없음. SSE 연결 대기 중')
+      return
+    }
 
-  if (!token) {
-    console.error('❌ accessToken이 없습니다. SSE 연결 불가')
-    return
-  }
+    if (eventSource) {
+      console.log('⚠️ SSE 이미 연결됨')
+      return
+    }
 
-  eventSource = new EventSource(`http://localhost:8080/api/follow/stream?token=${token}`)
+    console.log('📡 SSE 연결 시도...')
+    eventSource = new EventSource(`http://localhost:8080/api/follow/stream?token=${token}`)
 
-  eventSource.addEventListener('connect', (event) => {
-    console.log('✅ SSE 연결 성공:', event.data)
-  })
+    eventSource.addEventListener('connect', (event) => {
+      console.log('✅ SSE 연결 성공:', event.data)
+    })
 
-  eventSource.addEventListener('follow', (event) => {
-    console.log('🔔 팔로우 알림 도착:', event.data)
-    // 👉 필요시 이곳에서 UI로 알림 띄우기
-  })
+    eventSource.addEventListener('follow', (event) => {
+      console.log('🔔 팔로우 알림 도착:', event.data)
+    })
 
-  eventSource.onerror = (error) => {
-    console.error('❌ SSE 연결 에러:', error)
-    eventSource.close()
-  }
-})
+    eventSource.onerror = (error) => {
+      console.error('❌ SSE 연결 에러:', error)
+      eventSource.close()
+      eventSource = null
+    }
+  },
+  { immediate: true }
+)
 
 onBeforeUnmount(() => {
   if (eventSource) {
     eventSource.close()
-    console.log('SSE 연결 종료')
+    console.log('👋 SSE 연결 종료')
   }
 })
 </script>
