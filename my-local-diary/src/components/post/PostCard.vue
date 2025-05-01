@@ -36,11 +36,12 @@
   
         <!-- 게시글 제목 -->
         <div class="pt-2">
-          {{ postTitle }}
+          <h3>{{ postTitle }}</h3>
         </div>
         <!-- 게시글 내용 -->
         <!-- post/diary 타입 선택 -->
         <div
+          v-if="isMine"
           class="d-inline-flex align-center rounded-pill px-3 py-1 mb-2"
           style="background-color: #fecccc; font-size: 14px; user-select: none; width: fit-content; margin-top: 16px"
         >
@@ -65,7 +66,7 @@
           </span>
         </div>
         <div class="pb-5">
-          <PostContentCard 
+          <PostContentCard
             :content="postType === 'post' ? postContent : diaryContent"
           />
         </div>
@@ -142,6 +143,7 @@
   const memberId=props.memberId;
 
   const author=ref({});
+  const writerId=ref()
   const postTitle=ref('')
   const postContent=ref('')
   const diaryContent=ref('')
@@ -149,6 +151,7 @@
   const photoList=ref([])
   const postLikeCount = ref()
   const postLikedByCurrentUser = ref(false)
+  const isMine=ref()
 
   // const photoList = [
   //   { id: 1, url: 'https://randomuser.me/api/portraits/men/2.jpg', orders: 1, post_id: 10 },
@@ -186,6 +189,7 @@
     postContent.value=data.post
     diaryContent.value=data.diary
     createdAt.value=data.createdAt
+    writerId.value=data.memberId
     postLikeCount.value=data.postLikeCount
     photoList.value=data.photos.map(photo => ({
       id: photo.id,
@@ -193,6 +197,11 @@
       orders: photo.orders,
       post_id: data.postId
     }))
+    if(memberId===writerId.value){
+      isMine.value=true
+    }else{
+      isMine.value=false
+    }
   }
 
 
