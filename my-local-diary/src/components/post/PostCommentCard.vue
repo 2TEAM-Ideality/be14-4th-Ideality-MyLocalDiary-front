@@ -8,7 +8,7 @@
                         <v-img :src="comment.avatar" alt="Avatar" />
                     </v-avatar>
                     <div class="ml-2 flex-grow-1">
-                        <!-- 닉네임, 작성시간 -->
+                        <!-- 닉네임, 작성시간(닉네임 클릭하면 대상 프로필로 이동?) --> 
                         <div class="d-flex" style="gap: 20px">
                             <div class="font-weight-medium text-body-2">{{ comment.username }}</div>
                             <div class="text-body-2 text-grey">{{ dayjs(comment.timeAgo).fromNow() }}</div>

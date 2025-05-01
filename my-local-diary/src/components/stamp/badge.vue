@@ -25,7 +25,7 @@
   
   <script setup>
   import { ref, onMounted } from 'vue';
-  import { useUserStore } from '/src/stores/userStore';
+  import { useUserStore } from '@/stores/userStore';
   
   const userStore = useUserStore();
   const badges = ref([]);
@@ -51,13 +51,13 @@
   };
   
   const getBadgeImage = (name) => {
-    return `/src/assets/badge/${name}뱃지.png`; 
+    return `/images/badge/${name}뱃지.png`; 
   };
   
   const fetchBadges = async () => {
     try {
       const pageMemberId = Number(userStore.id);
-      const res = await fetch(`http://localhost:8080/api/badge?memberId=${pageMemberId}`);
+      const res = await fetch(`/api/badge?memberId=${pageMemberId}`);
       badges.value = await res.json();
     } catch (error) {
       console.error('❌ 뱃지 불러오기 실패:', error);

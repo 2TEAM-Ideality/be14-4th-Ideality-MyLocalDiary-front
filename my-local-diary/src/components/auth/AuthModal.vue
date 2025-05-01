@@ -10,7 +10,7 @@
         <v-icon>mdi-close</v-icon>
       </v-btn>
       <div class="text-center mb-6">
-        <img src="/src/assets/logo/My_Local_Diary.png" alt="logo" width="100" class="mb-2" />
+        <img src="/images/logo/My_Local_Diary.png" alt="logo" width="100" class="mb-2" />
         <h2 class="text-h5 font-weight-bold">My local Diary</h2>
       </div>
 
@@ -171,7 +171,7 @@ watch(loginId, (newId) => {
   if (!newId) return
   loginIdTimer = setTimeout(async () => {
     try {
-      const res = await axios.get('http://localhost:8080/api/auth/check-loginId', {
+      const res = await axios.get('/api/auth/check-loginId', {
         params: { loginId: newId }
       })
       isLoginIdAvailable.value = res.data.data.available
@@ -187,7 +187,7 @@ watch(nickname, (newName) => {
   if (!newName) return
   nicknameTimer = setTimeout(async () => {
     try {
-      const res = await axios.get('http://localhost:8080/api/auth/check-nickname', {
+      const res = await axios.get('/api/auth/check-nickname', {
         params: { nickname: newName }
       })
       isNicknameAvailable.value = res.data.data.available
@@ -214,7 +214,7 @@ async function sendEmailVerification() {
   }
 
   try {
-    const res = await axios.post("http://localhost:8080/api/auth/email-verification-code", {
+    const res = await axios.post("/api/auth/email-verification-code", {
       email: email.value
     }, {
       headers: { 'Content-Type': 'application/json' }
@@ -242,7 +242,7 @@ async function sendVerificationCode() {
   }
 
   try {
-    const res = await axios.post("http://localhost:8080/api/auth/email-verification", {
+    const res = await axios.post("/api/auth/email-verification", {
       email: email.value,
       verificationCode: verifyCode.value
     }, {
@@ -289,7 +289,7 @@ const isFormValid = computed(() => {
 
 async function signup() {
   try {
-    const res = await axios.post("http://localhost:8080/api/auth/signup", {
+    const res = await axios.post("/api/auth/signup", {
       loginId: loginId.value,
       email: email.value,
       password: password.value,

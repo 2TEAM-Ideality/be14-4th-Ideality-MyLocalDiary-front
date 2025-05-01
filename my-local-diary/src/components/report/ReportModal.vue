@@ -87,7 +87,7 @@ const submitReport = async () => {
       reportReasonId: 2
     }
 
-    await axios.post('http://localhost:8080/api/admin/report/create', payload)
+    await axios.post('/api/admin/report/create', payload)
     alert('신고가 접수되었습니다.')
     
     reason.value = ''

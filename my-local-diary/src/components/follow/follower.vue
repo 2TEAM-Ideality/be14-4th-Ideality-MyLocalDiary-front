@@ -11,7 +11,7 @@
             placeholder="검색"
             class="search-input"
           />
-          <img src="@/assets/sidebar/Search.png" alt="검색" class="search-img-icon" />
+          <img src="/images/sidebar/Search.png" alt="검색" class="search-img-icon" />
         </div>
   
         <!-- 유저 리스트 스크롤 영역 -->
@@ -67,7 +67,7 @@
   // 🔥 서버에서 팔로워 정보 가져오기
   const fetchFollowers = async () => {
     try {
-      const res = await axios.get('http://localhost:8080/api/mypage/follow/list/follower', {
+      const res = await axios.get('/api/mypage/follow/list/follower', {
         params: { memberId: props.memberId }
       })
   

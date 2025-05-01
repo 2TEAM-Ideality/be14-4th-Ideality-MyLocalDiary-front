@@ -50,7 +50,7 @@ import { useUserStore } from '@/stores/userStore.js';
 import { useRoute } from 'vue-router'
 import axios from 'axios';
 import CatStampBar from '@/components/stamp/stamp.vue';
-import UserProfile from '@/components/common/userprofile.vue';
+import UserProfile from '@/components/common/UserProfile.vue';
 import Badge from '@/components/stamp/badge.vue';
 import LoadingModal from '@/components/common/LoadingModal.vue';
 
@@ -66,12 +66,12 @@ const isLoading = ref(true);
 
 const stampsPerPage = 4;
 const BASE_STAMPS = [
-  { title: '카페냥', stampImage: '/src/assets/stamp_pic/카페냥.png' },
-  { title: '산책냥', stampImage: '/src/assets/stamp_pic/산책냥.png' },
-  { title: '꽐라냥', stampImage: '/src/assets/stamp_pic/꽐라냥.png' },
-  { title: '독서냥', stampImage: '/src/assets/stamp_pic/독서냥.png' },
-  { title: '맛집냥', stampImage: '/src/assets/stamp_pic/맛집냥.png' },
-  { title: '영화냥', stampImage: '/src/assets/stamp_pic/영화냥.png' }
+  { title: '카페냥', stampImage: '/images/stamp_pic/카페냥.png' },
+  { title: '산책냥', stampImage: '/images/stamp_pic/산책냥.png' },
+  { title: '꽐라냥', stampImage: '/images/stamp_pic/꽐라냥.png' },
+  { title: '독서냥', stampImage: '/images/stamp_pic/독서냥.png' },
+  { title: '맛집냥', stampImage: '/images/stamp_pic/맛집냥.png' },
+  { title: '영화냥', stampImage: '/images/stamp_pic/영화냥.png' }
 ];
 
 // 현재 URL 유저 ID
@@ -109,7 +109,7 @@ const fetchUserProfile = async () => {
         posts: userStore.posts
       };
     } else {
-      const res = await axios.get(`http://localhost:8080/api/member/${routeUserId.value}`, {
+      const res = await axios.get(`/api/member/${routeUserId.value}`, {
         headers: {
           Authorization: `Bearer ${userStore.token}`
         }
@@ -127,7 +127,7 @@ const fetchStampCounts = async () => {
 
   try {
     const pageMemberId = Number(userStore.id);
-    const res = await fetch(`http://localhost:8080/api/stamp?memberId=${pageMemberId}`);
+    const res = await fetch(`/api/stamp?memberId=${pageMemberId}`);
     const memberStamps = await res.json();
 
     // BASE_STAMPS 기준으로 갯수 매칭

@@ -74,7 +74,7 @@ const formatDate = (date) => {
 
 onMounted(async () => {
     try{
-        const response=await axios.get('http://localhost:8080/api/posts/calendar',{params:{memberId:1}});
+        const response=await axios.get('/api/posts/calendar',{params:{memberId:1}});
         const data=response.data.data;
         data.forEach(post=>{
             const date=post.createdAt?.slice(0,10);
