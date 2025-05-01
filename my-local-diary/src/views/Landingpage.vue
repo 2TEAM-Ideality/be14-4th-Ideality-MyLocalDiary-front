@@ -91,15 +91,19 @@
   const inputPw = ref("");
   const isRestoring = ref(false);
   
-  onMounted(async () => {
-    // const token = localStorage.getItem('accessToken');
-    await userStore.restoreUser();
-    isRestoring.value = true;
-    if (userStore.isLoggedIn) {
-      router.push('/home');
-    }
-  });
 
+  onMounted(async () => {
+    try {
+      await userStore.restoreUser()
+      if (userStore.isLoggedIn) {
+        router.push('/home')
+      }
+    } catch (e) {
+      console.error('복원 중 오류:', e)
+    } finally {
+      isRestoring.value = false
+    }
+  })
 
   // 로그인 처리 
   function redirectToKakao() {
