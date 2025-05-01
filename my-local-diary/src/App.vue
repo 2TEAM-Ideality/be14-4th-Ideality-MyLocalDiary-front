@@ -31,10 +31,10 @@ watch(() => userStore.forcedLogout, (val) => {
 
 onMounted(() => {
   setInterval(async () => {
-    if (!store.token) return
+    if (!userStore.token) return
 
     try {
-      const decoded = decodeJwt(store.token)
+      const decoded = decodeJwt(userStore.token)
       const now = Math.floor(Date.now() / 1000)
       const remaining = decoded.exp - now
 
