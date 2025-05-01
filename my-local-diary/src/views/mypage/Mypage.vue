@@ -1,6 +1,8 @@
 <template>
   <v-app class="mypage-container">
-    <v-main>
+    <LoadingModal v-if="isLoading" :today="new Date()" message="프로필 불러오는 중..." />
+
+    <v-main v-if="!isLoading">
       <div style="display: flex; height: 100vh;">
         <div
           class="left-side"
@@ -10,14 +12,30 @@
             v-if="profileUserData"
             :userData="profileUserData"
             :isMine="isMine"
+            @open-follower="isFollowerModalOpen = true"
+            @open-following="isFollowingModalOpen = true"
           />
 
           <div class="mini-map">
             <router-link to="/user-map-home" class="mini-map-link">지도에서 보기 →</router-link>
-            <MiniMap/>
+            <MiniMap
+              :memberId="routeUserId"
+              width="100%"
+              height="300px"
+              @post-selected="(id) => selectedPostId = id"
+            />
           </div>
         </div>
-       
+        <!-- 게시글 모달 -->
+        <div v-if="selectedPostId !== null" class="modal-overlay" @click="selectedPostId = null">
+          <div class="modal-content" @click.stop>
+            <div class="d-flex justify-end">
+              <button class="pr-3 pl-3" @click="selectedPostId = null">X</button>
+            </div>
+            <PostCard :postId="selectedPostId" />
+          </div>
+        </div>
+            
        
         <div class="right-side">
           <div class="right-upper">
@@ -42,26 +60,33 @@
   import { onMounted, ref, computed , watch } from 'vue';
   import { useRoute } from 'vue-router'
   import { useUserStore } from '@/stores/userStore.js';
-  import axios from 'axios'
+  import axios from 'axios';
 
   import MiniMap from '@/components/mypage/MiniMap.vue';
   import UserProfile from '@/components/common/userprofile.vue';
   import TodayDiary from '@/components/mypage/TodayDiary.vue';
   import Temp from '@/components/mypage/Temp.vue';
+  import LoadingModal from '@/components/common/LoadingModal.vue'; 
+  import PostCard from '@/components/post/PostCard.vue' 
+
 
   const userStore = useUserStore();
-  const route = useRoute()
+  const route = useRoute();
 
-  const profileUserData = ref(null);   // 다른 사람 또는 내 정보
-  const routeUserId = computed(() => Number(route.params.id));
+  const profileUserData = ref(null);
+  const isFollowerModalOpen = ref(false);
+  const isFollowingModalOpen = ref(false);
+  const isLoading = ref(true); // 로딩 상태
+  const selectedPostId = ref(null) // 선택된 게시글 ID
+
+
+  const routeUserId = computed(() => {
+    return route.params.id ? Number(route.params.id) : userStore.id;
+  });
   const isMine = computed(() => routeUserId.value === userStore.id);
 
-
-  // 다른 유저일 경우 백엔드에서 fetch
   const fetchUserProfile = async () => {
     if (isMine.value) {
-      console.log("로그인한 유저의 정보 가져오기")
-
       profileUserData.value = {
         id: userStore.id,
         loginId: userStore.loginId,
@@ -79,18 +104,12 @@
         posts: userStore.posts
       };
     } else {
-     console.log('다른 유의의 정보 가져오기')
-      console.log(userStore.token)
       try {
-        console.log("🔍 요청 대상 ID:", routeUserId.value);
-        console.log("🔍 현재 로그인한 내 ID:", userStore.id)
-        console.log("🟡 isMine:", isMine.value)
         const res = await axios.get(`http://localhost:8080/api/member/${routeUserId.value}`, {
           headers: {
             Authorization: `Bearer ${userStore.token}`
           }
         });
-        console.log(res.data)
         profileUserData.value = res.data.data;
       } catch (err) {
         console.error('❌ 유저 정보 조회 실패:', err);
@@ -98,16 +117,21 @@
     }
   };
 
-
   onMounted(async () => {
-    await userStore.restoreUser(); // Pinia 상태 복구
-    console.log(userStore.token)
-    await fetchUserProfile(); // 데이터 로딩
+    isLoading.value = true; // ✅ 시작
+    await userStore.restoreUser();
+    await fetchUserProfile();
+    isLoading.value = false; // ✅ 종료
   });
 
-  // 라우터가 바뀌는 경우에도 유저 다시 가져오기
-  watch(() => route.params.id, fetchUserProfile);
+  // 라우터 변경 시에도 리패치
+  watch(() => route.params.id, async () => {
+    isLoading.value = true;
+    await fetchUserProfile();
+    isLoading.value = false;
+  });
 </script>
+
 
 <style scoped>
 .mypage-container {
@@ -180,6 +204,25 @@
   padding: 0 30px;
   display:flex;
   flex-direction: column;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  max-width: 90%;
+  max-height: 80%;
+  overflow-y: auto;
 }
 
 

@@ -5,11 +5,12 @@
         <div class="image-container" style="position: relative; display: inline-flex;">
           <img
             ref="imageEl"
-            v-if="visible"
             :src="currentImage?.url"
             class="display-image"
             style="object-fit: contain;"
             @load="onImageLoad"
+            @error="handleImageError"
+            v-show="visible"
           />
           <div
             class="nav-zone left"
@@ -59,6 +60,7 @@
     },
   })
 
+  console.log(props.images)
   const currentIndex = ref(0)
   const currentImage = computed(() => props.images[currentIndex.value])
 
@@ -100,6 +102,12 @@
       img.style.width = 'auto'
     }
     visible.value = true
+  }
+
+
+  const handleImageError = () => {
+    console.error('이미지 로딩 실패:', currentImage?.url);
+    visible.value = false;
   }
 </script>
 

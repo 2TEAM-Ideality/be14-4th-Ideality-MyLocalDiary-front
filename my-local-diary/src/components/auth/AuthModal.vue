@@ -13,7 +13,6 @@
         <img src="/src/assets/logo/My_Local_Diary.png" alt="logo" width="100" class="mb-2" />
         <h2 class="text-h5 font-weight-bold">My local Diary</h2>
       </div>
-     
 
       <v-form>
         <v-text-field label="아이디" variant="outlined" dense class="mb-3" />
