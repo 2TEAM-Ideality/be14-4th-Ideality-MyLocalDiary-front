@@ -70,6 +70,7 @@ export const useUserStore = defineStore('user', () => {
       await fetchProfileStats();
 
       localStorage.setItem('user', JSON.stringify({
+        token: token.value,   // 액세스 토큰
         id: id.value,
         loginId: loginId.value,
         name: name.value,
@@ -115,6 +116,7 @@ export const useUserStore = defineStore('user', () => {
     // 2. localStorage 정리
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
+    localStorage.removeItem('access_token'); // ✅ 이거 꼭!
   }
   
 
@@ -148,7 +150,8 @@ export const useUserStore = defineStore('user', () => {
     
     if (savedUser) {
       const user = JSON.parse(savedUser);
-  
+      
+      token.value = user.token;
       id.value = user.id;
       loginId.value = user.loginId;
       name.value = user.name;

@@ -1,45 +1,47 @@
-<template>
-  <div></div> <!-- UI 요소는 없어도 됨 -->
-</template>
-
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue'
+import { watch } from 'vue'
+import { onBeforeUnmount } from 'vue'
+import { useUserStore } from '@/stores/userStore'
+import { useNotificationStore } from '@/stores/notificationStore' // 추가
+
+const userStore = useUserStore()
+const notificationStore = useNotificationStore() // store 인스턴스
 
 let eventSource = null
 
-onMounted(() => {
-  const token = localStorage.getItem('accessToken') // ✅ localStorage에서 토큰 가져오기
+watch(
+  () => userStore.token,
+  (token) => {
+    if (!token) return
+    if (eventSource) return
 
-  if (!token) {
-    console.error('❌ accessToken이 없습니다. SSE 연결 불가')
-    return
-  }
+    console.log('📡 SSE 연결 시도...')
+    eventSource = new EventSource(`http://localhost:8080/api/follow/stream?token=${token}`)
 
-  eventSource = new EventSource(`http://localhost:8080/api/follow/stream?token=${token}`)
+    eventSource.addEventListener('connect', (event) => {
+      console.log('✅ SSE 연결 성공:', event.data)
+    })
 
-  eventSource.addEventListener('connect', (event) => {
-    console.log('✅ SSE 연결 성공:', event.data)
-  })
+    eventSource.addEventListener('follow', (event) => {
+      const noti = JSON.parse(event.data) // ← 백엔드에서 보낸 Notification 객체
+      console.log('🔔 팔로우 알림 도착:', noti)
 
-  eventSource.addEventListener('follow', (event) => {
-    console.log('🔔 팔로우 알림 도착:', event.data)
-    // 👉 필요시 이곳에서 UI로 알림 띄우기
-  })
++     notificationStore.addNotification(noti) // 🟢 알림 store에 추가!
+    })
 
-  eventSource.onerror = (error) => {
-    console.error('❌ SSE 연결 에러:', error)
-    eventSource.close()
-  }
-})
+    eventSource.onerror = (error) => {
+      console.error('❌ SSE 연결 에러:', error)
+      eventSource.close()
+      eventSource = null
+    }
+  },
+  { immediate: true }
+)
 
 onBeforeUnmount(() => {
   if (eventSource) {
     eventSource.close()
-    console.log('SSE 연결 종료')
+    console.log('👋 SSE 연결 종료')
   }
 })
 </script>
-
-<style scoped>
-/* 스타일은 필요 없으면 비워두자 */
-</style>
