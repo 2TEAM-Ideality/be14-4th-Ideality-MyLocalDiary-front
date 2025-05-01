@@ -3,6 +3,8 @@
     <!-- 📌 지도 위에 떠 있는 모달 -->
     <div class="floating-modal">
       <ReportModal />
+      <UserProfileModal />
+
     </div>
 
     <!-- 지도 -->

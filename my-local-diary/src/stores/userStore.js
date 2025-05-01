@@ -147,28 +147,47 @@ export const useUserStore = defineStore('user', () => {
   }
   async function restoreUser() {
     const savedUser = localStorage.getItem('user');
-    
-    if (savedUser) {
+    const savedToken = savedUser ? JSON.parse(savedUser).token : null;
+  
+    if (!savedUser || !savedToken) {
+      console.warn("❌ 저장된 사용자 없음 또는 토큰 없음");
+      logout(); // 상태 초기화
+      return;
+    }
+  
+    try {
       const user = JSON.parse(savedUser);
-      
       token.value = user.token;
-      id.value = user.id;
-      loginId.value = user.loginId;
-      name.value = user.name;
-      nickname.value = user.nickname;
-      email.value = user.email;
-      birth.value = user.birth;
-      role.value = user.role;
-      status.value = user.status;
-      isPublic.value = user.isPublic;
-      bio.value = user.bio;
-      profileImage.value = user.profileImage;
-      profileMusic.value = user.profileMusic;
+  
+      const response = await axios.get('http://localhost:8080/api/member/info', {
+        headers: {
+          Authorization: `Bearer ${token.value}`
+        }
+      });
+  
+      const memberData = response.data.data;
+  
+      // 상태 갱신
+      id.value = memberData.memberId;
+      loginId.value = memberData.loginId;
+      name.value = memberData.name;
+      nickname.value = memberData.nickname;
+      email.value = memberData.email;
+      birth.value = '';
+      role.value = memberData.role;
+      status.value = memberData.status;
+      isPublic.value = memberData.isPublic;
+      bio.value = memberData.bio;
+      profileImage.value = memberData.profileImage || '/images/profile/defaultProfile.png';
+      profileMusic.value = memberData.profileMusic;
   
       await fetchProfileStats();
+    } catch (err) {
+      console.error('❌ restoreUser 실패 - 토큰이 유효하지 않거나 서버 오류:', err);
+      logout(); // 복원이 실패했으면 안전하게 로그아웃 처리
     }
-
   }
+  
   
 
   return {
