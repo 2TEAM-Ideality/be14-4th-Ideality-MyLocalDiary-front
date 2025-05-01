@@ -53,7 +53,7 @@ const props = defineProps({ isOpen: Boolean })
 const emit = defineEmits(['close'])
 const router = useRouter()
 const notificationStore = useNotificationStore()
-const userStore = useUserStore()
+const userStore = useUserStore();
 
 
 const handleNotificationClick = async (id, targetId) => {
