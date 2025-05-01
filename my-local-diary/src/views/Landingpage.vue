@@ -139,6 +139,7 @@
     } catch (error) {
       if (error.response) {
         console.error('에러 응답:', error.response.data);
+        alert(error.response.data.message);
       } else {
         console.error('요청 실패:', error.message);
       }
