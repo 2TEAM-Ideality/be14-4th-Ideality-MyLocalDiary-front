@@ -18,7 +18,21 @@
 
           <div class="mini-map">
             <router-link to="/user-map-home" class="mini-map-link">지도에서 보기 →</router-link>
-            <MiniMap/>
+            <MiniMap
+              :memberId="userStore.id"
+              width="100%"
+              height="300px"
+              @post-selected="(id) => selectedPostId = id"
+            />
+          </div>
+        </div>
+        <!-- 게시글 모달 -->
+        <div v-if="selectedPostId !== null" class="modal-overlay" @click="selectedPostId = null">
+          <div class="modal-content" @click.stop>
+            <div class="d-flex justify-end">
+              <button class="pr-3 pl-3" @click="selectedPostId = null">X</button>
+            </div>
+            <PostCard :postId="selectedPostId" />
           </div>
         </div>
        
@@ -52,7 +66,9 @@
   import UserProfile from '@/components/common/userprofile.vue';
   import TodayDiary from '@/components/mypage/TodayDiary.vue';
   import Temp from '@/components/mypage/Temp.vue';
-  import LoadingModal from '@/components/common/LoadingModal.vue'; // ✅ 추가
+  import LoadingModal from '@/components/common/LoadingModal.vue'; 
+  import PostCard from '@/components/post/PostCard.vue' 
+
 
   const userStore = useUserStore();
   const route = useRoute();
@@ -60,7 +76,9 @@
   const profileUserData = ref(null);
   const isFollowerModalOpen = ref(false);
   const isFollowingModalOpen = ref(false);
-  const isLoading = ref(true); // ✅ 로딩 상태
+  const isLoading = ref(true); // 로딩 상태
+  const selectedPostId = ref(null) // 선택된 게시글 ID
+
 
   const routeUserId = computed(() => Number(route.params.id));
   const isMine = computed(() => routeUserId.value === userStore.id);
@@ -184,6 +202,25 @@
   padding: 0 30px;
   display:flex;
   flex-direction: column;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  max-width: 90%;
+  max-height: 80%;
+  overflow-y: auto;
 }
 
 

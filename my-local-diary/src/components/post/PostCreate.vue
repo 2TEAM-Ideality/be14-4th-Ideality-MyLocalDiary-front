@@ -408,7 +408,7 @@ async function submitPost() {
     }
   })
 
-  const token = localStorage.getItem('accessToken')
+  const token = userStore.token;
 
   try {
     await axios.post('/api/posts', formData, {
