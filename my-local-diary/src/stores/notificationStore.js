@@ -13,7 +13,7 @@ export const useNotificationStore = defineStore('notification', () => {
 
   async function fetchNotifications(token) {
     try {
-      const res = await axios.get('http://localhost:8080/api/notifications', {
+      const res = await axios.get('/api/notifications', {
         headers: {
           Authorization: `Bearer ${token}`
         }

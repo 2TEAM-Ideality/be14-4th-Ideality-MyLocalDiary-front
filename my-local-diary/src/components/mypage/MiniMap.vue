@@ -15,8 +15,8 @@
 <script setup>
   import { ref, onMounted, h, render } from 'vue'
   import axios from 'axios'
-  import CustomMarker from '../common/CustomMarker.vue'
-  import PostCard from '../post/PostCard.vue'
+  import CustomMarker from '@/components/common/CustomMarker.vue'
+  import PostCard from '@/components/post/PostCard.vue'
 
   // 부모 컴포넌트에서 지도 크기를 설정
   const props = defineProps({
@@ -68,7 +68,7 @@
   // 서버에서 게시글 좌표 불러오기
   async function fetchPostLocations() {
     try {
-      const res = await axios.get('http://localhost:8080/api/posts/my/map', {
+      const res = await axios.get('/api/posts/my/map', {
         params: { memberId: props.memberId }
       })
       postLocations.value = res.data || []

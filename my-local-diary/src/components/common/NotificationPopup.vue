@@ -58,7 +58,7 @@ const userStore = useUserStore();
 
 const handleNotificationClick = async (id, targetId) => {
   try {
-    await axios.patch(`http://localhost:8080/api/notifications/${id}/read`, {}, {
+    await axios.patch(`/api/notifications/${id}/read`, {}, {
       headers: { Authorization: `Bearer ${userStore.token}` }
     })
 
@@ -73,7 +73,7 @@ const handleNotificationClick = async (id, targetId) => {
 // ✅ 팔로우 요청 수락
 const acceptRequest = async (n) => {
   try {
-    await axios.patch('http://localhost:8080/api/follow/accept', {
+    await axios.patch('/api/follow/accept', {
       followingMemberId: n.targetId,
       followTargetMemberId: userStore.id
     }, {
@@ -94,7 +94,7 @@ const acceptRequest = async (n) => {
 
 const rejectRequest = async (n) => {
   try {
-    await axios.delete('http://localhost:8080/api/follow/reject', {
+    await axios.delete('/api/follow/reject', {
       headers: { Authorization: `Bearer ${userStore.token}` },
       data: {
         followingMemberId: n.targetId,

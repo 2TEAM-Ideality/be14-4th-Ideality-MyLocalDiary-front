@@ -16,7 +16,7 @@ watch(
     if (eventSource) return
 
     console.log('📡 SSE 연결 시도...')
-    eventSource = new EventSource(`http://localhost:8080/api/follow/stream?token=${token}`)
+    eventSource = new EventSource(`/api/follow/stream?token=${token}`)
 
     eventSource.addEventListener('connect', (event) => {
       console.log('✅ SSE 연결 성공:', event.data)

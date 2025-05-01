@@ -70,7 +70,7 @@ const followings = ref(0)
 // 📍 유저 정보 fetch
 async function fetchOtherUserInfo() {
   try {
-    const res = await axios.get(`http://localhost:8080/api/member/${targetMemberId.value}`, {
+    const res = await axios.get(`/api/member/${targetMemberId.value}`, {
       headers: {
         Authorization: `Bearer ${userStore.token}`
       }
@@ -89,7 +89,7 @@ async function fetchOtherUserInfo() {
 
 async function fetchPostCount() {
   try {
-    const res = await axios.get(`http://localhost:8080/api/mypage/${targetMemberId.value}/posts/count`)
+    const res = await axios.get(`/api/mypage/${targetMemberId.value}/posts/count`)
     postCount.value = res.data
     console.log('✅ 게시글 수:', postCount.value)
   } catch (err) {
@@ -100,7 +100,7 @@ async function fetchPostCount() {
 
 async function fetchFollowingCount() {
   try {
-    const res = await axios.get(`http://localhost:8080/api/mypage/follow/count`, {
+    const res = await axios.get(`/api/mypage/follow/count`, {
       params: { memberId: targetMemberId.value }
     })
     followings.value = res.data
@@ -114,7 +114,7 @@ async function fetchFollowingCount() {
 // 📍 포스트/마커용 장소 fetch
 async function fetchUserPostLocations() {
   try {
-    const res = await axios.get(`http://localhost:8080/api/posts/my/map`, {
+    const res = await axios.get(`/api/posts/my/map`, {
       params: { memberId: targetMemberId.value }
     })
     postLocations.value = res.data || []

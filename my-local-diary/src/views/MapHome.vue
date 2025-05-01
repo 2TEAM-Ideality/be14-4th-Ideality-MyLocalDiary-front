@@ -165,7 +165,7 @@
   // 서버에서 유저 리스트 가져오기
   async function fetchUserList() {
     try {
-      const { data } = await axios.get('http://localhost:8080/api/mypage/follow/list', {
+      const { data } = await axios.get('/api/mypage/follow/list', {
         params: { memberId: userStore.id }
       });
 
@@ -185,7 +185,7 @@
   // 서버에서 포스트/장소 데이터 가져오기
   async function fetchFollowPosts() {
     try {
-      const { data } = await axios.get('http://localhost:8080/api/posts/follow/map', {
+      const { data } = await axios.get('/api/posts/follow/map', {
         params: { memberId: userStore.id }  // 👈 실제 로그인 유저 ID 사용
       })
 

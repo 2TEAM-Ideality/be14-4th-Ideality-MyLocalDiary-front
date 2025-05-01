@@ -15,7 +15,7 @@
           <div class="logo-container">
             <v-img
               v-if="!ui.isHover"
-              src="/src/assets/cursor/슈크림붕어빵1.png"
+              src="/images/cursor/슈크림붕어빵1.png"
               width="40"
               height="40"
               aspect-ratio="1"
@@ -23,7 +23,7 @@
             <transition name="fade">
               <div v-if="ui.showImage">
                 <v-img
-                  src="/src/assets/logo/My_Local_Diary.png"
+                  src="/images/logo/My_Local_Diary.png"
                   width="120"
                   height="40"
                   aspect-ratio="3"
@@ -38,42 +38,42 @@
         <template v-if="!isAdmin">
           <v-list-item @click="goToHome">
             <div class="menu-item">
-              <v-img src="/src/assets/sidebar/Map.png" class="menu-icon" />
+              <v-img src="/images/sidebar/Map.png" class="menu-icon" />
               <span v-if="ui.showText">지도 홈</span>
             </div>
           </v-list-item>
 
           <v-list-item @click="openUserSearch">
             <div class="menu-item">
-              <v-img src="/src/assets/sidebar/Search.png" class="menu-icon" />
+              <v-img src="/images/sidebar/Search.png" class="menu-icon" />
               <span v-if="ui.showText">검색</span>
             </div>
           </v-list-item>
 
           <v-list-item @click="goToMypage">
             <div class="menu-item">
-              <v-img src="/src/assets/sidebar/person.png" alt="mypage" class="menu-icon" />
+              <v-img src="/images/sidebar/person.png" alt="mypage" class="menu-icon" />
               <span v-if="ui.showText">마이페이지</span>
             </div>
           </v-list-item>
 
           <v-list-item @click="goToCreateDiary">
             <div class="menu-item">
-              <v-img src="/src/assets/sidebar/Pen.png" class="menu-icon" />
+              <v-img src="/images/sidebar/Pen.png" class="menu-icon" />
               <span v-if="ui.showText">글쓰기</span>
             </div>
           </v-list-item>
 
           <v-list-item @click="goToStamp">
             <div class="menu-item">
-              <v-img src="/src/assets/sidebar/stamp.png" class="stamp-icon ml-n1" />
+              <v-img src="/images/sidebar/stamp.png" class="stamp-icon ml-n1" />
               <span v-if="ui.showText">스탬프 목록</span>
             </div>
           </v-list-item>
 
           <v-list-item @click="openAlarm">
             <div class="menu-item" style="position: relative;">
-              <v-img src="/src/assets/sidebar/notifications.png" class="menu-icon" />
+              <v-img src="/images/sidebar/notifications.png" class="menu-icon" />
               <span v-if="unreadCount > 0" class="badge">{{ unreadCount }}</span>
               <span v-if="ui.showText">알림</span>
             </div>
@@ -98,7 +98,7 @@
 
           <v-list-item @click="goToAdminMyPage">
             <div class="menu-item">
-              <v-img src="/src/assets/sidebar/person.png" class="menu-icon" />
+              <v-img src="/images/sidebar/person.png" class="menu-icon" />
               <span v-if="ui.showText">대시보드</span>
             </div>
           </v-list-item>
@@ -148,7 +148,7 @@ import { useUIStore } from '@/stores/uiStore'
 import { useUserStore } from '@/stores/userStore'
 import { useNotificationStore } from '@/stores/notificationStore'
 import NotificationPopup from '@/components/common/NotificationPopup.vue'
-import SearchUserModal from '../search/SearchUserModal.vue'
+import SearchUserModal from '@/components/search/SearchUserModal.vue'
 import axios from 'axios'
 
 const router = useRouter()

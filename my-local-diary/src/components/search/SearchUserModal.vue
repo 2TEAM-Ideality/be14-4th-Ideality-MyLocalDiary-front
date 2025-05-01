@@ -101,7 +101,7 @@
     try {
       console.log(userStore.token);
       const method = user.followStatus === 'following' ? 'DELETE' : 'POST';
-      const res = await fetch(`http://localhost:8080/api/follow`, {
+      const res = await fetch(`/api/follow`, {
   method,
   headers: {
     'Content-Type': 'application/json',
@@ -141,7 +141,7 @@
   
     try {
       const res = await fetch(
-        `http://localhost:8080/api/member/search?nickname=${searchQuery.value}&myId=${userId}`,
+        `/api/member/search?nickname=${searchQuery.value}&myId=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

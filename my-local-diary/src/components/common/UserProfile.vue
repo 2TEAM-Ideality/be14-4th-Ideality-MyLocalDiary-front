@@ -142,9 +142,9 @@ const postCount = ref(0)
 async function fetchProfileCounts(memberId) {
   try {
     const [followingRes, followerRes, postRes] = await Promise.all([
-      axios.get(`http://localhost:8080/api/mypage/follow/count`, { params: { memberId } }),
-      axios.get(`http://localhost:8080/api/mypage/follow/count/follower`, { params: { memberId } }),
-      axios.get(`http://localhost:8080/api/mypage/posts/count`, { params: { memberId } })
+      axios.get(`/api/mypage/follow/count`, { params: { memberId } }),
+      axios.get(`/api/mypage/follow/count/follower`, { params: { memberId } }),
+      axios.get(`/api/mypage/posts/count`, { params: { memberId } })
     ])
     followingCount.value = followingRes.data
     followerCount.value = followerRes.data
@@ -199,7 +199,7 @@ const handleFollow = async () => {
     const isFollowing = props.userData.isFollowing
     const method = isFollowing ? 'DELETE' : 'POST'
 
-    const res = await fetch('http://localhost:8080/api/follow', {
+    const res = await fetch('/api/follow', {
       method,
       headers: {
         'Content-Type': 'application/json',

@@ -63,7 +63,7 @@
   import axios from 'axios';
 
   import MiniMap from '@/components/mypage/MiniMap.vue';
-  import UserProfile from '@/components/common/userprofile.vue';
+  import UserProfile from '@/components/common/UserProfile.vue';
   import TodayDiary from '@/components/mypage/TodayDiary.vue';
   import Temp from '@/components/mypage/Temp.vue';
   import LoadingModal from '@/components/common/LoadingModal.vue'; 
@@ -105,7 +105,7 @@
       };
     } else {
       try {
-        const res = await axios.get(`http://localhost:8080/api/member/${routeUserId.value}`, {
+        const res = await axios.get(`/api/member/${routeUserId.value}`, {
           headers: {
             Authorization: `Bearer ${userStore.token}`
           }

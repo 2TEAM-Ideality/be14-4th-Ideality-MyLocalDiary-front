@@ -3,7 +3,7 @@
       <div style="display:flex; flex-direction: row; justify-content: space-between; align-items: flex-end;">
         <!-- 고양이 그림 + 제목 -->
         <div class="header">
-          <img src="/src/assets/stamp_pic/cat_bar.png" alt="고양이" class="cat-image" />
+          <img src="/images/stamp_pic/cat_bar.png" alt="고양이" class="cat-image" />
           <div class="title">규제 내역</div>
         </div>
         <div class="filter-buttons">
