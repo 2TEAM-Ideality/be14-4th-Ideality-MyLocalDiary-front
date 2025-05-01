@@ -36,6 +36,7 @@
               size="x-small"
               variant="outlined"
               @click="sendEmailVerification"
+              :disabled="isEmailVerificationSent"
             >
               인증하기
             </v-btn>
@@ -53,9 +54,9 @@
           />
           <v-btn
             size="small"
-            :color="isEmailVerified ? 'pink-lighten-4' : 'grey'"
+            :color="isVerificationCodeValid ? 'pink-lighten-4' : 'grey'"
             variant="flat"
-            :disabled="!isEmailVerified"
+            :disabled="!isVerificationCodeValid"
             @click = sendVerificationCode
           >
             인증 완료
@@ -86,6 +87,15 @@
         </div>
 
         <v-text-field v-model = "name" label="이름" variant="outlined" dense class="mb-3" />
+
+        <v-text-field
+          v-model="birth"
+          label="생년월일"
+          variant="outlined"
+          dense
+          class="mb-3"
+          type="date"
+        />
         <v-text-field v-model = "nickname" 
         label="닉네임" 
         variant="outlined" 
@@ -107,7 +117,7 @@
           color="black"
           class="text-white font-weight-bold mb-4"
           height="44"
-          :disabled="!passwordsMatch"
+          :disabled="!isFormValid"
         >
           가입하기
         </v-btn>
@@ -127,21 +137,24 @@ import axios from 'axios'
 
 const emit = defineEmits(['close', 'switch'])
 
-const loginId = ref('');
-const name = ref('');
-const nickname = ref('');
+const loginId = ref('')
+const name = ref('')
+const nickname = ref('')
+const birth = ref('')
 const internalDialog = ref(true)
 const isPublic = ref(true)
 
 const email = ref('')
 const verifyCode = ref('')
-const isEmailVerified = ref(false)
-
 const password = ref('')
 const confirmPassword = ref('')
 
 const isLoginIdAvailable = ref(true)
 const isNicknameAvailable = ref(true)
+
+const isEmailVerificationSent = ref(false)
+const isVerificationCodeValid = ref(false)
+// const isEmailVerified = ref(false)
 
 let loginIdTimer = null
 let nicknameTimer = null
@@ -150,6 +163,7 @@ const passwordsMatch = computed(() => {
   return password.value !== '' && password.value === confirmPassword.value
 })
 
+// 로그인 아이디 중복 체크
 watch(loginId, (newId) => {
   clearTimeout(loginIdTimer)
   if (!newId) return
@@ -165,6 +179,7 @@ watch(loginId, (newId) => {
   }, 500)
 })
 
+// 닉네임 중복 체크
 watch(nickname, (newName) => {
   clearTimeout(nicknameTimer)
   if (!newName) return
@@ -180,67 +195,97 @@ watch(nickname, (newName) => {
   }, 500)
 })
 
+// 인증번호 길이 감시
+watch(verifyCode, (code) => {
+  isVerificationCodeValid.value = code.length === 6
+})
+
+// 다이얼로그 닫기 이벤트 처리
 watch(internalDialog, (val) => {
   if (!val) emit('close')
 })
 
 async function sendEmailVerification() {
   if (!email.value) {
-    alert('이메일을 입력하세요!')
-    return
+    alert('📧 이메일을 입력해주세요.');
+    return;
   }
-  // 여기에 백엔드 SMTP 인증 요청 로직 들어갈 자리
+
   try {
     const res = await axios.post("http://localhost:8080/api/auth/email-verification-code", {
       email: email.value
     }, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: { 'Content-Type': 'application/json' }
     });
-    alert(res.data.message);
-  } catch (err) {
-    if (err.response) {
-    const status = err.response.data.status;
-    const message = err.response.data.message;
 
-    // 예시 조건 분기
-    if (status === 409) {
-        alert(message); // ❗ 예: "이미 가입된 이메일입니다."
-      } else {
-        alert("오류가 발생했습니다: " + message);
-    }
+    alert(res.data.message); // ex. "인증 코드가 발송되었습니다."
+    isEmailVerificationSent.value = true;
+    verifyCode.value = '';
+    isVerificationCodeValid.value = false;
+  } catch (err) {
+    const message = err?.response?.data?.message || '네트워크 오류가 발생했습니다.';
+    
+    if (err?.response?.status === 409 && message === '이미 사용중인 이메일입니다.') {
+      alert('🚫 이미 가입된 이메일입니다.');
     } else {
-      alert("네트워크 오류가 발생했습니다.");
+      alert('❗ 오류: ' + message);
     }
   }
-  console.log('이메일 인증 요청:', email.value)
 }
 
 async function sendVerificationCode() {
-   // 여기에 백엔드 SMTP 인증 요청 로직 들어갈 자리
+  if (!verifyCode.value) {
+    alert('✅ 인증 코드를 입력해주세요.');
+    return;
+  }
+
   try {
     const res = await axios.post("http://localhost:8080/api/auth/email-verification", {
       email: email.value,
       verificationCode: verifyCode.value
     }, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: { 'Content-Type': 'application/json' }
     });
-    alert(res.data.message);
-  } catch (err) {
-    if (err.response) {
-      const status = err.response.data.status;
-      const message = err.response.data.message;
 
-      if (status == 401) {
-        alert(message);
-      }
-    } else {
-      alert('네트워크 오류가 발생하였습니다!');
+    alert(res.data.message); // ex. "이메일 인증이 완료되었습니다."
+    isEmailVerified.value = true;
+  } catch (err) {
+    const message = err?.response?.data?.message || '네트워크 오류가 발생했습니다.';
+
+    switch (message) {
+      case '인증 번호가 만료되었습니다.':
+        alert('⏰ 인증 번호가 만료되었습니다. 다시 요청해주세요.');
+        break;
+      case '인증되지 않는 이메일입니다.':
+        alert('⚠️ 이메일 인증을 먼저 진행해주세요.');
+        break;
+      default:
+        alert('❗ 인증 실패: ' + message);
     }
   }
+}
+
+const isFormValid = computed(() => {
+  return (
+    loginId.value &&
+    email.value &&
+    verifyCode.value &&
+    password.value &&
+    confirmPassword.value &&
+    name.value &&
+    birth.value &&
+    nickname.value &&
+    passwordsMatch.value &&
+    isLoginIdAvailable.value &&
+    isNicknameAvailable.value &&
+    isEmailVerified.value
+  )
+})
+
+async function signup() {
+  // try {
+
+  // } catch ()
 }
 
 function switchToLogin() {
