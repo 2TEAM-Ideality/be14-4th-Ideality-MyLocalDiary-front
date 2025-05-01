@@ -38,6 +38,8 @@
 
 <script setup>
 import { ref, watch, defineEmits, defineProps } from 'vue'
+import { useUserStore } from '@/stores/userStore'
+import axios from 'axios'
 import reportImg from '@/assets/report/report.svg'
 
 const emit = defineEmits(['update:modelValue', 'close'])
@@ -45,9 +47,18 @@ const props = defineProps({
   modelValue: {
     type: Boolean,
     required: true
+  },
+  type: {
+    type: String, // 'POST', 'COMMENT', 'MEMBER'
+    required: true
+  },
+  reportedId: {
+    type: [Number, String],
+    required: true
   }
 })
 
+const userStore = useUserStore();
 
 
 // 내부용 dialog 상태
@@ -66,12 +77,25 @@ watch(internalDialog, (newVal) => {
 const reason = ref('')
 
 // 신고 신청
-const submitReport = () => {
-  console.log('신고 내용:', reason.value)
-  
-  reason.value = ''
-  internalDialog.value = false
-  emit('close')
+const submitReport = async () => {
+  try {
+    const payload = {
+      reportType: props.type,
+      reportedId: props.reportedId,
+      content: reason.value,
+      memberId: userStore.id,
+      reportReasonId: 2
+    }
+
+    await axios.post('http://localhost:8080/api/admin/report/create', payload)
+    alert('신고가 접수되었습니다.')
+    
+    reason.value = ''
+    emit('close')
+  } catch (err) {
+    console.error('신고 실패:', err)
+    alert('신고에 실패했습니다.')
+  }
 }
 </script>
 

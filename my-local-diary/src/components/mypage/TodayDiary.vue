@@ -74,7 +74,7 @@ const dayOfWeek = dayNames[today.getDay()]
 
 // 다이어리 작성 페이지 이동
 const createDiary = () => {
-  router.push('/create-diary')
+  router.push('/post/create')
 }
 
 // 오늘 다이어리 데이터 가져오기
