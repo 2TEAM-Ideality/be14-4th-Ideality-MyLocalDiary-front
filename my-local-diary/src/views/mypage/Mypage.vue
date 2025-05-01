@@ -19,7 +19,7 @@
           <div class="mini-map">
             <router-link to="/user-map-home" class="mini-map-link">지도에서 보기 →</router-link>
             <MiniMap
-              :memberId="userStore.id"
+              :memberId="routeUserId"
               width="100%"
               height="300px"
               @post-selected="(id) => selectedPostId = id"
