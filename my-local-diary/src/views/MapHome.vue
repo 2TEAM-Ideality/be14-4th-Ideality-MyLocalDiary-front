@@ -67,13 +67,13 @@
 </template>
 
 <script setup>
-  import { ref, computed, onMounted, h, render } from 'vue'
+  import { ref, computed, onMounted, h, render, watch } from 'vue'
   import { useRouter } from 'vue-router'
   import axios from 'axios'
   import SearchLocation2 from '@/components/map/SearchLocation2.vue'
   import CustomMarker from '@/components/common/CustomMarker.vue'
   import PostCard from '@/components/post/PostCard.vue'
-  import profileImageDummy from '@/assets/profile/profile.png'
+  import profileImageDummy from '@/assets/profile/default.png'
   import { useUserStore } from '@/stores/userStore'
   const userStore = useUserStore()
 
@@ -164,18 +164,22 @@
   // 서버에서 유저 리스트 가져오기
   async function fetchUserList() {
     try {
-      const { data } = await axios.get('/json/following_list.json')
-      userList.value = data.following
-        .filter(user => user.status === 'ACTIVE')
-        .map(user => ({
-          id: user.id,
-          name: user.nickname,
-          image: user.profile_image || ''
-        }))
+      const { data } = await axios.get('http://localhost:8080/api/mypage/follow/list', {
+        params: { memberId: userStore.id }
+      });
+
+      console.log('📌 팔로우 유저 목록:', data);
+
+      userList.value = data.map(user => ({
+        id: user.id,
+        name: user.nickname,
+        image: user.profileImage || profileImageDummy
+      }));
     } catch (error) {
-      console.error('유저 리스트 로드 실패', error)
+      console.error('❌ 유저 리스트 로드 실패:', error);
     }
   }
+
 
   // 서버에서 포스트/장소 데이터 가져오기
   async function fetchFollowPosts() {
@@ -241,6 +245,19 @@
       })
     }
   })
+
+  watch(
+    () => userStore.id,
+    (id) => {
+      if (id) {
+        fetchUserList();
+        fetchFollowPosts();
+      }
+    },
+    { immediate: true }
+  );
+
+
 
 </script>
 
