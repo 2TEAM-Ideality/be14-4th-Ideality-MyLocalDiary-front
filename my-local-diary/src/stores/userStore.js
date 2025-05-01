@@ -114,6 +114,7 @@ export const useUserStore = defineStore('user', () => {
     // 2. localStorage 정리
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
+    localStorage.removeItem('access_token'); // ✅ 이거 꼭!
   }
   
 

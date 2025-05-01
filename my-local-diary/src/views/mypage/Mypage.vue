@@ -52,9 +52,9 @@
   const userStore = useUserStore();
 
 
-  onMounted(async () => {
-    await userStore.restoreUser();
-  });
+  // onMounted(async () => {
+  //   await userStore.restoreUser();
+  // });
 
 </script>
 
