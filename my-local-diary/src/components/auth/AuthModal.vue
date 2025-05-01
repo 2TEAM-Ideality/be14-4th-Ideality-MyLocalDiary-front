@@ -96,7 +96,7 @@
           class="mb-3"
           type="date"
         />
-        <v-text-field v-model = "nickname" 
+        <v-text-field v-model.lazy = "nickname" 
         label="닉네임" 
         variant="outlined" 
         dense class="mb-3" 
@@ -118,6 +118,7 @@
           class="text-white font-weight-bold mb-4"
           height="44"
           :disabled="!isFormValid"
+          @click="signup"
         >
           가입하기
         </v-btn>
@@ -154,7 +155,8 @@ const isNicknameAvailable = ref(true)
 
 const isEmailVerificationSent = ref(false)
 const isVerificationCodeValid = ref(false)
-// const isEmailVerified = ref(false)
+
+const isAuthenticated = ref(false)
 
 let loginIdTimer = null
 let nicknameTimer = null
@@ -248,7 +250,8 @@ async function sendVerificationCode() {
     });
 
     alert(res.data.message); // ex. "이메일 인증이 완료되었습니다."
-    isEmailVerified.value = true;
+    isVerificationCodeValid.value = false;
+    isAuthenticated.value = true;
   } catch (err) {
     const message = err?.response?.data?.message || '네트워크 오류가 발생했습니다.';
 
@@ -265,6 +268,8 @@ async function sendVerificationCode() {
   }
 }
 
+
+
 const isFormValid = computed(() => {
   return (
     loginId.value &&
@@ -278,14 +283,33 @@ const isFormValid = computed(() => {
     passwordsMatch.value &&
     isLoginIdAvailable.value &&
     isNicknameAvailable.value &&
-    isEmailVerified.value
+    isAuthenticated
   )
 })
 
 async function signup() {
-  // try {
+  try {
+    const res = await axios.post("http://localhost:8080/api/auth/signup", {
+      loginId: loginId.value,
+      email: email.value,
+      password: password.value,
+      name: name.value,
+      nickname: nickname.value,
+      birth: birth.value,
+      isPublic: isPublic.value
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
 
-  // } catch ()
+    alert('🎉 회원가입이 완료되었습니다!');
+    internalDialog.value = false; // 다이얼로그 닫기
+    emit('switch'); // 로그인 화면으로 전환
+  } catch (err) {
+    const message = err?.response?.data?.message || '회원가입 중 오류가 발생했습니다.';
+    alert('❗ ' + message);
+  }
 }
 
 function switchToLogin() {
