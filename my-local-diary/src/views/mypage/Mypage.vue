@@ -29,7 +29,7 @@
             </div>
           </div>
           <div class="right-downer">
-            <Temp/>
+            <Temp :member-id="userStore.id"/>
           </div>
         </div>
       </div>
