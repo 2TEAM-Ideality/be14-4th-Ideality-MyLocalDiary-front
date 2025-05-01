@@ -16,16 +16,15 @@
             {{ followButtonText }}
           </button>
         </div>
-
       </div>
 
       <div class="user-stats">
-        <span>게시글 <strong>{{ userData.posts }}</strong>개</span>
-        <span @click="$emit('open-follower')" style="cursor: pointer;">
-          팔로워 <strong>{{ userData.followers }}</strong>
+        <span>게시글 <strong>{{ postCount }}</strong>개</span>
+        <span @click="openFollowerModal" style="cursor: pointer;">
+          팔로워 <strong>{{ followerCount }}</strong>
         </span>
-        <span @click="$emit('open-following')" style="cursor: pointer;">
-          팔로우 <strong>{{ userData.following }}</strong>
+        <span @click="openFollowingModal" style="cursor: pointer;">
+          팔로우 <strong>{{ followingCount }}</strong>
         </span>
       </div>
 
@@ -47,14 +46,27 @@
 
     <audio ref="audioPlayer" :src="userData.profileMusic" preload="auto" class="hidden" @timeupdate="onTimeUpdate"
       @ended="isPlaying = false" />
+
+    <!-- 팔로워/팔로잉 모달 연결 -->
+    <FollowerModal v-if="showFollowerModal" :memberId="userData.id" @close="closeModals" />
+    <FollowingModal v-if="showFollowingModal" :memberId="userData.id" @close="closeModals" />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import { waveform } from 'ldrs'
+import axios from 'axios'
+import { useNotificationStore } from '@/stores/notificationStore'
+
+
+// 모달 컴포넌트 import
+import FollowerModal from '@/components/follow/follower.vue'
+import FollowingModal from '@/components/follow/following.vue'
+
+const notificationStore = useNotificationStore()
 
 const props = defineProps({
   userData: Object,
@@ -82,7 +94,6 @@ const musicTitle = computed(() => {
 
 const isMyProfile = computed(() => props.isMine)
 
-// 팔로우 버튼 텍스트
 const followButtonText = computed(() => {
   if (props.userData.isFollowing === true) return '팔로잉'
   if (props.userData.isFollowing === 'wait') return '수락 대기'
@@ -95,8 +106,6 @@ const followButtonClass = computed(() => {
   return 'btn-follow'
 })
 
-
-// 음악 관련
 waveform.register()
 
 function togglePlayback() {
@@ -125,34 +134,58 @@ function formatTime(seconds) {
   return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
 }
 
+// --- 프로필 통계 가져오기 ---
+const followerCount = ref(0)
+const followingCount = ref(0)
+const postCount = ref(0)
+
+async function fetchProfileCounts(memberId) {
+  try {
+    const [followingRes, followerRes, postRes] = await Promise.all([
+      axios.get(`http://localhost:8080/api/mypage/follow/count`, { params: { memberId } }),
+      axios.get(`http://localhost:8080/api/mypage/follow/count/follower`, { params: { memberId } }),
+      axios.get(`http://localhost:8080/api/mypage/posts/count`, { params: { memberId } })
+    ])
+    followingCount.value = followingRes.data
+    followerCount.value = followerRes.data
+    postCount.value = postRes.data
+  } catch (e) {
+    console.error('프로필 카운트 가져오기 실패:', e)
+  }
+}
+
+watch(() => props.userData?.id, (newId) => {
+  if (newId) fetchProfileCounts(newId)
+})
+
 onMounted(() => {
-  if (audioPlayer.value) {
-    audioPlayer.value.play().then(() => isPlaying.value = true)
-      .catch(err => {
-        console.warn('🎵 자동 재생 실패:', err)
-      })
-  }
+  if (props.userData?.id) fetchProfileCounts(props.userData.id)
 })
 
-watch(() => props.userData.profileMusic, (newVal) => {
-  if (newVal && audioPlayer.value) {
-    audioPlayer.value.load()
-    audioPlayer.value.play().then(() => isPlaying.value = true)
-      .catch(err => {
-        console.warn('🎵 음악 변경 후 재생 실패:', err)
-      })
-  }
-})
+// --- 모달 관리 ---
+const showFollowerModal = ref(false)
+const showFollowingModal = ref(false)
 
-// 프로필 수정 이동
+const openFollowerModal = () => {
+  showFollowerModal.value = true
+}
+const openFollowingModal = () => {
+  showFollowingModal.value = true
+}
+const closeModals = () => {
+  showFollowerModal.value = false
+  showFollowingModal.value = false
+}
+
+// --- 프로필 수정 이동 ---
 const editProfile = () => router.push('/edit/profile')
 const editAccount = () => router.push('/edit/account')
 
-// 팔로우 / 언팔로우 처리
+// --- 팔로우 / 언팔로우 처리 ---
 const handleFollow = async () => {
   if (!token) {
-    alert('로그인이 필요합니다.');
-    return;
+    alert('로그인이 필요합니다.')
+    return
   }
 
   try {
@@ -177,15 +210,18 @@ const handleFollow = async () => {
     if (method === 'POST') {
       if (props.userData.isPublic) {
         props.userData.isFollowing = true
-        props.userData.followers += 1
+        followerCount.value += 1
         alert('팔로우 성공!')
       } else {
         props.userData.isFollowing = 'wait'
         alert('팔로우 요청 보냈습니다!')
       }
+
+      // 📢 알림 새로고침 추가
+      await notificationStore.fetchNotifications()
     } else {
       props.userData.isFollowing = false
-      props.userData.followers -= 1
+      followerCount.value -= 1
       alert('언팔로우 성공!')
     }
   } catch (error) {
@@ -196,6 +232,7 @@ const handleFollow = async () => {
 </script>
 
 <style scoped>
+/* ✅ 네가 작성한 기존 CSS 그대로 복사 */
 .user-profile {
   width: 100%;
   margin: 15px auto;
@@ -257,7 +294,6 @@ const handleFollow = async () => {
   margin-top: 16px;
 }
 
-
 .button-group button {
   padding: 2px 8px;
   font-size: 14px;
@@ -285,19 +321,16 @@ const handleFollow = async () => {
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* 팔로우 (검정 배경, 흰 글씨) */
 .btn-follow {
   background-color: #1f2937;
   color: white;
 }
 
-/* 팔로잉 (연핑 배경, 핑크 글씨) */
 .btn-following {
   background-color: #FFE8F3;
   color: #efb8c8;
 }
 
-/* 수락 대기 (회색 배경, 어두운 회색 글씨) */
 .btn-wait {
   background-color: #D9D9D9;
   color: #B3B3B3;

@@ -3,11 +3,10 @@
     <!-- 유저 프로필 -->
     <div class="left-side">
       <UserProfile :userData="userStore" 
-        @open-follower="isFollowerModalOpen = true"
-        @open-following="isFollowingModalOpen = true"
       />
       <Badge />
     </div>
+    
 
     <!-- 스탬프 영역 -->
     <div class="right-side">
