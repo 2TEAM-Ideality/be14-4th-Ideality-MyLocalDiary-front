@@ -29,7 +29,7 @@ export const useUserStore = defineStore('user', () => {
     token.value = accessToken
 
     try {
-      const response = await axios.get('http://localhost:8080/api/member/info', {
+      const response = await axios.get('/api/member/info', {
         headers: { Authorization: `Bearer ${token.value}` }
       })
 
@@ -71,7 +71,7 @@ export const useUserStore = defineStore('user', () => {
   async function logout() {
     try {
       if (token.value) {
-        await axios.post('http://localhost:8080/api/member/logout', null, {
+        await axios.post('/api/member/logout', null, {
           headers: { Authorization: `Bearer ${token.value}` },
           withCredentials: true
         })
@@ -111,7 +111,7 @@ export const useUserStore = defineStore('user', () => {
     if (!savedUser) return
 
     try {
-      const res = await axios.post('http://localhost:8080/api/member/reissue', null, {
+      const res = await axios.post('/api/member/reissue', null, {
         withCredentials: true
       })
       const newAccessToken = res.data.data.accessToken
@@ -140,7 +140,7 @@ export const useUserStore = defineStore('user', () => {
 
   async function tryReissueToken() {
     try {
-      const res = await axios.post('http://localhost:8080/api/member/reissue', null, {
+      const res = await axios.post('/api/member/reissue', null, {
         withCredentials: true
       })
       const newAccessToken = res.data.data.accessToken
