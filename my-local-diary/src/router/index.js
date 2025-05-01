@@ -13,6 +13,7 @@ import EditPage from '@/views/mypage/EditPage.vue';
 import ReportManagement from '@/views/admin/ReportManagement.vue';
 import RegulationHistory from '@/views/admin/RegulationHistory.vue';
 import AdminMyPage from '@/views/admin/AdminMyPage.vue';
+import { useUserStore } from '@/stores/userStore';
 
 const routes = [
   {
@@ -117,6 +118,24 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+// router/index.js 또는 router 설정파일
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore()
+
+  if (!userStore.token && !userStore.id) {
+    await userStore.restoreUser()
+  }
+
+  const requiresAuth = to.meta.requiresAuth || to.path !== '/' // 예시 조건
+  const isAuthenticated = !!userStore.id
+
+  if (requiresAuth && !isAuthenticated) {
+    return next('/') // 로그인 페이지
+  }
+
+  next()
 })
 
 export default router
