@@ -76,11 +76,8 @@ const paginatedStamps = computed(() => {
 const fetchStampCounts = async () => {
   try {
     const pageMemberId = Number(userStore.id);
-    console.log(pageMemberId);
     const res = await fetch(`http://localhost:8080/api/stamp?memberId=${pageMemberId}`);
     const memberStamps = await res.json();
-
-    console.log(memberStamps);
 
     // BASE_STAMPS 기준으로 갯수 매칭
     stamps.value = BASE_STAMPS.map((stamp) => ({

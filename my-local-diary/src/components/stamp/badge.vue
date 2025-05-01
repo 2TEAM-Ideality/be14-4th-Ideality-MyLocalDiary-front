@@ -17,7 +17,7 @@
           class="badge-item"
           @click="playRandomMeow"
         >
-          <img :src="getBadgeImage(badge.name)" alt="badge" />
+          <img :src="getBadgeImage(badge)" alt="badge" />
         </div>
       </div>
     </div>
@@ -56,22 +56,9 @@
   
   const fetchBadges = async () => {
     try {
-      const memberId = Number(userStore.id);
-  
-      const [memberBadgeRes, badgeRes] = await Promise.all([
-        fetch('http://localhost:3001/member_badge'),
-        fetch('http://localhost:3001/badge')
-      ]);
-  
-      const memberBadges = await memberBadgeRes.json();
-      const badgeList = await badgeRes.json();
-  
-      const myBadgeIds = memberBadges
-        .filter(b => b.member_id === memberId)
-        .map(b => b.badge_id);
-  
-      badges.value = badgeList.filter(b => myBadgeIds.includes(Number(b.id)));
-  
+      const pageMemberId = Number(userStore.id);
+      const res = await fetch(`http://localhost:8080/api/badge?memberId=${pageMemberId}`);
+      badges.value = await res.json();
     } catch (error) {
       console.error('❌ 뱃지 불러오기 실패:', error);
     }
