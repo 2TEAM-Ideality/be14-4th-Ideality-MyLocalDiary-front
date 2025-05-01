@@ -135,6 +135,7 @@ import { Pagination } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import CustomMarker from '@/components/common/CustomMarker.vue'
+import { useUserStore } from '@/stores/userStore'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -408,7 +409,8 @@ async function submitPost() {
     }
   })
 
-  const token = userStore.token;
+  const userStore = useUserStore()
+  const token = userStore.token
 
   try {
     await axios.post('/api/posts', formData, {
@@ -421,6 +423,7 @@ async function submitPost() {
     router.push(`/mypage/${userStore.id}`)
   } catch (err) {
     console.error('업로드 실패:', err)
+    console.log(token);
     alert('등록 실패')
   }
 }
