@@ -5,7 +5,7 @@ import axios from 'axios'
 
 export const useUserStore = defineStore('user', () => {
   const id = ref(null)
-  const token = ref(null)
+  const token = ref(null)  // access token 담는 용도
   const loginId = ref('')
   const name = ref('')
   const nickname = ref('')
@@ -49,6 +49,7 @@ export const useUserStore = defineStore('user', () => {
       profileMusic.value = memberData.profileMusic
 
       localStorage.setItem('user', JSON.stringify({
+        token: token.value,
         id: id.value,
         loginId: loginId.value,
         name: name.value,
@@ -89,6 +90,7 @@ export const useUserStore = defineStore('user', () => {
   function clearState() {
     token.value = null
     id.value = null
+    token.value = null
     loginId.value = ''
     name.value = ''
     nickname.value = ''
@@ -116,6 +118,7 @@ export const useUserStore = defineStore('user', () => {
       token.value = newAccessToken
 
       const user = JSON.parse(savedUser)
+      token.value = user.token
       id.value = user.id
       loginId.value = user.loginId
       name.value = user.name

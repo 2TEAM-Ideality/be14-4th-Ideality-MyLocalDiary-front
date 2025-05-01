@@ -1,142 +1,165 @@
 <template>
-    <v-card class="user-card">
-      <!-- 상단 유저 정보 -->
-      <v-card-title class="user-header" >
-        <v-avatar size="60"   @click="goToMypage" class="profile-image">
-          <img :src="profileImage" />
+  <v-card class="user-card">
+    <!-- 상단 유저 정보 -->
+    <v-card-title class="user-header">
+      <v-avatar size="60" @click="goToMypage" class="profile-image">
+        <img :src="userInfo?.profileImage || '/images/profile/defaultProfile.png'" />
+      </v-avatar>
+      <div class="user-info">
+        <div class="name-section">
+          <div class="name" @click="goToMypage">{{ userInfo?.nickname }}</div>
+          <button class="follow-btn" size="small">팔로우</button>
+        </div>
+        <div class="stats">
+          게시글 <b>{{ postCount }}</b> · 팔로워 <b>{{ followers }}</b> · 팔로우 <b>{{ followings }}</b>
+        </div>
+      </div>
+    </v-card-title>
+
+    <v-divider></v-divider>
+
+    <!-- 오늘의 기록 -->
+    <v-card-text class="section">
+      <div class="section-header d-flex justify-space-between">
+        <div class="section-title">오늘의 기록</div>
+        <router-link to="/mypage" class="see-all">전체 기록 보기 →</router-link>
+      </div>
+
+      <div>
+        <v-row dense v-for="(post, i) in todaysPosts" :key="i" class="post-item">
+          <v-col cols="auto">
+            <v-img :src="post.icon" class="marker-icon" width="32" height="32" contain></v-img>
+          </v-col>
+          <v-col>
+            <div class="post-title">{{ post.title }}</div>
+            <!-- <div class="post-location">{{ post.location }}</div> -->
+          </v-col>
+          <v-col cols="auto">
+            <div class="time">{{ post.time }}</div>
+          </v-col>
+        </v-row>
+      </div>
+    </v-card-text>
+
+    <!-- 스탬프 -->
+    <v-card-text class="section">
+      <div class="section-header d-flex justify-space-between">
+        <div class="section-title">발자국을 남긴 곳</div>
+        <router-link to="/mypage" class="see-all">스탬프 컬렉션 →</router-link>
+      </div>
+      <div class="badge-row d-flex gap-3">
+        <v-avatar
+          v-for="(badge, i) in displayedBadges"
+          :key="i"
+          size="48"
+          @click="goToStamp"
+        >
+          <img :src="badge" />
         </v-avatar>
-        <div class="user-info">
-            <div class="name-section">
-                <div class="name" @click="goToMypage">{{ username }}</div>
-                <button class="follow-btn" size="small">팔로우</button>
-            </div>
-          
-          <div class="stats">
-            게시글 <b>{{ posts }}</b> · 팔로워 <b>{{ followers }}</b> · 팔로우 <b>{{ followings }}</b>
-          </div>
-        </div>
-      </v-card-title>
-  
-      <v-divider></v-divider>
-  
-      <!-- 오늘의 기록 -->
-      <v-card-text class="section">
-        <div class="section-header d-flex justify-space-between">
-            <div class="section-title">오늘의 기록</div>
-            <router-link to="/mypage" class="see-all">전체 기록 보기 →</router-link>
-        </div>
-  
-        <div>
-            <v-row dense v-for="(post, i) in todaysPosts" :key="i" class="post-item">
-            <v-col cols="auto">
-                <v-img :src="post.icon" class="marker-icon" width="32" height="32" contain></v-img>
-            </v-col>
-            <v-col>
-                <div class="post-title">{{ post.title }}</div>
-                <div class="post-location">
-                {{ post.location }}
-                </div>
-            </v-col>
-            <v-col cols="auto">
-                <div class="time">{{ post.time }}</div>
-            </v-col>
-            </v-row>
-        </div>
-      </v-card-text>
-  
-      <!-- 스탬프 -->
-      <v-card-text class="section">
-        <div class="section-header d-flex justify-space-between">
-          <div class="section-title">발자국을 남긴 곳</div>
-          <router-link to="/mypage" class="see-all">스탬프 컬렉션 →</router-link>
-        </div>
-        <div class="badge-row d-flex gap-3">
-          <v-avatar
-            v-for="(badge, i) in displayedBadges"
-            :key="i"
-            size="48"
-            @click="goToStamp"
-          >
-            <img :src="badge" />
-          </v-avatar>
-          <v-chip v-if="hiddenBadgeCount > 0" size="small" class="muted" color="grey">
-            +{{ hiddenBadgeCount }}
-          </v-chip>
-        </div>
-      </v-card-text>
+        <v-chip v-if="hiddenBadgeCount > 0" size="small" class="muted" color="grey">
+          +{{ hiddenBadgeCount }}
+        </v-chip>
+      </div>
+    </v-card-text>
 
-  
-      <!-- 동네 -->
-      <v-card-text class="section">
-        <div class="section-header d-flex justify-space-between">
-            <div class="section-title">발견한 동네</div>
-        </div>
-        <div class="neighborhoods d-flex flex-wrap gap-2">
-          <LocationChip
-            v-for="(place, i) in neighborhoods"
-            :key="i"
-            :place="place"
-          />
-          <v-chip size="small" class="muted" color="grey">+ 6</v-chip>
-        </div>
+    <!-- 동네 -->
+    <v-card-text class="section">
+      <div class="section-header d-flex justify-space-between">
+        <div class="section-title">발견한 동네</div>
+      </div>
+      <div class="neighborhoods-one-line d-flex align-center">
+        <LocationChip
+          v-for="(place, i) in visibleNeighborhoods"
+          :key="i"
+          :place="place"
+        />
+        <v-chip
+          v-if="hiddenNeighborhoodCount > 0"
+          size="small"
+          class="muted"
+          color="grey"
+        >
+          +{{ hiddenNeighborhoodCount }}
+        </v-chip>
+      </div>
+    </v-card-text>
 
-      </v-card-text>
-    </v-card>
-  </template>
-  
-  <script setup>
-  import {useRouter} from 'vue-router';
-  import profileImage from '@/assets/profile/profile.png'
-  import stampDummy from '@/assets/stamp_pic/독서냥.png'
-  import LocationChip from '@/components/common/LocationChip.vue'
-  
-  const router = useRouter(); 
-  const username = 'Madara Uchiha'
-  const posts = 10
-  const followers = 600
-  const followings = 600
+  </v-card>
+</template>
 
-  const maxBadgesToShow = 5
-  
-  
-  const todaysPosts = [
-    {
-      icon: stampDummy,
-      title: '신대방동 돈까스 투어',
-      location: '신대방동 294',
-      time: '6시간 전'
-    },
-    {
-      icon: stampDummy,
-      title: '신대방동 돈까스 투어',
-      location: '신대방동 294',
-      time: '6시간 전'
-    }
-  ]
-  // 뱃지 전체 목록 
-  const badges = [
-    stampDummy, stampDummy, stampDummy, stampDummy, stampDummy, stampDummy, stampDummy
-  ]
-  const displayedBadges = badges.slice(0, maxBadgesToShow)    // 최대 5개만 보이도록 
-  const hiddenBadgeCount = badges.length - maxBadgesToShow   
-  
-  // 발견한 동네 목록 
-  const neighborhoods = [
-    { name: '신대방동 294', latitude: 37.4854, longitude: 126.9016 },
-    { name: '보라매로 73', latitude: 37.4923, longitude: 126.9248 }
-  ]
+<script setup>
+import { useRouter } from 'vue-router'
+import { computed, watch, ref } from 'vue'
+import LocationChip from '@/components/common/LocationChip.vue'
+import stampDummy from '@/assets/stamp_pic/독서냥.png'
+
+// 🔸 Props 받기
+const props = defineProps({
+  userInfo: Object,
+  postCount: Number,
+  followers: Number,
+  followings: Number,
+  postList: Array
+})
 
 
-  const goToStamp = () => {
-    router.push('/stamp')
+const router = useRouter()
+
+const goToStamp = () => {
+  router.push('/stamp')
+}
+const goToMypage = () => {
+  if (props.userInfo?.id) {
+    router.push(`/mypage/${props.userInfo.id}`)
   }
-  const goToMypage = () => {
-    router.push('/mypage')
-  }
-  </script>
-  
-  <style scoped>
-/* 전체 카드 컨테이너 */
+}
+
+
+// 뱃지 관련
+const maxBadgesToShow = 5
+const badges = Array(7).fill(stampDummy)
+const displayedBadges = computed(() => badges.slice(0, maxBadgesToShow))
+const hiddenBadgeCount = computed(() => badges.length - maxBadgesToShow)
+const neighborhoods = ref([]);
+
+const MAX_NEIGHBORHOODS = 6
+
+const visibleNeighborhoods = computed(() =>
+  neighborhoods.value.slice(0, MAX_NEIGHBORHOODS)
+)
+
+const hiddenNeighborhoodCount = computed(() =>
+  neighborhoods.value.length - MAX_NEIGHBORHOODS
+)
+
+
+
+const todaysPosts = computed(() => {
+  if (!props.postList) return []
+  return props.postList.slice(0, 3).map(post => ({
+    title: post.placeName || '장소 없음',
+    location: post.placeName,
+    time: '', // 시간 없음
+    icon: post.thumbnailImage || stampDummy
+  }))
+})
+
+
+watch(
+  () => props.postList,
+  (list) => {
+    if (!list) return
+    const uniquePlaces = [...new Set(list.map(post => post.placeName).filter(Boolean))]
+    neighborhoods.value = uniquePlaces.map(name => ({ name }))
+  },
+  { immediate: true }
+)
+
+
+
+</script>
+
+<style scoped>
 .user-card {
   width: 370px;
   padding: 20px 10px;
@@ -147,7 +170,6 @@
   overflow: hidden;
 }
 
-/* ───── 상단 유저 정보 ───── */
 .user-header {
   display: flex;
   gap: 20px;
@@ -161,6 +183,7 @@
   align-items: center;
   padding-bottom: 8px;
 }
+
 .profile-image {
   cursor: pointer;
 }
@@ -181,7 +204,7 @@
   border-radius: 8px;
   color: white;
   width: fit-content !important;
-  float:right;
+  float: right;
 }
 
 .stats {
@@ -190,7 +213,6 @@
   margin-top: 4px;
 }
 
-/* ───── 공통 섹션 ───── */
 .section {
   margin-top: 12px;
 }
@@ -218,7 +240,6 @@
   text-decoration: underline;
 }
 
-/* ───── 오늘의 기록 ───── */
 .post-item {
   padding: 10px 5px;
 }
@@ -235,7 +256,6 @@
   color: #999;
 }
 
-/* ───── 스탬프 / 아바타 ───── */
 .badge-row {
   gap: 8px;
   align-items: center;
@@ -248,17 +268,15 @@
   cursor: pointer;
 }
 
-/* ───── 동네 / LocationChip ───── */
-.neighborhoods {
-  margin-top: 8px;
-  gap: 10px;
+.neighborhoods-oneline {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  gap: 8px;
+  max-width: 100%;
 }
 
 .muted {
   color: #777;
 }
-
-  </style>
-  
+</style>

@@ -38,7 +38,7 @@
           v-for="user in paginatedUsers"
           :key="user.id"
           class="user-icon-wrapper"
-          @click="goToUserMap"
+          @click="goToUserMap(user.id)"
         >
           <div class="user-icon">
             <img :src="getUserImage(user.image)" alt="user" />
@@ -67,18 +67,23 @@
 </template>
 
 <script setup>
-  import { ref, computed, onMounted, h, render } from 'vue'
-  import { useRouter } from 'vue-router'
+  import { ref, computed, onMounted, h, render, watch } from 'vue'
+  import { useRouter, useRoute } from 'vue-router'
   import axios from 'axios'
   import SearchLocation2 from '@/components/map/SearchLocation2.vue'
   import CustomMarker from '@/components/common/CustomMarker.vue'
   import PostCard from '@/components/post/PostCard.vue'
-  import profileImageDummy from '@/assets/profile/profile.png'
-  
+  import profileImageDummy from '@/assets/profile/default.png'
+  import { useUserStore } from '@/stores/userStore'
+  const userStore = useUserStore()
+
+  console.log(userStore.id)
   const router = useRouter(); 
+  const route = useRoute();
 
   const query = ref('') // 검색창 입력 값
   const selectedPostId = ref(null) // 선택된 포스트 ID (모달 띄우기용)
+
   const mapRef = ref(null) // 지도 DOM 참조
   const map = ref(null) // 네이버 지도 객체
   const infoWindow = ref(null) // 검색 결과 InfoWindow
@@ -160,37 +165,49 @@
   // 서버에서 유저 리스트 가져오기
   async function fetchUserList() {
     try {
-      const { data } = await axios.get('/json/following_list.json')
-      userList.value = data.following
-        .filter(user => user.status === 'ACTIVE')
-        .map(user => ({
-          id: user.id,
-          name: user.nickname,
-          image: user.profile_image || ''
-        }))
+      const { data } = await axios.get('http://localhost:8080/api/mypage/follow/list', {
+        params: { memberId: userStore.id }
+      });
+
+      console.log('📌 팔로우 유저 목록:', data);
+
+      userList.value = data.map(user => ({
+        id: user.id,
+        name: user.nickname,
+        image: user.profileImage || profileImageDummy
+      }));
     } catch (error) {
-      console.error('유저 리스트 로드 실패', error)
+      console.error('❌ 유저 리스트 로드 실패:', error);
     }
   }
+
 
   // 서버에서 포스트/장소 데이터 가져오기
-  async function fetchPosts() {
+  async function fetchFollowPosts() {
     try {
-      const { data } = await axios.get('/json/post.json')
-      data.post.forEach(post => {
-        post.places.forEach(place => {
-          places.value.push(place)
-        })
+      const { data } = await axios.get('http://localhost:8080/api/posts/follow/map', {
+        params: { memberId: userStore.id }  // 👈 실제 로그인 유저 ID 사용
       })
+
+      // 서버에서 받은 포스트 리스트를 마커용 장소 데이터로 변환
+      places.value = data.map(post => ({
+        latitude: post.latitude,
+        longitude: post.longitude,
+        name: post.placeName,
+        post_id: post.postId,
+        thumbnail_image: post.thumbnailImage
+      }))
     } catch (error) {
-      console.error('포스트 데이터 로드 실패', error)
+      console.error('팔로우 포스트 데이터 로드 실패', error)
     }
   }
+  
+
 
   // 유저 아이콘 클릭시 유저 맵 홈으로 이동
-  function goToUserMap() {
-    console.log('유저 클릭됨.')
-    router.push('/user-map-home')
+  function goToUserMap(userId) {
+    console.log('유저 클릭됨. id:', userId)
+    router.push(`/map/${userId}`)
   }
 
   // 커스텀 마커 생성하고 클릭 시 모달 오픈
@@ -224,12 +241,37 @@
     if (window.naver?.maps) {
       initMap()
       await fetchUserList()
-      await fetchPosts()
+      await fetchFollowPosts()
       places.value.forEach((place, index) => {
         createCustomMarker(place, index)
       })
     }
   })
+
+  watch(
+    () => userStore.id,
+    (id) => {
+      if (id) {
+        fetchUserList();
+        fetchFollowPosts();
+      }
+    },
+    { immediate: true }
+  );
+
+  watch(
+    () => route.params.id,
+    (newId) => {
+      if (newId) {
+        console.log('📌 라우트 ID 바뀜:', newId)
+        fetchFollowPosts()
+        // 필요시 initMap() 호출하거나 마커 갱신 로직도 여기에
+      }
+    },
+    { immediate: true }
+  )
+
+
 </script>
 
 
