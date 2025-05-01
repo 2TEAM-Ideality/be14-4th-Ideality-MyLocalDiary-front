@@ -25,6 +25,16 @@
       @place-selected="selectPlace"
     />
   </div>
+
+  <!-- 📌 PostCard 모달 -->
+  <div v-if="selectedPostId !== null" class="modal-overlay" @click="selectedPostId = null">
+      <div class="modal-content" @click.stop>
+        <div class="d-flex justify-end">
+          <button class="pr-3 pl-3" @click="selectedPostId = null">X</button>
+        </div>
+        <PostCard :postId="selectedPostId" />
+      </div>
+    </div>
 </template>
 
 <script setup>
@@ -36,6 +46,7 @@ import UserProfileModal from '@/components/mypage/UserProfileModal.vue'
 import CustomMarker from '@/components/common/CustomMarker.vue'
 import SearchLocation2 from '@/components/map/SearchLocation2.vue'
 import ReportModal from '@/components/report/ReportModal.vue'
+import PostCard from '@/components/post/PostCard.vue'
 
 // 🧩 라우트에서 /map/:id 추출
 const route = useRoute()
@@ -48,6 +59,8 @@ const userInfo = ref(null)
 const query = ref('')
 const map = ref(null)
 const postLocations = ref([])
+
+const selectedPostId = ref(null)
 
 const postCount = ref(0)
 const followers = ref(0)
@@ -128,6 +141,7 @@ function renderMarkers() {
       name: loc.placeName,
       onClick: (id) => {
         console.log(`📌 마커 클릭됨: post_id=${id}`)
+        selectedPostId.value = id // ✅ 모달 열기
       }
     })
 
@@ -188,6 +202,8 @@ onMounted(async () => {
 
 
 
+
+
 </script>
 
 <style scoped>
@@ -206,5 +222,22 @@ onMounted(async () => {
   top: 80px;
   right: 40px;
   z-index: 1000;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 </style>

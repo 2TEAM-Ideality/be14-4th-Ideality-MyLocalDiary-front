@@ -189,23 +189,24 @@ const scrollToTop = () => {
 
 const fetchPostDetail = async (id) => {
   try {
-    console.log('📌 [fetch] 시작:', id, 'memberId:', userStore.id);
-    let res;
-    if (routeUserId.value !== userStore.id) {
-      res = await axios.get(`/api/posts/follow/${id}`, {
-        params: { memberId: userStore.id }
-      });
-    } else {
-      res = await axios.get(`/api/posts/my/${id}`, {
-        params: { memberId: userStore.id }
-      });
+    const isMyPost = Number(route.params.id) === userStore.id;
+  const url = isMyPost
+    ? `/api/posts/my/${id}`
+    : `/api/posts/follow/${id}`;
+
+  console.log('📌 [fetch] 시작:', id, 'memberId:', userStore.id);
+
+  const res = await axios.get(url, {
+    params: { memberId: userStore.id },
+    headers: {
+      Authorization: `Bearer ${userStore.token}`
     }
-        
+  });
 
     console.log('📌 [fetch] 응답:', res.data);
 
     const data = res.data;
-
+    console.log(data)
     author.value = { name: data.nickname, avatar: data.profileImage };
     postTitle.value = data.title;
     postContent.value = data.post;

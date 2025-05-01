@@ -68,7 +68,7 @@
 
 <script setup>
   import { ref, computed, onMounted, h, render, watch } from 'vue'
-  import { useRouter } from 'vue-router'
+  import { useRouter, useRoute } from 'vue-router'
   import axios from 'axios'
   import SearchLocation2 from '@/components/map/SearchLocation2.vue'
   import CustomMarker from '@/components/common/CustomMarker.vue'
@@ -79,6 +79,7 @@
 
   console.log(userStore.id)
   const router = useRouter(); 
+  const route = useRoute();
 
   const query = ref('') // 검색창 입력 값
   const selectedPostId = ref(null) // 선택된 포스트 ID (모달 띄우기용)
@@ -205,7 +206,8 @@
 
   // 유저 아이콘 클릭시 유저 맵 홈으로 이동
   function goToUserMap(userId) {
-    router.push({ name: 'UserMapHome', params: { id: userId } });
+    console.log('유저 클릭됨. id:', userId)
+    router.push(`/map/${userId}`)
   }
 
   // 커스텀 마커 생성하고 클릭 시 모달 오픈
@@ -257,6 +259,17 @@
     { immediate: true }
   );
 
+  watch(
+    () => route.params.id,
+    (newId) => {
+      if (newId) {
+        console.log('📌 라우트 ID 바뀜:', newId)
+        fetchFollowPosts()
+        // 필요시 initMap() 호출하거나 마커 갱신 로직도 여기에
+      }
+    },
+    { immediate: true }
+  )
 
 
 </script>

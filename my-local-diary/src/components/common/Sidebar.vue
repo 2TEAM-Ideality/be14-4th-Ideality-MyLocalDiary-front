@@ -233,21 +233,23 @@ const reportProblem = () => console.log('문제 신고 창 열기')
 
 // 로그아웃
 async function confirmLogout() {
-  console.log('logout accessToken:', userStore.token);
-  
-  try {
-    await axios.post('http://localhost:8080/api/member/logout', null, {
-      headers: {
-        Authorization: `Bearer ${userStore.token}`
-      }
-    })
+  // console.log('logout accessToken:', userStore.token);
+  // try {
+  //   await axios.post('http://localhost:8080/api/member/logout', null, {
+  //     headers: {
+  //       Authorization: `Bearer ${userStore.token}`
+  //     }
+  //   })
 
-    userStore.logout()
-    router.push('/')
-  } catch (err) {
-    console.error('❌ 로그아웃 실패', err)
-  }
+  //   userStore.logout()
+  //   router.push('/')
+  // } catch (err) {
+  //   console.error('❌ 로그아웃 실패', err)
+  // }
+  await userStore.logout();
+  router.push('/')
 }
+
 
 const goToRegulationHistory = () => router.push('/admin/regulations')
 const goToReportHistory = () => router.push('/admin/reports')
