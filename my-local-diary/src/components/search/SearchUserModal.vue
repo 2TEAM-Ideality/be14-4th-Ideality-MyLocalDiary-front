@@ -99,19 +99,20 @@
     if (user.followStatus === 'wait') return;
   
     try {
+      console.log(userStore.token);
       const method = user.followStatus === 'following' ? 'DELETE' : 'POST';
       const res = await fetch(`http://localhost:8080/api/follow`, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${userStore.token}`
-        },
-        body: JSON.stringify({
-          followingMemberId: userStore.id,
-          followTargetMemberId: user.id,
-          ...(method === 'POST' && { status: user.is_public })
-        })
-      });
+  method,
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${userStore.token}`
+  },
+  body: JSON.stringify({
+    followingMemberId: userStore.id,
+    followTargetMemberId: user.id,
+    ...(method === 'POST' && { status: user.is_public ? true : false })
+  })
+});
   
       if (!res.ok) throw new Error('Follow action failed');
   

@@ -408,7 +408,6 @@ async function submitPost() {
     }
   })
 
-  const userStore = useUserStore()
   const token = userStore.token
 
   try {
