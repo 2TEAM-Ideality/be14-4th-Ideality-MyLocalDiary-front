@@ -6,6 +6,11 @@ import axios from 'axios'
 export const useNotificationStore = defineStore('notification', () => {
   const notifications = ref([])
 
+  const splitContent = (content) => {
+    const match = content.match(/(.+?)님(.*)/)
+    return match ? [match[1], `님${match[2]}`] : ['알 수 없음', content]
+  }
+
   async function fetchNotifications(token) {
     try {
       const res = await axios.get('http://localhost:8080/api/notifications', {
@@ -13,8 +18,21 @@ export const useNotificationStore = defineStore('notification', () => {
           Authorization: `Bearer ${token}`
         }
       })
-      console.log('📦 알림 불러오기 성공:', res.data)
-      notifications.value = res.data // ✅ 배열이니까 그대로 저장
+
+      notifications.value = res.data.map(noti => {
+        const [nickname, action] = splitContent(noti.content)
+        return {
+          id: noti.id,
+          nickname,
+          action,
+          content: noti.content,
+          type: noti.type,
+          accepted: noti.accepted,
+          createdAt: noti.createdAt,
+          read: noti.isRead,
+          targetId: noti.targetId
+        }
+      })
     } catch (err) {
       console.error('❌ 알림 불러오기 실패:', err)
     }
@@ -22,10 +40,9 @@ export const useNotificationStore = defineStore('notification', () => {
 
   function markAsRead(id) {
     const target = notifications.value.find(n => n.id === id)
-    if (target) target.isRead = true
+    if (target) target.read = true
   }
 
-  // ❗❗ 이 부분이 중요
   return {
     notifications,
     fetchNotifications,
