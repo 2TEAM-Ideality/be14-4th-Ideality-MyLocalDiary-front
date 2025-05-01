@@ -8,6 +8,7 @@ import 'swiper/css/pagination';
 
 import '@mdi/font/css/materialdesignicons.css'  // 아이콘
 
+
 // ⭐ Naver Maps API 스크립트 동적 로딩
 const loadNaverMapsScript = () => {
   return new Promise((resolve, reject) => {
@@ -27,12 +28,12 @@ const loadNaverMapsScript = () => {
 };
 
 loadNaverMapsScript()
-  .then(() => {
+  .then(async () => {
     console.log('✅ Naver Maps script loaded!')
-    
+
     const pinia = createPinia()
     const app = createApp(App)
-    
+
     app.use(router)
     app.use(vuetify)
     app.use(pinia)
@@ -45,4 +46,3 @@ loadNaverMapsScript()
 
 
 
-  
