@@ -1,5 +1,5 @@
 <template>
-    <v-container fluid class="fill-height d-flex align-center justify-center pa-4" style="background-color: black; color: white;">
+    <v-container v-if = "!isRestoring" fluid class="fill-height d-flex align-center justify-center pa-4" style="background-color: black; color: white;">
       <v-row class="ma-0" align="center" justify="center">
         <v-col cols="12" md="10" lg="8">
           <v-card class="d-flex flex-row pa-0" elevation="6" style="background-color: transparent;">
@@ -89,23 +89,21 @@
 
   const inputId = ref("");
   const inputPw = ref("");
+  const isRestoring = ref(false);
+  
 
-  // 
   onMounted(async () => {
-    const token = localStorage.getItem('accessToken');
-    
-    if (token) {
-      try {
-        await userStore.login(token);
-        router.push('/home');
-      } catch (err) {
-        console.warn("⛔ 유효하지 않은 토큰, 자동 로그인 실패");
-        userStore.logout();
-        router.push('/');
+    try {
+      await userStore.restoreUser()
+      if (userStore.isLoggedIn) {
+        router.push('/home')
       }
+    } catch (e) {
+      console.error('복원 중 오류:', e)
+    } finally {
+      isRestoring.value = false
     }
-  });
-
+  })
 
   // 로그인 처리 
   function redirectToKakao() {
@@ -122,17 +120,18 @@
       }, {
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        withCredentials: true // 쿠키 포함
       });
       console.log('로그인 성공', response.data)
 
       const accessToken = response.data.data.accessToken;
-      const refreshToken = response.data.data.refreshToken;
+      // const refreshToken = response.data.data.refreshToken;
 
       console.log('✅ JWT Token 확인 테스트:', accessToken);
-      console.log('✅ Refresh Token 확인 테스트:', refreshToken);
+      // console.log('✅ Refresh Token 확인 테스트:', refreshToken);
 
-      await userStore.login(accessToken, refreshToken); 
+      await userStore.login(accessToken); 
 
       router.push('/home');  // 메인 홈으로 이동
 
