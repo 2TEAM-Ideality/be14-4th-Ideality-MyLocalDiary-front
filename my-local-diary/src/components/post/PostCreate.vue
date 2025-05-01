@@ -128,11 +128,16 @@
 <script setup>
 import { ref, onMounted, h, render, nextTick } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/userStore'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import CustomMarker from '@/components/common/CustomMarker.vue'
+
+const router = useRouter()
+const userStore = useUserStore()
 
 const fileInput = ref(null)
 const uploadedImages = ref([])
@@ -413,6 +418,7 @@ async function submitPost() {
       }
     })
     alert('게시글이 성공적으로 등록되었습니다.')
+    router.push(`/mypage/${userStore.id}`)
   } catch (err) {
     console.error('업로드 실패:', err)
     alert('등록 실패')

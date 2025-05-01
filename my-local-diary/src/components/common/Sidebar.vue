@@ -234,6 +234,7 @@ const reportProblem = () => console.log('문제 신고 창 열기')
 // 로그아웃
 async function confirmLogout() {
   console.log('logout accessToken:', userStore.token);
+  
   try {
     await axios.post('http://localhost:8080/api/member/logout', null, {
       headers: {

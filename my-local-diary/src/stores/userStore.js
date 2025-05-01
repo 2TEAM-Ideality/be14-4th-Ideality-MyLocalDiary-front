@@ -6,7 +6,7 @@ import axios from 'axios';
 export const useUserStore = defineStore('user', () => {
   // ✅ state
   const id = ref(null)
-  const token = ref(null)
+  const token = ref(null)  // access token 담는 용도
   const loginId = ref('')
   const name = ref('')
   const nickname = ref('')
@@ -31,11 +31,11 @@ export const useUserStore = defineStore('user', () => {
   async function login(accessToken, refreshToken) {
     console.log('로그인하러 넘어 옴')
 
-
     // 1. 액세스 토큰, 리프레시 토큰 저장
     localStorage.setItem('refreshToken', refreshToken);
+    
     token.value = accessToken;
-    localStorage.setItem('accessToken', accessToken); // ✅ accessToken 저장
+
     console.log(token.value)
 
     try {
@@ -98,6 +98,7 @@ export const useUserStore = defineStore('user', () => {
   function logout() {
     // 1. 상태 초기화
     id.value = null
+    token.value = null
     loginId.value = ''
     name.value = ''
     nickname.value = ''
@@ -116,7 +117,6 @@ export const useUserStore = defineStore('user', () => {
     // 2. localStorage 정리
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
-    localStorage.removeItem('access_token'); // ✅ 이거 꼭!
   }
   
 
