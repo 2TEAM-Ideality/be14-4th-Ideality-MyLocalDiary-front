@@ -524,6 +524,12 @@
       "following_member_id": "5",
       "follower_target_member_id": "8",
       "status": "wait"
+    },
+    {
+      "id": "5a03",
+      "following_member_id": 2,
+      "follower_target_member_id": "5",
+      "status": "wait"
     }
   ],
   "member_stamp": [

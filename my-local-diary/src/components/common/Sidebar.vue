@@ -17,15 +17,22 @@
               v-if="!ui.isHover"
               src="/src/assets/cursor/슈크림붕어빵1.png"
               width="40"
+              height="40"
+              aspect-ratio="1"
             />
             <transition name="fade">
-              <v-img
-                v-if="ui.showImage"
-                src="/src/assets/logo/My_Local_Diary.png"
-              />
+              <div v-if="ui.showImage">
+                <v-img
+                  src="/src/assets/logo/My_Local_Diary.png"
+                  width="120"
+                  height="40"
+                  aspect-ratio="3"
+                />
+              </div>
             </transition>
           </div>
         </v-list-item>
+
 
         <!-- ✨ 메뉴 항목 -->
         <template v-if="!isAdmin">
@@ -158,15 +165,17 @@ const isAlarmOpen = ref(false)
 const isAdmin = ref(false)
 
 onMounted(async () => {
-  isAdmin.value = userStore.role === 'ADMIN'
-  await notificationStore.fetchNotifications(userStore.token)
+  await userStore.restoreUser()
 
+  isAdmin.value = userStore.role === 'ADMIN'
+
+  await notificationStore.fetchNotifications(userStore.token)
   
   // 🔁 알림 자동 갱신 (10초마다)
   setInterval(() => {
-    notificationStore.fetchNotifications(userStore.token)
-  }, 10000) // 10초 간격 (10000ms)
-}
+      notificationStore.fetchNotifications(userStore.token)
+    }, 10000) // 10초 간격 (10000ms)
+  }
 )
 
 // 알림 수 계산
@@ -222,7 +231,9 @@ const goToSettings = () => router.push('/settings')
 const goToActivities = () => router.push('/activities')
 const reportProblem = () => console.log('문제 신고 창 열기')
 
-const confirmLogout = async () => {
+// 로그아웃
+async function confirmLogout() {
+  console.log('logout accessToken:', userStore.token);
   try {
     await axios.post('http://localhost:8080/api/member/logout', null, {
       headers: {
