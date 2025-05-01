@@ -2,6 +2,7 @@
   <VApp>
     <Sidebar v-if="route.path !== '/'" />
     <VMain class="main-content">
+      <SSEConnect /> 
       <RouterView />
     </VMain>
   </VApp>
@@ -9,10 +10,48 @@
 
 <script setup>
 import Sidebar from './components/common/Sidebar.vue'
-import { useRoute } from 'vue-router'
-
+import SSEConnect from './components/common/SSEconnect.vue'
+import { useRoute, useRouter } from 'vue-router'
+import { watch } from 'vue'
+import { useUserStore } from '@/stores/userStore'
+import { decodeJwt } from 'jose'
+import { onMounted } from 'vue' // ✅ 이거 반드시 필요함
 
 const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
+
+// 👇 강제 로그아웃 감시
+watch(() => userStore.forcedLogout, (val) => {
+  if (val) {
+    alert('세션이 만료되어 로그아웃되었습니다.')
+    router.push('/')
+  }
+})
+
+onMounted(() => {
+  setInterval(async () => {
+    if (!userStore.token) return
+
+    try {
+      const decoded = decodeJwt(userStore.token)
+      const now = Math.floor(Date.now() / 1000)
+      const remaining = decoded.exp - now
+
+      if (remaining <= 60) {
+        const success = await userStore.tryReissueToken()
+        if (!success) {
+          userStore.forceLogout()
+          router.push('/')  // 로그인 페이지로 이동
+        }
+      }
+    } catch (e) {
+      console.error('❌ JWT 디코딩 실패:', e)
+      userStore.forceLogout()
+      router.push('/')  // 토큰 손상 시에도 로그인 페이지 이동
+    }
+  }, 30000)
+})
 </script>
 
 <style scoped>

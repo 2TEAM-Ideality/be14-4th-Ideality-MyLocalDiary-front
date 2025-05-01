@@ -49,7 +49,7 @@
             <div class="d-flex justify-end">
                 <button class="pr-3 pl-3" @click="selectedPostId = null">X</button>
             </div>
-            <PostCard/>
+            <PostCard :postId="selectedPostId"/>
         </div>
     </div>
 </template>
@@ -57,22 +57,40 @@
 <script setup>
 import PostCard from '../post/PostCard.vue';
 import PostList from './PostList.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
 const selectedPostId=ref(null);
 const showCalendar = ref(true)
 const selectedDate = ref(null)
+const postsByDate = ref({});
 
-const allowedList = [
-    '2025-04-01',
-    '2025-04-05',
-    '2025-04-10'
-]
+const formatDate = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+onMounted(async () => {
+    try{
+        const response=await axios.get('http://localhost:8080/api/posts/calendar',{params:{memberId:1}});
+        const data=response.data.data;
+        data.forEach(post=>{
+            const date=post.createdAt?.slice(0,10);
+            if(date){
+                postsByDate.value[date]=post.postId;
+            }
+        });
+        console.log(`✅ postsByDate: `, postsByDate.value);
+    }catch(error){
+        console.error(`❌ 게시글 정보 불러오기 실패: `,error)
+    }
+})
 
 const allowedDates = (date) => {
-    const formatted = new Date(date).toISOString().slice(0, 10)
-    return allowedList.includes(formatted)
+    const formatted = formatDate(date)
+    return postsByDate.value.hasOwnProperty(formatted)
 }
 
 function toggleView() {
@@ -80,17 +98,14 @@ function toggleView() {
 }
 
 async function handleDateClick(date) {
-    try {
-        const formattedDate = new Date(date).toISOString().slice(0, 10)
-        const response = await axios.get('http://localhost:3001/calendar', {
-            params: { date: formattedDate }
-        })
-        selectedPostId.value = response.data.postId
+    const formattedDate=formatDate(date)
+
+    if(postsByDate.value[formattedDate]){
+        selectedPostId.value=postsByDate.value[formattedDate]
         console.log('✅ selectedPostId 업데이트:', selectedPostId.value)
-    }
-    catch (error) {
-        console.error('❌ 날짜 데이터 요청 실패:', error)
-        selectedPostId.value=1;
+    } else {
+        selectedPostId.value = null
+        console.warn('❗ 해당 날짜에 게시물이 없습니다.')
     }
 }
 </script>
@@ -101,7 +116,7 @@ async function handleDateClick(date) {
     display: flex;
     flex-direction: column;
     padding: 24px;
-    height: 100%;
+    height:100%;
 }
 
 .floating-toggle {
@@ -116,7 +131,11 @@ async function handleDateClick(date) {
 
 .calendar {
     width: 100%;
-    height: 100%;
+    height: auto; /* ✨ auto로 바꿔 */
+    /* min-height: 500px; */
+    /*min-height: 400px;*/
+     /* ✨ 너무 줄어들지 않게 최소 높이 보장 */
+    box-sizing: border-box;
 }
 
 .content-box {

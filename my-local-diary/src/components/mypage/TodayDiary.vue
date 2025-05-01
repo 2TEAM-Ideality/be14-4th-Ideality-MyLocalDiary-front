@@ -1,9 +1,9 @@
 <template>
   <v-card class="today-diary-card" flat>
     <div class="header d-flex justify-space-between align-center mb-2">
-      <span class="today-text">
+      <p class="today-text">
         TODAY : <span class="today-date">{{ formattedToday }} {{ dayOfWeek }}</span>
-      </span>
+      </p>
       <v-icon size="18" color="grey" @click="createDiary">mdi-pencil</v-icon>
     </div>
 
@@ -74,7 +74,7 @@ const dayOfWeek = dayNames[today.getDay()]
 
 // 다이어리 작성 페이지 이동
 const createDiary = () => {
-  router.push('/create-diary')
+  router.push('/post/create')
 }
 
 // 오늘 다이어리 데이터 가져오기
@@ -109,10 +109,9 @@ onMounted(() => {
 
 <style scoped>
 .today-diary-card {
-  height: 100%;
-display: flex;
-flex-direction: column;
-
+  height:100%;
+  display: flex;
+  flex-direction: column;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   padding: 20px 18px 30px 18px;

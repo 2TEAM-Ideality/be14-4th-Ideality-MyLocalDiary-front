@@ -28,12 +28,12 @@ const loadNaverMapsScript = () => {
 };
 
 loadNaverMapsScript()
-  .then(() => {
+  .then(async () => {
     console.log('✅ Naver Maps script loaded!')
-    
+
     const pinia = createPinia()
     const app = createApp(App)
-    
+
     app.use(router)
     app.use(vuetify)
     app.use(pinia)
@@ -46,4 +46,3 @@ loadNaverMapsScript()
 
 
 
-  

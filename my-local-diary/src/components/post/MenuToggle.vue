@@ -47,18 +47,41 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <ReportModal
+        v-if="reportDialog"
+        :type="props.type"
+        :reported-id="props.reportedId"
+        :modelValue="reportDialog"
+        @update:modelValue="reportDialog = $event"
+        @close="reportDialog = false"
+      />
     </div>
   </template>
   
   <script setup>
   import { ref } from 'vue'
+  import ReportModal from '@/components/report/ReportModal.vue'
+
+  const props = defineProps({
+    modelValue: Boolean,
+    type: String, // 'POST' | 'COMMENT' | 'MEMBER'
+    reportedId: [Number, String]
+  })
+
+
   
   const menu = ref(false)
   const confirmDialog = ref(false)
-  
+  const reportDialog = ref(false)
+
   function onAction(action) {
     menu.value = false
-    console.log('Selected action:', action)
+    if (action === 'Report') {
+    reportDialog.value = true // 신고 모달 열기!
+    } else {
+      console.log('Selected action:', action)
+    }
   }
 
   function onClose() {

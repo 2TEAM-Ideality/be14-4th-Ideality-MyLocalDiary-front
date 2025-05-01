@@ -1,38 +1,37 @@
 <template>
-  <v-app class="mypage-container">
-    <v-main>
-      <div style="display: flex; height: 100vh;">
-      <!-- 유저 프로필 -->
-      <div
-          class="left-side"
-          style="flex: 6; border-right: 1px solid #E5E7EB; box-shadow: 4px 0 12px -4px rgba(0, 0, 0, 0.1); flex-direction: column;"
-        >
-        <UserProfile :userData="userStore" 
-          @open-follower="isFollowerModalOpen = true"
-          @open-following="isFollowingModalOpen = true"
-        />
-        <Badge />
-      </div>
+  <LoadingModal v-if="isLoading" :today="new Date()" message="프로필 불러오는 중..." />
+  
+  <div v-if="!isLoading" class="container">
+    <!-- 유저 프로필 -->
+    <div class="left-side">
+      <UserProfile 
+        v-if="profileUserData"
+        :userData="profileUserData"
+        :isMine="isMine"
+        @open-follower="isFollowerModalOpen = true"
+        @open-following="isFollowingModalOpen = true"
+      />
+      <Badge />
+    </div>
+    
 
-      <!-- 스탬프 영역 -->
-      <div class="right-side">
-        <div class="stamps">
-          <CatStampBar
-            v-for="(stamp, index) in paginatedStamps"
-            :key="index"
-            :title="stamp.title"
-            :stampImage="stamp.stampImage"
-            :count="stamp.count"
-          />
-          <div class="button-row">
-            <button v-if="currentPage > 0" @click="previousPage" class="prev-button">이전장으로</button>
-            <button v-if="currentPage < totalPages - 1" @click="nextPage" class="next-button">다음장으로 넘기기</button>
-          </div>
+    <!-- 스탬프 영역 -->
+    <div class="right-side">
+      <div class="stamps">
+        <CatStampBar
+          v-for="(stamp, index) in paginatedStamps"
+          :key="index"
+          :title="stamp.title"
+          :stampImage="stamp.stampImage"
+          :count="stamp.count"
+        />
+        <div class="button-row">
+          <button v-if="currentPage > 0" @click="previousPage" class="prev-button">이전장으로</button>
+          <button v-if="currentPage < totalPages - 1" @click="nextPage" class="next-button">다음장으로 넘기기</button>
         </div>
       </div>
-      </div>
-    </v-main>
-  </v-app>
+    </div>
+  </div>
 
   <Follower
     v-if="isFollowerModalOpen"
@@ -46,16 +45,26 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import CatStampBar from '/src/components/stamp/stamp.vue';
-import UserProfile from '/src/components/common/UserProfile.vue';
-import { useUserStore } from '/src/stores/userStore.js';
-import Badge from '/src/components/stamp/badge.vue';
-import Follower from '/src/components/follow/Follower.vue';
-import Following from '/src/components/follow/Following.vue';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useUserStore } from '@/stores/userStore.js';
+import { useRoute } from 'vue-router'
+import axios from 'axios';
+import CatStampBar from '@/components/stamp/stamp.vue';
+import UserProfile from '@/components/common/userprofile.vue';
+import Badge from '@/components/stamp/badge.vue';
+import LoadingModal from '@/components/common/LoadingModal.vue';
 
 const userStore = useUserStore();
+const route = useRoute();
 
+const profileUserData = ref(null);
+const currentPage = ref(0);
+const stamps = ref([]);
+const isFollowerModalOpen = ref(false);
+const isFollowingModalOpen = ref(false);
+const isLoading = ref(true);
+
+const stampsPerPage = 4;
 const BASE_STAMPS = [
   { title: '카페냥', stampImage: '/src/assets/stamp_pic/카페냥.png' },
   { title: '산책냥', stampImage: '/src/assets/stamp_pic/산책냥.png' },
@@ -65,68 +74,100 @@ const BASE_STAMPS = [
   { title: '영화냥', stampImage: '/src/assets/stamp_pic/영화냥.png' }
 ];
 
-// 상태 관리
-const currentPage = ref(0);
-const stampsPerPage = 4;
-const stamps = ref([]);
-const isFollowerModalOpen = ref(false);
-const isFollowingModalOpen = ref(false);
-
+// 현재 URL 유저 ID
+const routeUserId = computed(() => Number(route.params.id));
+const isMine = computed(() => userStore.id && routeUserId.value === Number(userStore.id));
 const totalPages = computed(() => Math.ceil(stamps.value.length / stampsPerPage));
-
 const paginatedStamps = computed(() => {
   const start = currentPage.value * stampsPerPage;
   return stamps.value.slice(start, start + stampsPerPage);
 });
 
-// 데이터 가져오기
-const fetchStampCounts = async () => {
+// 유저 프로필 가져오기
+const fetchUserProfile = async () => {
+  if (!userStore.id) {
+    console.warn("❌ 아직 restoreUser() 끝나지 않음");
+    return;
+  }
+
   try {
-    const res = await fetch('http://localhost:3001/member_stamp');
+    if (isMine.value) {
+      profileUserData.value = {
+        id: userStore.id,
+        loginId: userStore.loginId,
+        nickname: userStore.nickname,
+        email: userStore.email,
+        birth: userStore.birth,
+        role: userStore.role,
+        status: userStore.status,
+        isPublic: userStore.isPublic,
+        bio: userStore.bio,
+        profileImage: userStore.profileImage,
+        profileMusic: userStore.profileMusic,
+        followers: userStore.followers,
+        following: userStore.following,
+        posts: userStore.posts
+      };
+    } else {
+      const res = await axios.get(`http://localhost:8080/api/member/${routeUserId.value}`, {
+        headers: {
+          Authorization: `Bearer ${userStore.token}`
+        }
+      });
+      profileUserData.value = res.data.data;
+    }
+  } catch (err) {
+    console.error('❌ 유저 정보 조회 실패:', err);
+  }
+};
+
+// 스탬프 카운트 가져오기
+const fetchStampCounts = async () => {
+  if (!userStore.id) return;
+
+  try {
+    const pageMemberId = Number(userStore.id);
+    const res = await fetch(`http://localhost:8080/api/stamp?memberId=${pageMemberId}`);
     const memberStamps = await res.json();
-
-    // 내 id만 필터링
-    const myId = Number(userStore.id);
-    const myStamps = memberStamps.filter(record => record.member.id === myId);
-
-    // 내 스탬프 기록으로 count 세기
-    const stampCountMap = {};
-
-    myStamps.forEach((record) => {
-      const stampName = record.stamp.name;
-      if (stampCountMap[stampName]) {
-        stampCountMap[stampName]++;
-      } else {
-        stampCountMap[stampName] = 1;
-      }
-    });
 
     // BASE_STAMPS 기준으로 갯수 매칭
     stamps.value = BASE_STAMPS.map((stamp) => ({
       ...stamp,
-      count: stampCountMap[stamp.title] ?? 0
+      count: memberStamps[stamp.title] ?? 0
     }));
-
   } catch (err) {
     console.error('❌ 스탬프 count 불러오기 실패:', err);
   }
 };
 
-// 페이지 네비게이션
+// 페이지 전환
 const nextPage = () => {
   if (currentPage.value < totalPages.value - 1) currentPage.value++;
 };
-
 const previousPage = () => {
   if (currentPage.value > 0) currentPage.value--;
 };
 
-// 컴포넌트 마운트 시 데이터 로딩
+// 최초 로딩
 onMounted(async () => {
-  await userStore.restoreUser();  // ✅ await 필수
-  fetchStampCounts();              // ✅ 그 다음에 데이터 받아와야
+  isLoading.value = true; // ✅ 로딩 시작
+  await userStore.restoreUser();
+  await fetchUserProfile();
+  isLoading.value = false; // ✅ 로딩 끝
+
+  await fetchStampCounts();
+});
+
+watch(() => route.params.id, async (newId, oldId) => {
+  if (newId !== oldId) {
+    isLoading.value = true;
+    await fetchUserProfile();
+    await fetchStampCounts();
+    isLoading.value = false;
+  }
 });
 </script>
+
 
 <style scoped>
 /* 화면 기본 여백 없애기 */
@@ -135,27 +176,26 @@ onMounted(async () => {
   padding: 0;
 }
 
-.mypage-container {
+.container {
   display: flex;
   height: 100vh;
   width: 100vw;
   min-width: 100vw;
-  margin-left: 200px;
-  height: 100vh;
-  
+  margin: 0;
 }
 
 .left-side {
-  width:50%;
-  height: 100%;
+  width: 50%;
   display: flex;
   justify-content: flex-start;
-  align-items: start;
-  padding-top: 40px;
-  padding-right: 2%;
-  flex-direction: column; /* ✨ 추가 */
-  overflow-y: auto; /* ✨ 추가: 넘치면 내부만 스크롤 */
-
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0;
+  margin-top: 0;
+  position: relative;
+  top: -20px;
+  align-self: flex-start;
+  margin-left: 100px;
 }
 
 .right-side {

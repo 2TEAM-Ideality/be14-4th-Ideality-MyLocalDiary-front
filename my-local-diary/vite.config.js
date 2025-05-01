@@ -32,10 +32,11 @@ export default defineConfig({
 
       // 백엔드
       '/api': {
-        target: 'http://localhost:8080',  // Spring Boot 서버 주소
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '/api'), // 경로 유지
+        target: 'http://localhost:8080',
+        changeOrigin: true
       }
+
+      
     },
   }
 })

@@ -1,13 +1,25 @@
 <template>
   <div class="report-management">
-    <!-- 고양이 그림 + 제목 -->
-    <div class="header">
-      <img src="/src/assets/stamp_pic/cat_bar.png" alt="고양이" class="cat-image" />
-      <div class="title">신고 관리</div>
+    <div style="display:flex; flex-direction: row; justify-content: space-between; align-items: flex-end;">
+      <!-- 고양이 그림 + 제목 -->
+      <div class="header">
+        <img src="/src/assets/stamp_pic/cat_bar.png" alt="고양이" class="cat-image" />
+        <div class="title">신고 관리</div>
+      </div>
+
+      <!-- 필터링 버튼 -->
+      <!-- 상태별 필터 버튼 -->
+      <div class="filter-buttons">
+        <button @click="filterStatus('ALL')" :class="{ active: selectedStatus === 'ALL' }">전체</button>
+        <button @click="filterStatus('WAITING')" :class="{ active: selectedStatus === 'WAITING' }">처리중</button>
+        <button @click="filterStatus('RESOLVED')" :class="{ active: selectedStatus === 'RESOLVED' }">처리완료</button>
+        <button @click="filterStatus('REJECTED')" :class="{ active: selectedStatus === 'REJECTED' }">반려</button>
+      </div>
     </div>
+    
 
     <!-- 테이블 -->
-    <div class="table-container">
+    <div  v-if="reports.length > 0" class="table-container">
       <table class="report-table" v-if="pagedReports.length">
         <thead>
           <tr>
@@ -23,30 +35,43 @@
           </tr>
         </thead>
         <tbody>
+          
           <tr v-for="report in pagedReports" :key="report.id">
             <td>{{ report.id }}</td>
-            <td>{{ report.created_at }}</td>
-            <td>{{ report.report_type }}</td>
-            <td>{{ report.reported_id }}</td>
+            <td>{{ report.createdAt }}</td>
+            <td>{{ report.reportType }}</td>
+            <td>{{ report.reportedId }}</td>
             <td>
               <button class="detail-button" @click="openContentModal(report.content)">자세히보기</button>
             </td>
             <td>
-              <select v-model="report.status" @change="updateReportStatus(report)">
-                <option value="처리중">처리중</option>
-                <option value="처리완료">처리완료</option>
-                <option value="반려">반려</option>
-              </select>
+              <template v-if="report.status === 'WAITING'">
+                <select v-model="report.status" @change="updateReportStatus(report, report.status)">
+                  <option value="WAITING">처리중</option>
+                  <option value="RESOLVED">처리완료</option>
+                  <option value="REJECTED">반려</option>
+                </select>
+              </template>
+
+              <!-- 처리 완료 상태인 경우: 텍스트 표시 -->
+              <template v-else>
+                <span>
+                  {{ report.status === 'RESOLVED' ? '처리완료' : '반려' }}
+                </span>
+              </template>
             </td>
-            <td>{{ report.member_id }}</td>
             <td>
-              <div class="reason-select">
+              {{ report.memberId  }}
+            </td>
+            <td>
+              {{ report.reportReasonId }}
+              <!-- <div class="reason-select">
                 <select v-model="report.report_reason_id" @change="handleReasonChange(report)" disabled>
                   <option v-for="reason in reportReasons" :key="reason.id" :value="reason.id">
-                    {{ reason.reason }}
+                    {{ reason.reportReasons }}
                   </option>
                 </select>
-              </div>
+              </div> -->
             </td>
             <td>
               <div class="report-link">
@@ -61,7 +86,9 @@
       </table>
 
       <div v-else>
-        <LoadingModal />
+        <div style="padding: 5%;">
+          해당 상태의 신고 내역이 없습니다.
+        </div>
       </div>
     </div>
 
@@ -106,6 +133,23 @@
     </div>
 
   </div>
+
+  <!-- 확인 모달 -->
+  <div v-if="showConfirmModal" class="modal-overlay" @click.self="closeConfirmModal">
+    <div class="modal">
+      <h3>상태 변경 확인</h3>
+      <p>
+        해당 신고를 <strong>{{ confirmAction === 'RESOLVED' ? '처리완료' : '반려' }}</strong> 상태로 변경하시겠습니까?
+      </p>
+      <div style="margin-top: 20px;">
+        <button @click="confirmStatusChange" class="close-button">확인</button>
+        <button @click="closeConfirmModal" class="close-button">취소</button>
+      </div>
+    </div>
+  </div>
+
+
+
 </template>
 <script>
 import LoadingModal from '@/components/common/LoadingModal.vue';
@@ -125,38 +169,48 @@ export default {
       customReasonInput: '',
       currentPage: 1,
       pageSize: 10,
+      selectedStatus: 'ALL', 
+      
+      // 신고 처리 확인 모달 
+      showConfirmModal: false,
+      confirmAction: null,
+      confirmTargetReport: null,
     };
   },
   computed: {
     totalPages() {
-      return Math.ceil(this.reports.length / this.pageSize);
+    return Math.ceil(this.filteredReports.length / this.pageSize);
     },
     pagedReports() {
       const start = (this.currentPage - 1) * this.pageSize;
       const end = start + this.pageSize;
-      return this.reports.slice(start, end);
+      return this.filteredReports.slice(start, end);
     },
+    filteredReports() {
+      if (this.selectedStatus === 'ALL') {
+        return this.reports;
+      }
+      return this.reports.filter(report => report.status === this.selectedStatus);
+    }
   },
   created() {
     this.fetchReports();
-    this.fetchReportReasons();
+    // this.fetchReportReasons();
   },
   methods: {
     async fetchReports() {
       try {
-        const response = await axios.get('http://localhost:3001/reports');
-        this.reports = response.data.map(report => ({ ...report }));
+        const response = await axios.get('/api/admin/report/all');
+        console.log("신고 내역 리스트 요청됨")
+        console.log(response)
+        this.reports = response.data.data.map(report => ({ ...report }));
       } catch (error) {
         console.error('Failed to fetch reports', error);
       }
     },
-    async fetchReportReasons() {
-      try {
-        const response = await axios.get('http://localhost:3001/report_reasons');
-        this.reportReasons = response.data;
-      } catch (error) {
-        console.error('Failed to fetch report reasons', error);
-      }
+    filterStatus(status) {   //  상태 필터링 메소드
+      this.selectedStatus = status;
+      this.currentPage = 1; // 필터 바꿀 때 페이지도 1로 초기화
     },
     openContentModal(content) {
       this.selectedContent = content;
@@ -166,15 +220,51 @@ export default {
       this.showContentModal = false;
       this.selectedContent = '';
     },
-    async updateReportStatus(report) {
+    async updateReportStatus(report, status) {
+      if (status === 'RESOLVED' || status === 'REJECTED') {
+        // 모달창 띄우고, 나중에 확인되면 호출
+        this.confirmTargetReport = report;
+        this.confirmAction = status;
+        this.showConfirmModal = true;
+        return;
+      }
+
+      // WAITING 등 기타 상태 처리
       try {
-        await axios.patch(`http://localhost:3001/reports/${report.id}`, {
-          status: report.status,
+        await axios.patch(`/api/admin/report/${report.id}`, {
+          status
         });
+        console.log('상태 업데이트 완료');
       } catch (error) {
-        console.error('Failed to update report status', error);
+        console.error('상태 업데이트 실패:', error);
       }
     },
+    async confirmStatusChange() {
+      const report = this.confirmTargetReport;
+      const status = this.confirmAction;
+      console.log(report)
+      console.log(status)
+      try {
+        if (status === 'RESOLVED') {
+          await axios.patch(`/api/admin/report/${report.id}/resolve`);
+        } else if (status === 'REJECTED') {
+          await axios.patch(`/api/admin/report/${report.id}/reject`);
+        }
+        report.status = status;
+        this.closeConfirmModal();
+      } catch (error) {
+        console.error(`❌ ${status} 상태 변경 실패`, error);
+        alert('상태 변경에 실패했습니다.');
+      }
+    },
+    closeConfirmModal() {
+      this.showConfirmModal = false;
+      this.confirmAction = null;
+      this.confirmTargetReport = null;
+    },
+
+
+
     async handleReasonChange(report) {
       if (report.report_reason_id === 10) {
         this.selectedReport = report;
@@ -184,6 +274,7 @@ export default {
         await this.updateReportReason(report);
       }
     },
+
     async updateReportReason(report) {
       try {
         await axios.patch(`http://localhost:3001/reports/${report.id}`, {
@@ -193,6 +284,7 @@ export default {
         console.error('Failed to update report reason', error);
       }
     },
+    
     async confirmCustomReason() {
       if (!this.customReasonInput.trim()) {
         alert('신고 사유를 입력해주세요.');
@@ -391,6 +483,29 @@ select {
 .link-button:hover {
   background-color: #9f9f9f;
 }
+.filter-buttons {
+  height: fit-content;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  /* margin-left: 220px; */
+  justify-content: flex-end;
+}
+
+.filter-buttons button {
+  padding: 6px 12px;
+  border: none;
+  background-color: #eee;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.filter-buttons button.active {
+  background-color: #FF9A9A;
+  font-weight: bold;
+  color: white;
+}
+
 
 
 </style>

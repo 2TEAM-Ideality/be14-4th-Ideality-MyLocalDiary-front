@@ -17,15 +17,22 @@
               v-if="!ui.isHover"
               src="/src/assets/cursor/슈크림붕어빵1.png"
               width="40"
+              height="40"
+              aspect-ratio="1"
             />
             <transition name="fade">
-              <v-img
-                v-if="ui.showImage"
-                src="/src/assets/logo/My_Local_Diary.png"
-              />
+              <div v-if="ui.showImage">
+                <v-img
+                  src="/src/assets/logo/My_Local_Diary.png"
+                  width="120"
+                  height="40"
+                  aspect-ratio="3"
+                />
+              </div>
             </transition>
           </div>
         </v-list-item>
+
 
         <!-- ✨ 메뉴 항목 -->
         <template v-if="!isAdmin">
@@ -45,7 +52,7 @@
 
           <v-list-item @click="goToMypage">
             <div class="menu-item">
-              <v-img src="/src/assets/sidebar/person.png" class="menu-icon" />
+              <v-img src="/src/assets/sidebar/person.png" alt="mypage" class="menu-icon" />
               <span v-if="ui.showText">마이페이지</span>
             </div>
           </v-list-item>
@@ -65,8 +72,9 @@
           </v-list-item>
 
           <v-list-item @click="openAlarm">
-            <div class="menu-item">
+            <div class="menu-item" style="position: relative;">
               <v-img src="/src/assets/sidebar/notifications.png" class="menu-icon" />
+              <span v-if="unreadCount > 0" class="badge">{{ unreadCount }}</span>
               <span v-if="ui.showText">알림</span>
             </div>
           </v-list-item>
@@ -118,93 +126,174 @@
       </v-menu>
     </v-list>
   </VNavigationDrawer>
+
+  <NotificationPopup
+  :isOpen="isAlarmOpen"
+  :notifications="notificationStore.notifications"
+  @close="closeAlarm"
+/>
+
+  <SearchUserModal
+  v-if="searchPanelOpen"
+  class="search-user-modal"
+   :style="{ left: '0px' }"
+  @close="handleSearchClose"
+  />
+
 </template>
-
-
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUIStore } from '@/stores/uiStore'
-import { useUserStore } from '@/stores/userStore';
+import { useUserStore } from '@/stores/userStore'
+import { useNotificationStore } from '@/stores/notificationStore'
+import NotificationPopup from '@/components/common/NotificationPopup.vue'
+import SearchUserModal from '../search/SearchUserModal.vue'
+import axios from 'axios'
 
 const router = useRouter()
-const drawer = ref(true)
-const ui = useUIStore()
-const showMoreMenu = ref(false)
 
-const isAdmin = ref(true)  // 관리자 테스트용
-const userStore = useUserStore();
+const ui = useUIStore()
+const userStore = useUserStore()
+const notificationStore = useNotificationStore()
+
+const drawer = ref(true)
+const showMoreMenu = ref(false)
+const searchPanelOpen = ref(false)
+const isAlarmOpen = ref(false)
+
+const isAdmin = ref(false)
 
 onMounted(async () => {
-  const userStore = useUserStore();
-  await userStore.restoreUser();
+  await userStore.restoreUser()
 
-  // isAdmin.value = userStore.role === 'ADMIN' // 관리자 여부 판별 
-})
+  isAdmin.value = userStore.role === 'ADMIN'
 
-// 라우팅 
+  await notificationStore.fetchNotifications(userStore.token)
+  
+  // 🔁 알림 자동 갱신 (10초마다)
+  setInterval(() => {
+      notificationStore.fetchNotifications(userStore.token)
+    }, 10000) // 10초 간격 (10000ms)
+  }
+)
+
+// 알림 수 계산
+const unreadCount = computed(() =>
+  notificationStore.notifications.filter(n => !n.read).length
+)
+
+// 알림창 열기
+const openAlarm = async () => {
+  drawer.value = false
+  isAlarmOpen.value = true
+  await notificationStore.fetchNotifications(userStore.token)
+}
+
+const closeAlarm = () => {
+  isAlarmOpen.value = false
+  drawer.value = true
+}
+
 const goToHome = () => router.push('/home')
-const goToMypage = () => router.push('/mypage')
+
+const goToMypage = () => {
+  if (userStore.id) {
+    router.push(`/mypage/${userStore.id}`)
+  } else {
+    console.warn('로그인된 사용자 ID가 없습니다.')
+  }
+}
+
 const goToCreateDiary = () => router.push('/post/create')
-const goToStamp = () => router.push('/stamp')
-const openUserSearch = () => console.log('유저 검색 창 뜨기')
-const openAlarm = () => console.log('알림 창 뜨기')
+
+const goToStamp = () => {
+  if (userStore.id) {
+    router.push(`/stamp/${userStore.id}`)
+  } else {
+    console.warn('로그인된 사용자 ID가 없습니다.')
+  }
+}
+
+const openUserSearch = () => {
+  drawer.value = false
+  searchPanelOpen.value = true
+}
+
+const handleSearchClose = () => {
+  searchPanelOpen.value = false
+  setTimeout(() => {
+    drawer.value = true
+  }, 50)
+}
 
 const goToSettings = () => router.push('/settings')
 const goToActivities = () => router.push('/activities')
 const reportProblem = () => console.log('문제 신고 창 열기')
-const confirmLogout = () => {
-  if (confirm('정말 로그아웃 하시겠습니까?')) {
-    // 실제 로그아웃 로직 추가할 자리
-    console.log('로그아웃 완료')
-    router.push('/')
-  }
+
+// 로그아웃
+async function confirmLogout() {
+  // console.log('logout accessToken:', userStore.token);
+  // try {
+  //   await axios.post('http://localhost:8080/api/member/logout', null, {
+  //     headers: {
+  //       Authorization: `Bearer ${userStore.token}`
+  //     }
+  //   })
+
+  //   userStore.logout()
+  //   router.push('/')
+  // } catch (err) {
+  //   console.error('❌ 로그아웃 실패', err)
+  // }
+  await userStore.logout();
+  router.push('/')
 }
 
-// 관리자용 라우팅
+
 const goToRegulationHistory = () => router.push('/admin/regulations')
 const goToReportHistory = () => router.push('/admin/reports')
 const goToAdminMyPage = () => router.push('/admin/mypage')
 </script>
 
 <style scoped>
-:deep(.v-navigation-drawer) {
-  transition: width 0.3s ease;
-  overflow: hidden;
-  z-index: 1000;
-}
+  :deep(.v-navigation-drawer) {
+    transition: width 0.3s ease;
+    overflow: hidden;
+    z-index: 1000;
+  }
 
-.menu-item {
-  display: flex;
-  align-items: center;
-}
+  .menu-item {
+    display: flex;
+    align-items: center;
+  }
 
-.menu-icon {
-  width: 25px;
-  height: 25px;
-  min-width: 25px;
-  max-width: 25px;
-  flex-shrink: 0;
-  margin-right: 8px;
-  object-fit: contain;
-}
+  .menu-icon {
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+    max-width: 25px;
+    flex-shrink: 0;
+    margin-right: 8px;
+    object-fit: contain;
+  }
 
-.stamp-icon {
-  width: 35px;
-  height: 35px;
-  min-width: 35px;
-  max-width: 35px;
-  flex-shrink: 0;
-  margin-right: 8px;
-  object-fit: contain;
-}
+  .stamp-icon {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    max-width: 35px;
+    flex-shrink: 0;
+    margin-right: 8px;
+    object-fit: contain;
+  }
 
-.logo-container {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  .logo-container {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
 .fade-enter-active,
 .fade-leave-active {
@@ -213,5 +302,17 @@ const goToAdminMyPage = () => router.push('/admin/mypage')
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.badge {
+  position: absolute;
+  top: 0px;
+  right: 2px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: bold;
 }
 </style>

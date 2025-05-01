@@ -2,11 +2,22 @@
   <div class="map-container">
     <!-- 📌 지도 위에 떠 있는 모달 -->
     <div class="floating-modal">
-      <UserProfileModal />
+      <UserProfileModal
+        :userInfo="userInfo"
+        :postCount="postCount"
+        :followers="followers"
+        :followings="followings"
+        :postList="postLocations"
+      />
+      <!-- :postList ="postLocations" -->
+
+
+
     </div>
 
     <!-- 지도 -->
     <div id="map" class="map"></div>
+
     <!-- 검색창 -->
     <SearchLocation2
       :query="query"
@@ -14,112 +25,123 @@
       @place-selected="selectPlace"
     />
   </div>
+
+  <!-- 📌 PostCard 모달 -->
+  <div v-if="selectedPostId !== null" class="modal-overlay" @click="selectedPostId = null">
+      <div class="modal-content" @click.stop>
+        <div class="d-flex justify-end">
+          <button class="pr-3 pl-3" @click="selectedPostId = null">X</button>
+        </div>
+        <PostCard :postId="selectedPostId" />
+      </div>
+    </div>
 </template>
 
 <script setup>
-import { onMounted, h, render } from 'vue'
+import { onMounted, h, render, ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import axios from 'axios'
+import { useUserStore } from '@/stores/userStore'
 import UserProfileModal from '@/components/mypage/UserProfileModal.vue'
-import CustomMarker from '@/components/common/CustomMarker.vue' 
+import CustomMarker from '@/components/common/CustomMarker.vue'
 import SearchLocation2 from '@/components/map/SearchLocation2.vue'
+import ReportModal from '@/components/report/ReportModal.vue'
+import PostCard from '@/components/post/PostCard.vue'
 
-// 더미 마커들 (CustomMarker로 표시될 데이터)
-const postLocations = [
-  {
-    lat: 37.5704,
-    lng: 126.9958,
-    title: '서순라길 산책로',
-    image: ''
-  },
-  {
-    lat: 37.5710,
-    lng: 126.9945,
-    title: '아티장 베이커리',
-    image: ''
-  },
-  {
-    lat: 37.5685,
-    lng: 126.9976,
-    title: '청계천',
-    image: ''
-  },
-  {
-    lat: 37.5700,
-    lng: 126.9769,
-    title: '광화문 교보문고',
-    image: ''
+// 🧩 라우트에서 /map/:id 추출
+const route = useRoute()
+const userStore = useUserStore();
+const targetMemberId = computed(() => Number(route.params.id))
+console.log(targetMemberId.value, "의 지도 홈 페이지")
+
+// 상태 정의
+const userInfo = ref(null)
+const query = ref('')
+const map = ref(null)
+const postLocations = ref([])
+
+const selectedPostId = ref(null)
+
+const postCount = ref(0)
+const followers = ref(0)
+const followings = ref(0)
+
+
+// 📍 유저 정보 fetch
+async function fetchOtherUserInfo() {
+  try {
+    const res = await axios.get(`http://localhost:8080/api/member/${targetMemberId.value}`, {
+      headers: {
+        Authorization: `Bearer ${userStore.token}`
+      }
+    })
+    console.log('🌐 유저 조회 응답:', res.data)
+
+    if (res.data?.data) {
+      userInfo.value = res.data.data
+    } else {
+      console.warn('⚠️ 유저 정보가 없습니다:', res.data)
+    }
+  } catch (err) {
+    console.error('❌ 유저 정보 가져오기 실패:', err)
   }
-]
-
-// 대표 위치 (텍스트 말풍선 마커로 표시)
-const latestPostLocation = {
-  lat: 37.487325,
-  lng: 126.913483,
-  title: '신대방동 돈까스 투어'
 }
 
-onMounted(() => {
-  if (!window.naver || !window.naver.maps) {
-    console.error('❌ Naver Maps API가 아직 로드되지 않았어요.')
-    return
+async function fetchPostCount() {
+  try {
+    const res = await axios.get(`http://localhost:8080/api/mypage/${targetMemberId.value}/posts/count`)
+    postCount.value = res.data
+    console.log('✅ 게시글 수:', postCount.value)
+  } catch (err) {
+    console.error('❌ 게시글 수 가져오기 실패:', err)
   }
+}
 
-  const testMemberData = async () => {
-    try {
-      const response = await fetch('http://localhost:3001/members');
-      if (!response.ok) {
-        throw new Error(`HTTP 오류! 상태: ${response.status}`);
-      }
-      const data = await response.json();
-      console.log('📦 전체 members 데이터:', data);
-    } catch (error) {
-      console.error('🚨 members 데이터 가져오기 실패:', error);
-    }
-  };
 
-  // 호출 예시
-  testMemberData();
+async function fetchFollowingCount() {
+  try {
+    const res = await axios.get(`http://localhost:8080/api/mypage/follow/count`, {
+      params: { memberId: targetMemberId.value }
+    })
+    followings.value = res.data
+  } catch (err) {
+    console.error('❌ 팔로우 수 가져오기 실패:', err)
+  }
+}
 
-  const map = new naver.maps.Map('map', {
-    center: new naver.maps.LatLng(postLocations[0].lat, postLocations[0].lng),
-    zoom: 15,
-    customStyleId: 'ae8bf51c-899d-4773-9851-1f670d719a19',
-    gl: true,
-    mapTypeControl: true,
-    scaleControl: true,
-    zoomControl: false
-  })
 
-  // 🔶 마커 (텍스트 마커)
-  // new naver.maps.Marker({
-  //   position: new naver.maps.LatLng(latestPostLocation.lat, latestPostLocation.lng),
-  //   map: map,
-  //   title: latestPostLocation.title,
-  //   icon: {
-  //     content: `
-  //       <div style="
-  //         background: #ff9800;
-  //         color: white;
-  //         font-size: 12px;
-  //         padding: 4px 8px;
-  //         border-radius: 12px;
-  //         box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  //       ">
-  //         📍 ${latestPostLocation.title}
-  //       </div>
-  //     `,
-  //     size: new naver.maps.Size(80, 30),
-  //     anchor: new naver.maps.Point(40, 15)
-  //   }
-  // })
 
-  // 🔷 커스텀 마커 추가
-  postLocations.forEach((loc, index) => {
+// 📍 포스트/마커용 장소 fetch
+async function fetchUserPostLocations() {
+  try {
+    const res = await axios.get(`http://localhost:8080/api/posts/my/map`, {
+      params: { memberId: targetMemberId.value }
+    })
+    postLocations.value = res.data || []
+    console.log(postLocations.value)
+
+    renderMarkers()
+  } catch (err) {
+    console.error('❌ 포스트 장소 정보 가져오기 실패:', err)
+  }
+}
+
+// 📍 마커 렌더링
+function renderMarkers() {
+  if (!map.value || postLocations.value.length === 0) return
+
+  const avgLat = postLocations.value.reduce((sum, p) => sum + p.latitude, 0) / postLocations.value.length
+  const avgLng = postLocations.value.reduce((sum, p) => sum + p.longitude, 0) / postLocations.value.length
+  map.value.setCenter(new naver.maps.LatLng(avgLat, avgLng))
+
+  postLocations.value.forEach((loc, idx) => {
     const vnode = h(CustomMarker, {
-      image: loc.image,
-      post_id: index,
-      name: loc.title,
+      image: loc.thumbnailImage,
+      post_id: loc.postId,
+      name: loc.placeName,
       onClick: (id) => {
-        console.log(`📌 CustomMarker 클릭됨! post_id=${id}, 장소=${loc.title}`)
+        console.log(`📌 마커 클릭됨: post_id=${id}`)
+        selectedPostId.value = id // ✅ 모달 열기
       }
     })
 
@@ -127,16 +149,61 @@ onMounted(() => {
     render(vnode, container)
 
     new naver.maps.Marker({
-      position: new naver.maps.LatLng(loc.lat, loc.lng),
-      map: map,
+      position: new naver.maps.LatLng(loc.latitude, loc.longitude),
+      map: map.value,
       icon: {
         content: container,
         size: new naver.maps.Size(70, 80),
-        anchor: new naver.maps.Point(35, 80) // 꼬리까지 포함한 마커 기준 조정
+        anchor: new naver.maps.Point(35, 80)
       }
     })
   })
+}
+
+// 📍 장소 선택 시 이동
+function selectPlace(item) {
+  const latlng = new naver.maps.LatLng(Number(item.mapy) / 1e7, Number(item.mapx) / 1e7)
+  map.value.setCenter(latlng)
+  map.value.setZoom(15)
+}
+
+// 📍 지도 초기화
+function initMap() {
+  map.value = new naver.maps.Map('map', {
+    center: new naver.maps.LatLng(37.5665, 126.9780),
+    zoom: 14,
+    customStyleId: 'ae8bf51c-899d-4773-9851-1f670d719a19',
+    gl: true
+  })
+}
+
+// 📦 전체 초기화
+onMounted(async () => {
+  if (!window.naver?.maps) {
+    console.error('❌ Naver Maps API 미로드')
+    return
+  }
+  initMap()
+  console.log("지도 초기화 완료")
+  await fetchOtherUserInfo()
+  console.log("유저 정보 가져오기 완료", userInfo.value)
+
+  await fetchUserPostLocations()
+  console.log("유저 마커 가져오기 완료")
+
+  await fetchPostCount()
+  console.log("유저 게시물 개수 가져오기 완료", postCount.value)
+
+  fetchFollowingCount()
+  console.log("유저 팔로잉 개수 가져오기 완료", followings.value)
+
 })
+
+
+
+
+
+
 </script>
 
 <style scoped>
@@ -146,17 +213,31 @@ onMounted(() => {
   height: 100vh;
   overflow: hidden;
 }
-
 .map {
   width: 100%;
   height: 100%;
 }
-
-/* 🔥 지도 위에 떠 있는 플로팅 모달 */
 .floating-modal {
   position: absolute;
   top: 80px;
   right: 40px;
   z-index: 1000;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 </style>
