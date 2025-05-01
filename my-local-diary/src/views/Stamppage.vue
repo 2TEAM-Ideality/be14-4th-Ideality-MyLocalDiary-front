@@ -127,21 +127,14 @@ const fetchStampCounts = async () => {
   if (!userStore.id) return;
 
   try {
-    const res = await fetch('http://localhost:3001/member_stamp');
+    const pageMemberId = Number(userStore.id);
+    const res = await fetch(`http://localhost:8080/api/stamp?memberId=${pageMemberId}`);
     const memberStamps = await res.json();
 
-    const myId = Number(userStore.id);
-    const myStamps = memberStamps.filter(r => r.member.id === myId);
-
-    const stampCountMap = {};
-    myStamps.forEach(({ stamp }) => {
-      const name = stamp.name;
-      stampCountMap[name] = (stampCountMap[name] || 0) + 1;
-    });
-
-    stamps.value = BASE_STAMPS.map(stamp => ({
+    // BASE_STAMPS 기준으로 갯수 매칭
+    stamps.value = BASE_STAMPS.map((stamp) => ({
       ...stamp,
-      count: stampCountMap[stamp.title] ?? 0
+      count: memberStamps[stamp.title] ?? 0
     }));
   } catch (err) {
     console.error('❌ 스탬프 count 불러오기 실패:', err);
