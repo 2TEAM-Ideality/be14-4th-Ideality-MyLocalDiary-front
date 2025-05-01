@@ -178,10 +178,23 @@ const scrollToTop = () => {
   if (el) el.scrollTop = 0;
 };
 
-const handleTogglePostLike = () => {
-  postLikeCount.value += postLikedByCurrentUser.value ? -1 : 1;
-  postLikedByCurrentUser.value = !postLikedByCurrentUser.value;
+const handleTogglePostLike = async () => {
+  try {
+    const url = postLikedByCurrentUser.value
+      ? '/api/posts/unlike'
+      : '/api/posts/like';
+
+    await axios.post(url, null, {
+      params: { postId, memberId }
+    });
+
+    postLikeCount.value += postLikedByCurrentUser.value ? -1 : 1;
+    postLikedByCurrentUser.value = !postLikedByCurrentUser.value;
+  } catch (err) {
+    console.error('❌ 좋아요 토글 실패:', err);
+  }
 };
+
 
 onMounted(async () => {
   await fetchPostDetail();
