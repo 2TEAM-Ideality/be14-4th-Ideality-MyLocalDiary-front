@@ -50,6 +50,8 @@
 
       <ReportModal
         v-if="reportDialog"
+        :type="props.type"
+        :reported-id="props.reportedId"
         :modelValue="reportDialog"
         @update:modelValue="reportDialog = $event"
         @close="reportDialog = false"
@@ -60,6 +62,14 @@
   <script setup>
   import { ref } from 'vue'
   import ReportModal from '@/components/report/ReportModal.vue'
+
+  const props = defineProps({
+    modelValue: Boolean,
+    type: String, // 'POST' | 'COMMENT' | 'MEMBER'
+    reportedId: [Number, String]
+  })
+
+
   
   const menu = ref(false)
   const confirmDialog = ref(false)

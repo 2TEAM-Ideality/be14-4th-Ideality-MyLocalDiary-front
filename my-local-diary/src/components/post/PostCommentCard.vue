@@ -119,6 +119,13 @@
                 --- 답글 숨기기 ---
             </v-btn>
         </div>
+        <ReportModal
+        :type="'COMMENT'"
+        :reported-id="comment.id"
+        :modelValue="reportDialog"
+        @update:modelValue="reportDialog = $event"
+        @close="reportDialog = false"
+        />
     </div>
 </template>
 
@@ -127,10 +134,11 @@ import { ref } from 'vue'
 import PostCommentCard from './PostCommentCard.vue'
 import PostLikeIcon from './PostLikeIcon.vue'
 import dayjs from 'dayjs';
+import 'dayjs/locale/ko';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import 'dayjs/locale/ko';
+import ReportModal from '@/components/report/ReportModal.vue'
 
 // 플러그인 확장
 dayjs.extend(relativeTime);
@@ -150,6 +158,7 @@ dayjs.locale('ko');
     const replies = ref([])
     const repliesPage = ref(1)
     const hasMoreReplies = ref(true)
+    const reportDialog = ref(false) // 신고 모달
 
     // 임시 더미
     const allReplies = [
@@ -245,6 +254,9 @@ dayjs.locale('ko');
     function handleReport() {
         console.log("신고 클릭");
         // 신고 로직 처리
+        reportDialog.value = true 
+
+
     }
 
     function handleCloseMenu() {
