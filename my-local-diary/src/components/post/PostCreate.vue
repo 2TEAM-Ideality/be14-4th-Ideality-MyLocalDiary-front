@@ -133,6 +133,7 @@ import { Pagination } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import CustomMarker from '@/components/common/CustomMarker.vue'
+import { useUserStore } from '@/stores/userStore'
 
 const fileInput = ref(null)
 const uploadedImages = ref([])
@@ -403,7 +404,8 @@ async function submitPost() {
     }
   })
 
-  const token = localStorage.getItem('accessToken')
+  const userStore = useUserStore()
+  const token = userStore.token
 
   try {
     await axios.post('/api/posts', formData, {
@@ -415,6 +417,7 @@ async function submitPost() {
     alert('게시글이 성공적으로 등록되었습니다.')
   } catch (err) {
     console.error('업로드 실패:', err)
+    console.log(token);
     alert('등록 실패')
   }
 }
