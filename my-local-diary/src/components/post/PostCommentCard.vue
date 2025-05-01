@@ -84,6 +84,8 @@
   import timezone from 'dayjs/plugin/timezone';
   import relativeTime from 'dayjs/plugin/relativeTime';
   import 'dayjs/locale/ko';
+  import { useUserStore } from '@/stores/userStore.js';
+  const userStore = useUserStore();
   
   dayjs.extend(relativeTime);
   dayjs.extend(utc);
@@ -102,6 +104,7 @@
   const replies = ref([])
   const repliesPage = ref(1)
   const hasMoreReplies = ref(true)
+
   
   const pageSize = 5;
   const loadReplies = async () => {
@@ -136,14 +139,23 @@
     hasMoreReplies.value = true;
   };
   
-  const handleTogglecommentLike = () => {
-    if (props.comment.likedByCurrentUser) {
-      props.comment.likeCount -= 1;
-    } else {
-      props.comment.likeCount += 1;
-    }
+  const handleTogglecommentLike = async () => {
+  try {
+    const url = props.comment.likedByCurrentUser
+      ? '/api/posts/comment/unlike'
+      : '/api/posts/comment/like';
+
+    await axios.post(url, null, {
+      params: { commentId: props.comment.id, memberId: userStore.id }
+    });
+
+    props.comment.likeCount += props.comment.likedByCurrentUser ? -1 : 1;
     props.comment.likedByCurrentUser = !props.comment.likedByCurrentUser;
-  };
+  } catch (err) {
+    console.error('❌ 댓글 좋아요 토글 실패:', err);
+  }
+};
+
   
   const menuVisible = ref(false);
   const confirmDialog = ref(false);
