@@ -35,6 +35,7 @@ export const useUserStore = defineStore('user', () => {
     // 1. 액세스 토큰, 리프레시 토큰 저장
     localStorage.setItem('refreshToken', refreshToken);
     token.value = accessToken;
+    localStorage.setItem('accessToken', accessToken); // ✅ accessToken 저장
     console.log(token.value)
 
     try {
