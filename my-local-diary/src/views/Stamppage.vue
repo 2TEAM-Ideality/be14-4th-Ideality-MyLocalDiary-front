@@ -75,29 +75,17 @@ const paginatedStamps = computed(() => {
 // 데이터 가져오기
 const fetchStampCounts = async () => {
   try {
-    const res = await fetch('http://localhost:3001/member_stamp');
+    const pageMemberId = Number(userStore.id);
+    console.log(pageMemberId);
+    const res = await fetch(`http://localhost:8080/api/stamp?memberId=${pageMemberId}`);
     const memberStamps = await res.json();
 
-    // 내 id만 필터링
-    const myId = Number(userStore.id);
-    const myStamps = memberStamps.filter(record => record.member.id === myId);
-
-    // 내 스탬프 기록으로 count 세기
-    const stampCountMap = {};
-
-    myStamps.forEach((record) => {
-      const stampName = record.stamp.name;
-      if (stampCountMap[stampName]) {
-        stampCountMap[stampName]++;
-      } else {
-        stampCountMap[stampName] = 1;
-      }
-    });
+    console.log(memberStamps);
 
     // BASE_STAMPS 기준으로 갯수 매칭
     stamps.value = BASE_STAMPS.map((stamp) => ({
       ...stamp,
-      count: stampCountMap[stamp.title] ?? 0
+      count: memberStamps[stamp.title] ?? 0
     }));
 
   } catch (err) {
