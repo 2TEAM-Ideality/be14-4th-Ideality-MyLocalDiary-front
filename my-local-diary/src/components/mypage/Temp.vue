@@ -49,7 +49,7 @@
             <div class="d-flex justify-end">
                 <button class="pr-3 pl-3" @click="selectedPostId = null">X</button>
             </div>
-            <PostCard :postId="selectedPostId"/>
+            <PostCard :postId="selectedPostId" :member-id="memberId"/>
         </div>
     </div>
 </template>

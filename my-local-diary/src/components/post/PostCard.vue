@@ -134,11 +134,12 @@
   import axios from 'axios';
 
   const props = defineProps({
-    postId: Number
+    postId: Number,
+    memberId: Number
   })
 
   const postId=props.postId;
-  const memberId=1;
+  const memberId=props.memberId;
 
   const author=ref({});
   const postTitle=ref('')
@@ -146,6 +147,8 @@
   const diaryContent=ref('')
   const createdAt=ref('')
   const photoList=ref([])
+  const postLikeCount = ref()
+  const postLikedByCurrentUser = ref(false)
 
   // const photoList = [
   //   { id: 1, url: 'https://randomuser.me/api/portraits/men/2.jpg', orders: 1, post_id: 10 },
@@ -183,6 +186,7 @@
     postContent.value=data.post
     diaryContent.value=data.diary
     createdAt.value=data.createdAt
+    postLikeCount.value=data.postLikeCount
     photoList.value=data.photos.map(photo => ({
       id: photo.id,
       url: photo.url,
@@ -196,8 +200,8 @@
   const postType = ref('post')
 
   // 좋아요 날짜 부분도 컴포넌트로 빼자
-  const postLikeCount = ref(777)
-  const postLikedByCurrentUser = ref(false)
+  
+  
 
   const handleTogglePostLike = () => {
     if (postLikedByCurrentUser.value) {
