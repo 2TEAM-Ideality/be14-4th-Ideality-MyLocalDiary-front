@@ -74,11 +74,15 @@
   import CustomMarker from '@/components/common/CustomMarker.vue'
   import PostCard from '@/components/post/PostCard.vue'
   import profileImageDummy from '@/assets/profile/profile.png'
-  
+  import { useUserStore } from '@/stores/userStore'
+  const userStore = useUserStore()
+
+  console.log(userStore.id)
   const router = useRouter(); 
 
   const query = ref('') // 검색창 입력 값
   const selectedPostId = ref(null) // 선택된 포스트 ID (모달 띄우기용)
+
   const mapRef = ref(null) // 지도 DOM 참조
   const map = ref(null) // 네이버 지도 객체
   const infoWindow = ref(null) // 검색 결과 InfoWindow
@@ -174,18 +178,25 @@
   }
 
   // 서버에서 포스트/장소 데이터 가져오기
-  async function fetchPosts() {
+  async function fetchFollowPosts() {
     try {
-      const { data } = await axios.get('/json/post.json')
-      data.post.forEach(post => {
-        post.places.forEach(place => {
-          places.value.push(place)
-        })
+      const { data } = await axios.get('http://localhost:8080/api/posts/follow/map', {
+        params: { memberId: userStore.id }  // 👈 실제 로그인 유저 ID 사용
       })
+
+      // 서버에서 받은 포스트 리스트를 마커용 장소 데이터로 변환
+      places.value = data.map(post => ({
+        latitude: post.latitude,
+        longitude: post.longitude,
+        name: post.placeName,
+        post_id: post.postId,
+        thumbnail_image: post.thumbnailImage
+      }))
     } catch (error) {
-      console.error('포스트 데이터 로드 실패', error)
+      console.error('팔로우 포스트 데이터 로드 실패', error)
     }
   }
+
 
   // 유저 아이콘 클릭시 유저 맵 홈으로 이동
   function goToUserMap() {
@@ -224,12 +235,13 @@
     if (window.naver?.maps) {
       initMap()
       await fetchUserList()
-      await fetchPosts()
+      await fetchFollowPosts()
       places.value.forEach((place, index) => {
         createCustomMarker(place, index)
       })
     }
   })
+
 </script>
 
 

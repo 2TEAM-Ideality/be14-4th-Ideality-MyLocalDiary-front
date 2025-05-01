@@ -119,6 +119,7 @@ import PostCommentInput from './PostCommentInput.vue';
 import MenuToggle from './MenuToggle.vue';
 
 const props = defineProps({ postId: Number });
+console.log(props.postId)
 const userStore = useUserStore();
 
 const author = ref({});
@@ -183,19 +184,37 @@ const scrollToTop = () => {
 
 const fetchPostDetail = async (id) => {
   try {
-    const res = await axios.get(`/api/posts/my/${id}`, {
+    console.log('📌 [fetch] 시작:', id, 'memberId:', userStore.id);
+
+    const res = await axios.get(`/api/posts/follow/${id}`, {
       params: { memberId: userStore.id }
     });
+
+    console.log('📌 [fetch] 응답:', res.data);
+
     const data = res.data;
-    console.log(data)
+
     author.value = { name: data.nickname, avatar: data.profileImage };
     postTitle.value = data.title;
     postContent.value = data.post;
     diaryContent.value = data.diary;
     createdAt.value = data.createdAt;
-    photoList.value = data.photos.map(p => ({ id: p.id, url: p.imageUrl, orders: p.orders, post_id: data.postId }));
+
+    console.log('📷 사진 데이터:', data.photos); // ✅ 중요
+
+    photoList.value = Array.isArray(data.photos)
+      ? data.photos.map(p => ({
+          id: p.id,
+          url: p.imageUrl,
+          orders: p.orders,
+          post_id: data.postId
+        }))
+      : [];
+
+    console.log('✅ 최종 photoList:', photoList.value);
+
   } catch (err) {
-    console.error('Failed to fetch post detail', err);
+    console.error('❌ fetchPostDetail 실패:', err);
   }
 };
 
@@ -205,8 +224,13 @@ onMounted(() => {
 });
 
 watch(() => props.postId, async (id) => {
+  console.log('📌 PostCard 감지된 postId:', id); // ✅ 이거 출력됨?
   if (id) fetchPostDetail(id);
 }, { immediate: true });
+
+
+
+
 </script>
 
 <style scoped>
