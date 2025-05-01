@@ -38,7 +38,7 @@
           v-for="user in paginatedUsers"
           :key="user.id"
           class="user-icon-wrapper"
-          @click="goToUserMap"
+          @click="goToUserMap(user.id)"
         >
           <div class="user-icon">
             <img :src="getUserImage(user.image)" alt="user" />
@@ -200,12 +200,12 @@
       console.error('팔로우 포스트 데이터 로드 실패', error)
     }
   }
+  
 
 
   // 유저 아이콘 클릭시 유저 맵 홈으로 이동
-  function goToUserMap() {
-    console.log('유저 클릭됨.')
-    router.push('/user-map-home')
+  function goToUserMap(userId) {
+    router.push({ name: 'UserMapHome', params: { id: userId } });
   }
 
   // 커스텀 마커 생성하고 클릭 시 모달 오픈

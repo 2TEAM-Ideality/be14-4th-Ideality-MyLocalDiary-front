@@ -35,7 +35,7 @@
             <PostCard :postId="selectedPostId" />
           </div>
         </div>
-       
+            
        
         <div class="right-side">
           <div class="right-upper">
@@ -80,7 +80,9 @@
   const selectedPostId = ref(null) // 선택된 게시글 ID
 
 
-  const routeUserId = computed(() => Number(route.params.id));
+  const routeUserId = computed(() => {
+    return route.params.id ? Number(route.params.id) : userStore.id;
+  });
   const isMine = computed(() => routeUserId.value === userStore.id);
 
   const fetchUserProfile = async () => {

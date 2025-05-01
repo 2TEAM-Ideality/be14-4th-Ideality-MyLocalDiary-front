@@ -107,9 +107,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted,  computed , watch } from 'vue';
 import axios from 'axios';
 import { useUserStore } from '@/stores/userStore';
+import { useRoute } from 'vue-router';
 import PostAuthorCard from './PostAuthorCard.vue';
 import PostContentCard from '@/components/post/PostContentCard.vue';
 import PostCommentCard from './PostCommentCard.vue';
@@ -121,6 +122,10 @@ import MenuToggle from './MenuToggle.vue';
 const props = defineProps({ postId: Number });
 console.log(props.postId)
 const userStore = useUserStore();
+const route = useRoute();
+const routeUserId = computed(() => {
+    return route.params.id ? Number(route.params.id) : userStore.id;
+  });
 
 const author = ref({});
 const postTitle = ref('');
@@ -185,10 +190,17 @@ const scrollToTop = () => {
 const fetchPostDetail = async (id) => {
   try {
     console.log('📌 [fetch] 시작:', id, 'memberId:', userStore.id);
-
-    const res = await axios.get(`/api/posts/follow/${id}`, {
-      params: { memberId: userStore.id }
-    });
+    let res;
+    if (routeUserId.value !== userStore.id) {
+      res = await axios.get(`/api/posts/follow/${id}`, {
+        params: { memberId: userStore.id }
+      });
+    } else {
+      res = await axios.get(`/api/posts/my/${id}`, {
+        params: { memberId: userStore.id }
+      });
+    }
+        
 
     console.log('📌 [fetch] 응답:', res.data);
 

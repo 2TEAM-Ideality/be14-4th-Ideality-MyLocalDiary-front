@@ -76,7 +76,7 @@ const routes = [
         props: true
       },
       {
-        path: '/user-map-home',
+        path: '/map/:id',
         name: 'UserMapHome',
         component: UserMapView,
       },
