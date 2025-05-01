@@ -13,6 +13,7 @@
       />
       <Badge />
     </div>
+    
 
     <!-- 스탬프 영역 -->
     <div class="right-side">
@@ -51,8 +52,6 @@ import axios from 'axios';
 import CatStampBar from '@/components/stamp/stamp.vue';
 import UserProfile from '@/components/common/userprofile.vue';
 import Badge from '@/components/stamp/badge.vue';
-import Follower from '@/components/follow/Follower.vue';
-import Following from '@/components/follow/Following.vue';
 import LoadingModal from '@/components/common/LoadingModal.vue';
 
 const userStore = useUserStore();

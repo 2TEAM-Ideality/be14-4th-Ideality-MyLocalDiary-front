@@ -63,7 +63,7 @@ const handleNotificationClick = async (id, targetId) => {
     })
 
     notificationStore.markAsRead(id)
-    router.push(`/profile/${targetId}`)
+    router.push(`/mypage/${targetId}`)
     emit('close')
   } catch (error) {
     console.error('읽음 처리 실패:', error)

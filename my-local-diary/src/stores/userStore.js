@@ -17,9 +17,6 @@ export const useUserStore = defineStore('user', () => {
   const bio = ref('')
   const profileImage = ref(null)
   const profileMusic = ref(null)
-  const followers = ref(0)
-  const following = ref(0)
-  const posts = ref(0)
   const forcedLogout = ref(false)
 
   const isLoggedIn = computed(() => !!id.value)
@@ -50,8 +47,6 @@ export const useUserStore = defineStore('user', () => {
       bio.value = memberData.bio
       profileImage.value = memberData.profileImage || '/images/profile/defaultProfile.png'
       profileMusic.value = memberData.profileMusic
-
-      await fetchProfileStats()
 
       localStorage.setItem('user', JSON.stringify({
         token: token.value,
@@ -107,31 +102,8 @@ export const useUserStore = defineStore('user', () => {
     bio.value = ''
     profileImage.value = null
     profileMusic.value = null
-    followers.value = 0
-    following.value = 0
-    posts.value = 0
 
     localStorage.removeItem("user");
-  }
-
-  async function fetchProfileStats() {
-    if (!id.value) return
-    try {
-      const [followRes, postRes] = await Promise.all([
-        fetch('http://localhost:3001/follow'),
-        fetch('http://localhost:3001/post')
-      ])
-
-      const follow = await followRes.json()
-      const postsData = await postRes.json()
-
-      const myId = String(id.value)
-      following.value = follow.filter(f => f.following_member_id === myId).length
-      followers.value = follow.filter(f => f.follower_target_member_id === myId).length
-      posts.value = postsData.filter(p => String(p.member_id) === myId).length
-    } catch (e) {
-      console.error('프로필 통계 에러:', e)
-    }
   }
 
   async function restoreUser() {
@@ -160,7 +132,6 @@ export const useUserStore = defineStore('user', () => {
       profileImage.value = user.profileImage
       profileMusic.value = user.profileMusic
 
-      // await fetchProfileStats()
     } catch (err) {
       forcedLogout.value = true
       logout()
@@ -201,9 +172,6 @@ export const useUserStore = defineStore('user', () => {
     bio,
     profileImage,
     profileMusic,
-    followers,
-    following,
-    posts,
     isLoggedIn,
     welcomeMessage,
     login,
@@ -211,7 +179,6 @@ export const useUserStore = defineStore('user', () => {
     forceLogout,
     clearState,
     restoreUser,
-    tryReissueToken,
-    fetchProfileStats
+    tryReissueToken
   }
 })
