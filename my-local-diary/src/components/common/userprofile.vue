@@ -160,6 +160,13 @@ watch(() => props.userData?.id, (newId) => {
 
 onMounted(() => {
   if (props.userData?.id) fetchProfileCounts(props.userData.id)
+  // ✅ 프로필 음악이 있을 때 자동 재생 시도
+  if (props.userData?.profileMusic) {
+    setTimeout(() => {  // 약간 늦게 실행 (브라우저 정책 우회용)
+      togglePlayback()
+    }, 300)
+  }
+  
 })
 
 // --- 모달 관리 ---
