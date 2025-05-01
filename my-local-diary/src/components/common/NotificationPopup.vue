@@ -9,11 +9,34 @@
         v-for="n in notificationStore.notifications" 
         :key="n.id" 
         class="notification-item"
-        :class="{ unread: !n.isRead }"
-        @click="handleNotificationClick(n.id, n.targetId)"
+        :class="{ unread: !n.read }"
       >
-        <strong>{{ n.content }}</strong>
-        <div class="timestamp">{{ formatDate(n.createdAt) }}</div>
+        <!-- 📌 알림 내용 클릭 시 읽음 + 이동 -->
+        <div @click="handleNotificationClick(n.id, n.targetId)">
+          <strong>{{ n.content }}</strong>
+          <div class="timestamp">{{ formatDate(n.createdAt) }}</div>
+        </div>
+
+        <!-- ✅ 수락 버튼: 팔로우 요청일 경우에만 표시 -->
+        <button
+  v-if="n.type === 'FOLLOW' && n.content.includes('요청') && !n.accepted"
+  class="accept-btn"
+  @click="() => acceptRequest(n)"
+>
+  수락
+</button>
+
+
+<!-- ✅ 거절 버튼 추가 -->
+<button
+  v-if="n.type === 'FOLLOW' && n.content.includes('요청') && !n.accepted"
+  class="reject-btn"
+  @click="() => rejectRequest(n)"
+>
+  거절
+</button>
+
+
       </div>
     </div>
   </div>
@@ -32,7 +55,6 @@ const router = useRouter()
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
 
-// ✅ 알림창 열릴 때 알림 목록 불러오기
 watch(() => props.isOpen, async (newVal) => {
   if (newVal) {
     console.log('🔔 알림창 열림, 알림 불러오는 중...')
@@ -43,9 +65,8 @@ watch(() => props.isOpen, async (newVal) => {
 
 const handleNotificationClick = async (id, targetId) => {
   try {
-    const token = userStore.token
     await axios.patch(`http://localhost:8080/api/notifications/${id}/read`, {}, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${userStore.token}` }
     })
 
     notificationStore.markAsRead(id)
@@ -55,6 +76,49 @@ const handleNotificationClick = async (id, targetId) => {
     console.error('읽음 처리 실패:', error)
   }
 }
+
+// ✅ 팔로우 요청 수락
+const acceptRequest = async (n) => {
+  try {
+    await axios.patch('http://localhost:8080/api/follow/accept', {
+      followingMemberId: n.targetId,
+      followTargetMemberId: userStore.id
+    }, {
+      headers: { Authorization: `Bearer ${userStore.token}` }
+    })
+
+
+
+    notificationStore.notifications = notificationStore.notifications.filter(
+  noti => noti.id !== n.id
+)
+
+
+  } catch (err) {
+    console.error('팔로우 요청 수락 실패:', err)
+  }
+}
+
+const rejectRequest = async (n) => {
+  try {
+    await axios.delete('http://localhost:8080/api/follow/reject', {
+      headers: { Authorization: `Bearer ${userStore.token}` },
+      data: {
+        followingMemberId: n.targetId,
+        followTargetMemberId: userStore.id
+      }
+    })
+
+    // 알림 목록에서 제거하거나 상태 업데이트
+    notificationStore.notifications = notificationStore.notifications.filter(
+      noti => noti.id !== n.id
+    )
+  } catch (err) {
+    console.error('팔로우 요청 거절 실패:', err)
+  }
+}
+
+
 
 const formatDate = (datetime) => {
   return datetime.split('T')[0] + ' ' + (datetime.split('T')[1] || '')
@@ -109,4 +173,26 @@ const formatDate = (datetime) => {
   color: gray;
   margin-top: 4px;
 }
+.accept-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.reject-btn {
+  margin-top: 8px;
+  margin-left: 8px;
+  padding: 6px 12px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
 </style>

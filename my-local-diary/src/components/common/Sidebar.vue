@@ -140,6 +140,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUIStore } from '@/stores/uiStore'
 import { useUserStore } from '@/stores/userStore'
+import { useNotificationStore } from '@/stores/notificationStore'
+
 import NotificationPopup from '@/components/common/NotificationPopup.vue'
 import axios from 'axios'
 
@@ -156,7 +158,7 @@ const showMoreMenu = ref(false)
 const searchPanelOpen = ref(false)
 
 const isAlarmOpen = ref(false)
-const notificationList = ref([])
+const notificationStore = useNotificationStore()
 
 const isAdmin = ref(userStore.isAdmin)  // 관리자 테스트용
 
@@ -164,7 +166,7 @@ const isAdmin = ref(userStore.isAdmin)  // 관리자 테스트용
 onMounted(async () => {
   // await userStore.restoreUser()
   isAdmin.value = userStore.role === 'ADMIN'
-  fetchNotifications()
+  await notificationStore.fetchNotifications(userStore.token) 
 })
 
 const goToHome = () => router.push('/home')
@@ -197,8 +199,9 @@ const handleSearchClose = () => {
 
 
 const unreadCount = computed(() =>
-  notificationList.value.filter(n => !n.isRead).length
+  notificationStore.notifications.filter(n => !n.read).length
 )
+
 
 const fetchNotifications = async () => {
   try {
