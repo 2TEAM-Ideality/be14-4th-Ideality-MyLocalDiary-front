@@ -126,12 +126,12 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 12px;
-    max-width: 500px;
+    max-width: 700px;
   }
   
   .badge-item img {
     width: auto;
-    height: 170px;
+    height: 250px;
     object-fit: cover;
     transition: transform 0.3s ease;
     cursor: pointer;
