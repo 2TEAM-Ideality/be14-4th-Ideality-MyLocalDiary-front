@@ -157,7 +157,7 @@ dayjs.locale('ko');
         id: '2',
         username: '_one____eno_',
         avatar: 'https://randomuser.me/api/portraits/women/20.jpg',
-        text: '맨앞에 반팔셔츠는 공홈에 없나요?',
+        text: '11111?',
         timeAgo: '2025-04-28T12:52:00+09:00',
         likeCount: 3,
         likedByCurrentUser: false
@@ -166,7 +166,7 @@ dayjs.locale('ko');
         id: '3',
         username: 'mmmm.d2',
         avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
+        text: '22222',
         timeAgo: '2025-04-21T12:00:00+09:00',
         likeCount: 34,
         likedByCurrentUser: false
@@ -175,7 +175,7 @@ dayjs.locale('ko');
         id: '3',
         username: 'mmmm.d2',
         avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
+        text: '33333',
         timeAgo: '2025-04-28T13:54:00+09:00',
         likeCount: 23,
         likedByCurrentUser: false
@@ -184,7 +184,7 @@ dayjs.locale('ko');
         id: '3',
         username: 'mmmm.d2',
         avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
+        text: '44444',
         timeAgo: '2025-03-28T12:00:00+09:00',
         likeCount: 13,
         likedByCurrentUser: true
@@ -193,7 +193,7 @@ dayjs.locale('ko');
         id: '3',
         username: 'mmmm.d2',
         avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
-        text: '여름 셔츠 발매는 언제인가요',
+        text: '55555',
         timeAgo: '2025-04-23T12:00:00+09:00',
         likeCount: 22,
         likedByCurrentUser: true
