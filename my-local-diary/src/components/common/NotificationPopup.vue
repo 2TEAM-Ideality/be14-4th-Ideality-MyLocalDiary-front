@@ -55,13 +55,6 @@ const router = useRouter()
 const notificationStore = useNotificationStore()
 const userStore = useUserStore()
 
-watch(() => props.isOpen, async (newVal) => {
-  if (newVal) {
-    console.log('🔔 알림창 열림, 알림 불러오는 중...')
-    await notificationStore.fetchNotifications(userStore.token)
-    console.log('📬 알림 목록:', notificationStore.notifications)
-  }
-})
 
 const handleNotificationClick = async (id, targetId) => {
   try {

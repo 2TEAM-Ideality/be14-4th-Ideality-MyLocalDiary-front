@@ -29,7 +29,7 @@ export const useNotificationStore = defineStore('notification', () => {
           type: noti.type,
           accepted: noti.accepted,
           createdAt: noti.createdAt,
-          read: noti.isRead,
+          read: noti.read,
           targetId: noti.targetId
         }
       })
