@@ -91,18 +91,19 @@ const routes = [
         component: TempLoadingModalParent
       },
 
+
+      {
+        path: '/profile/:id',
+        name: 'Profile',
+        component: Mypage // 🔥 임시로(팔로우기능중...)
+      },
+      
       // 관리자용 
       {
         path: '/admin/reports',
         name: 'ReportManagement',
         component: ReportManagement
-    },
-    {
-      path: '/profile/:id',
-      name: 'Profile',
-      component: Mypage // 🔥 임시로(팔로우기능중...)
-    },
-    
+      },
       {
         path: '/admin/regulations',
         name: 'RegulationHistory',
