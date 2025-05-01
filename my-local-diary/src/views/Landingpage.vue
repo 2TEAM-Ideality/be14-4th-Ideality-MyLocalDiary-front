@@ -71,30 +71,33 @@
         </v-col>
       </v-row>
       <AuthModal v-if="showModal" @close="showModal = false" />
+      <LoadingModal v-if="isLoading" :today="new Date()" message="로그인 중..." />
     </v-container>
-  </template>
+</template>
   
-  <script setup>
+<script setup>
   import { ref, onMounted } from 'vue'
   import axios from 'axios';
   import { useRouter } from 'vue-router';
   import AuthModal from '@/components/auth/AuthModal.vue'
+  import LoadingModal from '@/components/common/LoadingModal.vue'
   import { useUserStore } from '@/stores/userStore'
   
   const userStore = useUserStore();
-
+  
   const showModal = ref(false)
-
+  const isLoading = ref(false)
+  
   const router = useRouter();
-
+  
   const inputId = ref("");
   const inputPw = ref("");
-
-  // 
+  
   onMounted(async () => {
     const token = localStorage.getItem('accessToken');
     
     if (token) {
+      isLoading.value = true;
       try {
         await userStore.login(token);
         router.push('/home');
@@ -102,20 +105,19 @@
         console.warn("⛔ 유효하지 않은 토큰, 자동 로그인 실패");
         userStore.logout();
         router.push('/');
+      } finally {
+        isLoading.value = false;
       }
     }
   });
-
-
-  // 로그인 처리 
+  
   function redirectToKakao() {
     window.location.href = 'http://localhost:8080/login/kakao';
   }
-
-  async function login()  {
+  
+  async function login() {
+    isLoading.value = true;
     try {
-      console.log(inputId.value, inputPw.value)
-
       const response = await axios.post('http://localhost:8080/api/auth/login', {
         loginId: inputId.value,
         password: inputPw.value 
@@ -124,27 +126,25 @@
           'Content-Type': 'application/json'
         }
       });
-      console.log('로그인 성공', response.data)
-
+  
       const accessToken = response.data.data.accessToken;
       const refreshToken = response.data.data.refreshToken;
-
-      console.log('✅ JWT Token 확인 테스트:', accessToken);
-      console.log('✅ Refresh Token 확인 테스트:', refreshToken);
-
+  
       await userStore.login(accessToken, refreshToken); 
-
-      router.push('/home');  // 메인 홈으로 이동
-
+      router.push('/home');
+  
     } catch (error) {
       if (error.response) {
         console.error('에러 응답:', error.response.data);
       } else {
         console.error('요청 실패:', error.message);
       }
+    } finally {
+      isLoading.value = false;
     }
   }
-  </script>
+</script>
+  
   
   <style scoped>
   </style>
