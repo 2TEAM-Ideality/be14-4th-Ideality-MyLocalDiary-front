@@ -1,53 +1,45 @@
 <template>
   <div style="padding-bottom: 10px" :style="{ 'padding-left': isReply ? '32px' : '0' }">
     <v-card flat class="pl-2 pt-2 pb-0 d-flex flex-column">
-      <div class="d-flex justify-space-between">
-        <div class="d-flex">
-          <v-avatar size="32">
-            <v-img :src="comment.avatar" alt="Avatar" />
-          </v-avatar>
-          <div class="ml-2 flex-grow-1">
-            <div class="d-flex" style="gap: 20px">
-              <div class="font-weight-medium text-body-2">{{ comment.username }}</div>
-              <div class="text-body-2 text-grey">{{ dayjs(comment.timeAgo).fromNow() }}</div>
-            </div>
-            <div class="text-body-2">{{ comment.text }}</div>
-            <v-btn size="x-small" variant="text" class="mt-1 pl-0" @click="loadReplies" v-if="!isReply">
-              답글 달기
-            </v-btn>
-          </div>
-        </div>
-        <div class="d-flex" style="gap: 3px;">
-          <v-menu v-model="menuVisible" :close-on-content-click="false" offset-y>
-            <template #activator="{ props }">
-              <v-btn size="x-small" variant="text" class="text-body-2 text-grey" style="font-size:12px" v-bind="props">
-                <v-icon>mdi-dots-horizontal</v-icon>
-              </v-btn>
-            </template>
-            <v-list dense style="padding: 0; margin: 0;">
-              <v-list-item @click="handleEdit"><v-list-item-title class="menu-list">수정</v-list-item-title></v-list-item>
-              <v-list-item @click="confirmDelete"><v-list-item-title class="menu-list">삭제</v-list-item-title></v-list-item>
-              <v-list-item @click="handleReport"><v-list-item-title class="menu-list">신고</v-list-item-title></v-list-item>
-              <v-list-item @click="handleCloseMenu"><v-list-item-title class="menu-list">닫기</v-list-item-title></v-list-item>
-            </v-list>
-          </v-menu>
-          <v-dialog v-model="confirmDialog" max-width="400px">
-            <v-card>
-              <v-card-title class="text-h6">삭제 확인</v-card-title>
-              <v-card-text>정말 삭제하시겠습니까?</v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="red" text @click="deleteItem">삭제</v-btn>
-                <v-btn color="grey" text @click="confirmDialog = false">취소</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </div>
-      </div>
+      <v-card flat class="pl-2 pt-2 pb-0 d-flex flex-column">
+  <!-- 1. 아바타 + 유저명 + 작성 시간 -->
+  <div class="d-flex align-center" style="gap: 8px;">
+    <v-avatar size="32">
+      <v-img :src="comment.avatar" alt="Avatar" />
+    </v-avatar>
+    <div class="font-weight-medium text-body-2">{{ comment.username }}</div>
+    <div class="text-body-2 text-grey">{{ dayjs(comment.timeAgo).fromNow() }}</div>
+  </div>
 
-      <div style="justify-items: center;">
-        <PostLikeIcon :likedByCurrentUser="comment.likedByCurrentUser" :likeCount="comment.likeCount" @toggle="handleToggleCommentLike" />
-      </div>
+  <!-- 2. 댓글 + 좋아요 + 메뉴 (한 줄) -->
+  <div class="d-flex justify-space-between align-center mt-1">
+    <!-- 왼쪽: 댓글 텍스트 -->
+    <div class="text-body-2">{{ comment.text }}</div>
+
+    <!-- 오른쪽: 좋아요 + 수 + 메뉴 -->
+    <div class="d-flex align-center" style="gap: 6px;">
+      <PostLikeIcon
+        :likedByCurrentUser="comment.likedByCurrentUser"
+        @toggle="handleToggleCommentLike"
+        style="margin: 0; padding: 0;"
+      />
+      <div class="text-body-2">{{ comment.likeCount }}</div>
+
+      <v-menu v-model="menuVisible" :close-on-content-click="false" offset-y>
+        <template #activator="{ props }">
+          <v-btn icon size="x-small" v-bind="props">
+            <v-icon small>mdi-dots-horizontal</v-icon>
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item @click="handleEdit"><v-list-item-title>수정</v-list-item-title></v-list-item>
+          <v-list-item @click="confirmDelete"><v-list-item-title>삭제</v-list-item-title></v-list-item>
+          <v-list-item @click="handleReport"><v-list-item-title>신고</v-list-item-title></v-list-item>
+        </v-list>
+      </v-menu>
+    </div>
+  </div>
+</v-card>
 
       <div v-if="showReplies" class="mt-2">
         <PostCommentCard
@@ -159,24 +151,45 @@ const loadReplies = async () => {
   try {
     const res = await axios.get('/api/posts/replies', {
       params: { parentCommentId: props.comment.id }
-    })
+    });
 
-    replies.value = res.data.map(r => ({
-      commentId: r.commentId,
-      username: r.nickname,
-      avatar: r.profileImage,
-      text: r.content,
-      timeAgo: r.createdAt,
-      likeCount: r.likeCount,
-      likedByCurrentUser: r.likedByCurrentUser
-    }))
+    // 댓글마다 좋아요 여부 별도 요청
+    const repliesWithLikeStatus = await Promise.all(
+      res.data.map(async r => {
+        const likeCheckRes = await axios.get('/api/posts/comment/like/check', {
+          params: { commentId: r.commentId, memberId: userStore.id }
+        });
+        console.log("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
+        console.log(likeCheckRes)
+        return {
+          commentId: r.commentId,
+          username: r.nickname,
+          avatar: r.profileImage,
+          text: r.content,
+          timeAgo: r.createdAt,
+          likeCount: r.likeCount,
+          likedByCurrentUser: likeCheckRes.data
+        };
+      })
+    );
 
-    showReplies.value = true
-    hasMoreReplies.value = false
+  replies.value = repliesWithLikeStatus.map(r => ({
+  id: r.commentId, // <-- 이걸 추가
+  username: r.username,
+  avatar: r.avatar,
+  text: r.text,
+  timeAgo: r.timeAgo,
+  likeCount: r.likeCount,
+  likedByCurrentUser: r.likedByCurrentUser
+}));
+
+    showReplies.value = true;
+    hasMoreReplies.value = false;
   } catch (err) {
-    console.error('❌ 대댓글 불러오기 실패:', err)
+    console.error('❌ 대댓글 불러오기 실패:', err);
   }
-}
+};
+
 
 const hideReplies = () => {
   showReplies.value = false
