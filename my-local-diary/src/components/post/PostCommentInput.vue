@@ -31,6 +31,8 @@ const props = defineProps({
   postId: Number
 })
 
+const emit = defineEmits(['refreshComments'])
+
 const handlePostComment = async () => {
   const trimmed = commentText.value.trim()
   if (!trimmed) return
@@ -48,6 +50,7 @@ const handlePostComment = async () => {
     commentText.value = ''
     console.log('✅ 댓글 등록 성공')
     // 예: emit('refreshComments') 등
+    emit('refreshComments')
   } catch (err) {
     console.error('❌ 댓글 등록 실패:', err)
   }

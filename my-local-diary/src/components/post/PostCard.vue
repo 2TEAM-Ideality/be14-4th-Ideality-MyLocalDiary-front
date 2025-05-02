@@ -92,7 +92,8 @@
       <button v-show="scrollPosition > 300" @click="scrollToTop" style="position: absolute; bottom: 60px; right: 30px;">↑</button>
 
       <v-divider class="my-3" />
-      <PostCommentInput />
+      <PostCommentInput @refreshComments="fetchComments" />
+
     </div>
   </div>
 </template>
