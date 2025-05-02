@@ -17,7 +17,7 @@
           />
 
           <div class="mini-map">
-            <router-link to="/user-map-home" class="mini-map-link">지도에서 보기 →</router-link>
+            <router-link :to="`/map/${routeUserId}`" class="mini-map-link">지도에서 보기 →</router-link>
             <MiniMap
               :memberId="routeUserId"
               width="100%"
@@ -124,6 +124,7 @@
   // 라우터 변경 시에도 리패치
   watch(() => route.params.id, async () => {
     isLoading.value = true;
+    await userStore.restoreUser();
     await fetchUserProfile();
     isLoading.value = false;
   });
