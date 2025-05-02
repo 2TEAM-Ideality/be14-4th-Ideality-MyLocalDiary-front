@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { onMounted, h, render, ref, computed } from 'vue'
+import { onMounted, h, render, ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { useUserStore } from '@/stores/userStore'
@@ -68,11 +68,17 @@ const followings = ref(0)
 // 📍 유저 정보 fetch
 async function fetchOtherUserInfo() {
   try {
-    const res = await axios.get(`http://localhost:8080/api/member/${targetMemberId.value}`, {
+    const isMyPage = Number(route.params.id) === userStore.id;
+
+    const url = isMyPage
+      ? `/api/member/info`                     // 🔄 내 페이지면 내 정보
+      : `/api/member/${targetMemberId.value}` // 🔄 남이면 그 사람 정보
+    const res = await axios.get(url, {
+      params: { memberId: userStore.id },
       headers: {
         Authorization: `Bearer ${userStore.token}`
       }
-    })
+    });
     console.log('🌐 유저 조회 응답:', res.data)
 
     if (res.data?.data) {
@@ -199,7 +205,14 @@ onMounted(async () => {
 
 })
 
-
+watch(() => route.params.id, async (newId) => {
+  if (newId) {
+    await fetchOtherUserInfo()
+    await fetchUserPostLocations()
+    await fetchPostCount()
+    await fetchFollowingCount()
+  }
+})
 
 
 
