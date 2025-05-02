@@ -110,7 +110,7 @@
 
   // 로그인 처리 
   function redirectToKakao() {
-    window.location.href = '/login/kakao';
+    window.location.href = '/api/login/kakao';
   }
   
   async function login() {
