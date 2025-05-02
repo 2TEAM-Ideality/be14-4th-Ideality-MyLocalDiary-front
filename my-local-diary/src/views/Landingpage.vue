@@ -111,7 +111,7 @@ onMounted(async () => {
 
 // 로그인 처리 
 function redirectToKakao() {
-  window.location.href = '/api/login/kakao';
+  window.location.href = '/login/kakao';
 }
 
 async function login() {
