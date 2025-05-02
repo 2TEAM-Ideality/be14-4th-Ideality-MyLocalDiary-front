@@ -173,7 +173,16 @@ const loadReplies = async () => {
       })
     );
 
-    replies.value = repliesWithLikeStatus;
+  replies.value = repliesWithLikeStatus.map(r => ({
+  id: r.commentId, // <-- 이걸 추가
+  username: r.username,
+  avatar: r.avatar,
+  text: r.text,
+  timeAgo: r.timeAgo,
+  likeCount: r.likeCount,
+  likedByCurrentUser: r.likedByCurrentUser
+}));
+
     showReplies.value = true;
     hasMoreReplies.value = false;
   } catch (err) {
