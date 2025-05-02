@@ -21,19 +21,39 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from 'vue'
+import axios from 'axios'
+import { useUserStore } from '@/stores/userStore'
 
-const commentText = ref('');
+const userStore = useUserStore()
+const commentText = ref('')
+const props = defineProps({
+  postId: Number
+})
 
-// 댓글 작성 처리
-const handlePostComment = () => {
-  if (commentText.value.trim()) {
-    // 댓글 작성 로직, 예: 서버에 전송하거나 로컬 상태에 추가
-    console.log('작성된 댓글:', commentText.value);
-    commentText.value = ''; // 입력 필드 초기화
+const handlePostComment = async () => {
+  const trimmed = commentText.value.trim()
+  if (!trimmed) return
+
+  try {
+    await axios.post('/api/comments', {
+      content: trimmed,
+      postId: props.postId,
+      memberId: userStore.id,
+      parentCommentId: null, // 대댓글이 아닌 경우
+      targetMemberId: null   // 멘션 등의 대상이 없을 경우
+    })
+
+    // 등록 후 초기화 및 추가 작업 (댓글 목록 갱신 등)
+    commentText.value = ''
+    console.log('✅ 댓글 등록 성공')
+    // 예: emit('refreshComments') 등
+  } catch (err) {
+    console.error('❌ 댓글 등록 실패:', err)
   }
-};
+}
 </script>
+
 
 <style scoped>
 </style>
