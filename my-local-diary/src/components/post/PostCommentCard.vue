@@ -151,24 +151,36 @@ const loadReplies = async () => {
   try {
     const res = await axios.get('/api/posts/replies', {
       params: { parentCommentId: props.comment.id }
-    })
+    });
 
-    replies.value = res.data.map(r => ({
-      commentId: r.commentId,
-      username: r.nickname,
-      avatar: r.profileImage,
-      text: r.content,
-      timeAgo: r.createdAt,
-      likeCount: r.likeCount,
-      likedByCurrentUser: r.likedByCurrentUser
-    }))
+    // 댓글마다 좋아요 여부 별도 요청
+    const repliesWithLikeStatus = await Promise.all(
+      res.data.map(async r => {
+        const likeCheckRes = await axios.get('/api/posts/comment/like/check', {
+          params: { commentId: r.commentId, memberId: userStore.id }
+        });
+        console.log("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
+        console.log(likeCheckRes)
+        return {
+          commentId: r.commentId,
+          username: r.nickname,
+          avatar: r.profileImage,
+          text: r.content,
+          timeAgo: r.createdAt,
+          likeCount: r.likeCount,
+          likedByCurrentUser: likeCheckRes.data
+        };
+      })
+    );
 
-    showReplies.value = true
-    hasMoreReplies.value = false
+    replies.value = repliesWithLikeStatus;
+    showReplies.value = true;
+    hasMoreReplies.value = false;
   } catch (err) {
-    console.error('❌ 대댓글 불러오기 실패:', err)
+    console.error('❌ 대댓글 불러오기 실패:', err);
   }
-}
+};
+
 
 const hideReplies = () => {
   showReplies.value = false

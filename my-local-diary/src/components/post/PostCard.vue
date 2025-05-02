@@ -184,17 +184,28 @@ const fetchComments = async () => {
       params: { postId: props.postId }
     });
 
-    comments.value = res.data.map(c => ({
-      id: c.commentId,
-      username: c.nickname,
-      avatar: c.profileImage,
-      text: c.content,
-      timeAgo: c.createdAt,
-      likeCount: c.likeCount,
-      likedByCurrentUser: c.likedByCurrentUser
-    }));
+    const commentsRaw = res.data;
 
-    commentCount.value = comments.value.length;
+    // 각각의 댓글에 대해 likedByCurrentUser 요청 병렬 처리
+    const commentsWithLikeStatus = await Promise.all(
+      commentsRaw.map(async c => {
+        const likeRes = await axios.get('/api/posts/comment/like/check', {
+          params: { commentId: c.commentId, memberId: props.memberId }
+        });
+        return {
+          id: c.commentId,
+          username: c.nickname,
+          avatar: c.profileImage,
+          text: c.content,
+          timeAgo: c.createdAt,
+          likeCount: c.likeCount,
+          likedByCurrentUser: likeRes.data
+        };
+      })
+    );
+
+    comments.value = commentsWithLikeStatus;
+    commentCount.value = commentsWithLikeStatus.length;
     currentPage = 0;
     displayedComments.value = [];
     loadMore();
@@ -202,6 +213,7 @@ const fetchComments = async () => {
     console.error('❌ 댓글 불러오기 실패:', err);
   }
 };
+
 
 const loadMore = () => {
   if (isLoading.value) return;
