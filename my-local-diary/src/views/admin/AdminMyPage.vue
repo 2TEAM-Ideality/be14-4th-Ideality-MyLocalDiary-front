@@ -15,21 +15,15 @@
       <div class="graph-section">
         <div class="graph-card">
           <h2>일일 게시글/댓글 추이</h2>
-          <!-- 여기에 차트 라이브러리로 그래프 삽입 예정 -->
-          <div class="graph-placeholder">[그래프 자리]
-
-            <div class="graph-placeholder">
+          <div class="graph-placeholder">
             <canvas id="postCommentChart"></canvas>
-            </div>
           </div>
         </div>
   
         <div class="graph-card">
           <h2>신고 및 규제 추이</h2>
-          <div class="graph-placeholder">[그래프 자리]
-            <div class="graph-placeholder">
+          <div class="graph-placeholder"> 
             <canvas id="reportRegulationChart"></canvas>
-            </div>
 
           </div>
         </div>

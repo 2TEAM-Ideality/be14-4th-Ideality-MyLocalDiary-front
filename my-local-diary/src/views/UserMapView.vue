@@ -11,8 +11,6 @@
       />
       <!-- :postList ="postLocations" -->
 
-
-
     </div>
 
     <!-- 지도 -->
@@ -89,7 +87,9 @@ async function fetchOtherUserInfo() {
 
 async function fetchPostCount() {
   try {
-    const res = await axios.get(`http://localhost:8080/api/mypage/${targetMemberId.value}/posts/count`)
+    const res = await axios.get('/api/mypage/posts/count', {
+      params: { memberId: targetMemberId.value }
+    })
     postCount.value = res.data
     console.log('✅ 게시글 수:', postCount.value)
   } catch (err) {
