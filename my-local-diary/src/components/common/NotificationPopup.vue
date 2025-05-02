@@ -53,7 +53,7 @@ const props = defineProps({ isOpen: Boolean })
 const emit = defineEmits(['close'])
 const router = useRouter()
 const notificationStore = useNotificationStore()
-const userStore = useUserStore()
+const userStore = useUserStore();
 
 
 const handleNotificationClick = async (id, targetId) => {
@@ -63,7 +63,7 @@ const handleNotificationClick = async (id, targetId) => {
     })
 
     notificationStore.markAsRead(id)
-    router.push(`/profile/${targetId}`)
+    router.push(`/mypage/${targetId}`)
     emit('close')
   } catch (error) {
     console.error('읽음 처리 실패:', error)

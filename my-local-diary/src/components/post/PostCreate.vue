@@ -6,8 +6,6 @@
       <div class="d-flex gap-4 mb-6">
         <span class="tab" :class="{ active: uploadedImages.length > 0 }">사진 등록</span>
         <span class="tab" :class="{ active: markers.length > 0 }">장소</span>
-        <span class="tab" :class="{ active: isPublic }" @click="isPublic = true">공개글</span>
-        <span class="tab" :class="{ active: !isPublic }" @click="isPublic = false">비밀글</span>
       </div>
 
       <div class="d-flex align-center justify-space-between mb-3">
@@ -26,13 +24,13 @@
         </template>
       </div>
       <div class="thumbnail-bar">
-            <div v-for="(image, index) in uploadedImages" :key="index" class="thumbnail">
-              <img :src="image" />
-              <v-btn icon size="x-small" class="delete-thumb" @click="removeImage(index)">
-                <v-icon>mdi-minus</v-icon>
-              </v-btn>
-            </div>
-          </div>
+        <div v-for="(image, index) in uploadedImages" :key="index" class="thumbnail">
+          <img :src="image" />
+          <v-btn icon size="x-small" class="delete-thumb" @click="removeImage(index)">
+            <v-icon>mdi-minus</v-icon>
+          </v-btn>
+        </div>
+      </div>
     </v-col>
 
     <!-- 오른쪽 장소 등록 + 다이어리 작성 -->
@@ -97,9 +95,30 @@
 
       <h2 class="text-h6 font-weight-bold mb-2">Diary</h2>
       <v-text-field v-model="title" label="제목" outlined dense class="mb-2" />
-      <v-textarea v-model="content" label="내용" rows="6" outlined class="mb-4" />
 
-      <div class="text-end">
+      <div class="mb-4 d-flex gap-2">
+        <v-btn-toggle v-model="activeTab" dense mandatory>
+          <v-btn value="post">공개 게시글</v-btn>
+          <v-btn value="diary">비공개 일기</v-btn>
+        </v-btn-toggle>
+      </div>
+
+      <v-textarea
+  :model-value="activeTab === 'post' ? postContent : diaryContent"
+  @update:modelValue="(val) => {
+    if (activeTab === 'post') postContent = val
+    else diaryContent = val
+  }"
+  :label="activeTab === 'post' ? '공개 게시글 내용' : '비공개 일기 내용'"
+  :placeholder="activeTab === 'post' ? '게시글 내용을 작성하세요' : '일기 내용을 작성하세요'"
+  outlined
+  rows="6"
+  class="mb-1"
+/>
+
+      <p class="text-caption text-grey">{{ activeTab === 'post' ? '해당 내용은 게시글로 저장됩니다.' : '해당 내용은 일기로 저장됩니다.' }}</p>
+
+      <div class="text-end mt-4">
         <v-btn color="black" class="me-2" @click="submitPost">글 등록하기</v-btn>
       </div>
     </v-col>
@@ -109,18 +128,24 @@
 <script setup>
 import { ref, onMounted, h, render, nextTick } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/userStore'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import CustomMarker from '@/components/common/CustomMarker.vue'
 
+const router = useRouter()
+const userStore = useUserStore()
+
 const fileInput = ref(null)
 const uploadedImages = ref([])
 const markers = ref([])
 const title = ref('')
-const content = ref('')
-const isPublic = ref(true)
+const postContent = ref('')
+const diaryContent = ref('')
+const activeTab = ref('post')
 const currentStep = ref('photo')
 const searchMode = ref('도로명')
 const query = ref('')
@@ -147,29 +172,23 @@ class CustomOverlay extends naver.maps.OverlayView {
     this._content = content
     this.setMap(map)
   }
-
   onAdd() {
     const pane = this.getPanes().overlayLayer
     pane.appendChild(this._content)
   }
-
   draw() {
     const projection = this.getProjection()
     const el = this._content
     if (!el) return
-
-    // 지연 로딩 고려
     if (el.offsetWidth === 0 || el.offsetHeight === 0) {
       setTimeout(() => this.draw(), 0)
       return
     }
-
     const pixel = projection.fromCoordToOffset(this._position)
     el.style.position = 'absolute'
     el.style.left = `${pixel.x - el.offsetWidth / 2}px`
     el.style.top = `${pixel.y - el.offsetHeight / 2}px`
   }
-
   onRemove() {
     if (this._content?.parentNode) {
       this._content.parentNode.removeChild(this._content)
@@ -207,16 +226,10 @@ function searchPlace() {
         alert('주소를 찾을 수 없습니다.')
         return
       }
-
       const result = response.v2.addresses[0]
       const latlng = new naver.maps.LatLng(result.y, result.x)
-
       if (previewMarker) previewMarker.setMap(null)
-      previewMarker = new naver.maps.Marker({
-        map,
-        position: latlng,
-        title: result.roadAddress || result.jibunAddress
-      })
+      previewMarker = new naver.maps.Marker({ map, position: latlng, title: result.roadAddress || result.jibunAddress })
       map.setCenter(latlng)
       searchResults.value = []
     })
@@ -240,7 +253,6 @@ function selectResult(item) {
   const lat = Number(item.mapy) / 1e7
   const lng = Number(item.mapx) / 1e7
   const latlng = new naver.maps.LatLng(lat, lng)
-
   if (previewMarker) previewMarker.setMap(null)
   previewMarker = new naver.maps.Marker({
     map,
@@ -252,41 +264,28 @@ function selectResult(item) {
 
 function fixMarker() {
   if (!previewMarker) return
-
   const position = previewMarker.getPosition()
   const lat = position.lat()
   const lng = position.lng()
   const label = previewMarker.getTitle()
-
   const markerIndex = markers.value.length
   const markerImage = ''
 
-  markers.value.push({
-    lat,
-    lng,
-    label,
-    image: markerImage,
-    overlay: null
-  })
+  markers.value.push({ lat, lng, label, image: markerImage, overlay: null })
 
   const container = document.createElement('div')
   const vnode = h(CustomMarker, {
     image: markerImage || 'https://placehold.co/100x100?text=+',
     post_id: markerIndex,
-    name: label,
-    onClick: (id) => {
-      console.log('커스텀 마커 클릭됨:', id)
-    }
+    name: label
   })
   render(vnode, container)
-
-  const el = container.firstElementChild // ✅ 필수!
+  const el = container.firstElementChild
   const img = el.querySelector('img')
 
   const mountOverlay = () => {
     const overlay = new CustomOverlay(new naver.maps.LatLng(lat, lng), el)
     markers.value[markerIndex].overlay = overlay
-    console.log('✅ 마커 생성 완료:', lat, lng)
   }
 
   if (img && !img.complete) {
@@ -304,22 +303,14 @@ function onThumbnailChange(event, index) {
   reader.onload = () => {
     const newImage = reader.result
     markers.value[index].image = newImage
-
-    // 📌 기존 마커 정보 재사용
     const { lat, lng, label } = markers.value[index]
 
     const container = document.createElement('div')
-    const vnode = h(CustomMarker, {
-      image: newImage,
-      post_id: index,
-      name: label
-    })
+    const vnode = h(CustomMarker, { image: newImage, post_id: index, name: label })
     render(vnode, container)
-
     const el = container.firstElementChild
     const img = el.querySelector('img')
 
-    // 기존 오버레이 제거
     if (markers.value[index].overlay) {
       markers.value[index].overlay.setMap(null)
     }
@@ -341,25 +332,26 @@ function onThumbnailChange(event, index) {
 
 function removeMarker(index) {
   const marker = markers.value[index]
-  if (marker.overlay) {
-    marker.overlay.setMap(null)
-  }
+  if (marker.overlay) marker.overlay.setMap(null)
   markers.value.splice(index, 1)
 }
 
 function openFileDialog() {
   fileInput.value?.click()
 }
+
 function handleFileSelect(event) {
   const files = Array.from(event.target.files)
   files.forEach(readAndAddImage)
   currentStep.value = 'photo'
 }
+
 function handleDrop(event) {
   const files = Array.from(event.dataTransfer.files)
   files.forEach(readAndAddImage)
   currentStep.value = 'photo'
 }
+
 function readAndAddImage(file) {
   const reader = new FileReader()
   reader.onload = () => {
@@ -367,23 +359,73 @@ function readAndAddImage(file) {
   }
   reader.readAsDataURL(file)
 }
+
 function removeImage(index) {
   uploadedImages.value.splice(index, 1)
 }
-function submitPost() {
-  const postData = {
+
+function dataURLtoFile(dataUrl, filename) {
+  const arr = dataUrl.split(',')
+  const mime = arr[0].match(/:(.*?);/)[1]
+  const bstr = atob(arr[1])
+  let n = bstr.length
+  const u8arr = new Uint8Array(n)
+  while (n--) u8arr[n] = bstr.charCodeAt(n)
+  return new File([u8arr], filename, { type: mime })
+}
+
+async function submitPost() {
+  const formData = new FormData()
+
+  const postRequest = {
     title: title.value,
-    content: content.value,
-    images: uploadedImages.value,
-    markers: markers.value,
-    isPublic: isPublic.value
+    post: postContent.value,
+    diary: diaryContent.value,
+    places: markers.value.map((m) => ({
+      name: m.label,
+      latitude: m.lat,
+      longitude: m.lng,
+      thumbnailImage: '' // 서버에서 S3 경로로 대체됨
+    }))
   }
-  axios.post('/api/posts', postData)
-    .then(() => alert('게시글이 등록되었습니다!'))
-    .catch(err => console.error('등록 실패:', err))
+
+  formData.append(
+    'request',
+    new Blob([JSON.stringify(postRequest)], {
+      type: 'application/json'
+    })
+  )
+
+  uploadedImages.value.forEach((dataUrl, i) => {
+    const file = dataURLtoFile(dataUrl, `photo${i}.jpg`)
+    formData.append('images', file)
+  })
+
+  markers.value.forEach((m, i) => {
+    if (m.image) {
+      const file = dataURLtoFile(m.image, `thumb${i}.jpg`)
+      formData.append('thumbnails', file)
+    }
+  })
+
+  const token = userStore.token
+
+  try {
+    await axios.post('/api/posts', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`
+      }
+    })
+    alert('게시글이 성공적으로 등록되었습니다.')
+    router.push(`/mypage/${userStore.id}`)
+  } catch (err) {
+    console.error('업로드 실패:', err)
+    console.log(token);
+    alert('등록 실패')
+  }
 }
 </script>
-
 
 <style scoped>
 .border-r {
@@ -605,5 +647,18 @@ function submitPost() {
 }
 .result-item:hover {
   background-color: #f0f0f0;
+}
+.v-btn-toggle .v-btn {
+  font-size: 0.85rem;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background-color: #f8f8f8;
+  color: #444;
+  box-shadow: none;
+}
+
+.v-btn-toggle .v-btn--active {
+  background-color: #f08caa !important;
+  color: white !important;
 }
 </style>
