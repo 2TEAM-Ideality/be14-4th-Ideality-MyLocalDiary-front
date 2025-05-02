@@ -39,9 +39,6 @@
        
         <div class="right-side">
           <div class="right-upper">
-            <!-- <div class="stamp-container">
-              <img src="@/assets/badge/꽐라냥뱃지.png" alt="Badge" class="badge-image" />
-            </div> -->
             <div class="today-post">
               <TodayDiary />
             </div>
@@ -165,7 +162,7 @@
 }
 
 .right-upper {
-  flex: 3.5; /* 4 + 6 = 10 기준으로 40% */
+  flex: 2.5; /* 4 + 6 = 10 기준으로 40% */
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
