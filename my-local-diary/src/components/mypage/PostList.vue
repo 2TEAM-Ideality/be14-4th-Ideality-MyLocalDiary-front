@@ -153,9 +153,12 @@
                 }
             });
 
-            const data = res.data;
-            console.log('📌 POST LIST 받아온 게시글 목록:', data);
+            let data = res.data;
 
+            // ✅ createdAt 기준 내림차순 정렬
+            data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            console.log('📌 POST LIST 정렬된 게시글 목록:', data);
             allPosts.value = data;
 
         } catch (error) {

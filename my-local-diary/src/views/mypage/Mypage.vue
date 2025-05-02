@@ -162,7 +162,7 @@
 }
 
 .right-upper {
-  flex: 3.5; /* 4 + 6 = 10 기준으로 40% */
+  flex: 2.5; /* 4 + 6 = 10 기준으로 40% */
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
