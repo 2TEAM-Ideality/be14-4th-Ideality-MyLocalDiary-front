@@ -29,7 +29,7 @@ export const useUserStore = defineStore('user', () => {
     token.value = accessToken
 
     try {
-      const response = await axios.get('http://localhost:8080/api/member/info', {
+      const response = await axios.get('/api/member/info', {
         headers: { Authorization: `Bearer ${token.value}` }
       })
 
