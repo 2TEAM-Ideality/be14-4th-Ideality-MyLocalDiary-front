@@ -237,7 +237,7 @@ function searchPlace() {
     axios.get('/api/naver/search', {
       params: { query: query.value }      
     }).then(res => {
-      searchResults.value = res.data.items || []
+      searchResults.value = res.data.data || []
     }).catch(err => {
       console.error('장소 검색 오류:', err)
       searchResults.value = []
