@@ -25,7 +25,7 @@ export const useUserStore = defineStore('user', () => {
     return nickname.value ? `안녕하세요, ${nickname.value}님!` : ''
   })
 
-  async function login(accessToken) {
+  async function login(accessToken, refreshToken) {
     token.value = accessToken
 
     try {
@@ -62,6 +62,7 @@ export const useUserStore = defineStore('user', () => {
         profileImage: profileImage.value,
         profileMusic: profileMusic.value
       }))
+      localStorage.setItem('refreshToken', refreshToken)
     } catch (error) {
       console.error("사용자 정보 조회 실패:", error)
     }
@@ -102,16 +103,22 @@ export const useUserStore = defineStore('user', () => {
     profileMusic.value = null
 
     localStorage.removeItem("user");
+    localStorage.removeItem("refreshToken")
   }
 
   async function restoreUser() {
     const savedUser = localStorage.getItem('user')
-    if (!savedUser) return
+    const refreshToken = localStorage.getItem('refreshToken')  // ✅ 추가
+    console.log(refreshToken)
+    if (!savedUser || !refreshToken) return
 
     try {
       const res = await axios.post('http://localhost:8080/api/member/reissue', null, {
-        withCredentials: true
+        headers: {
+          'refresh-token': refreshToken
+        }
       })
+
       const newAccessToken = res.data.data.accessToken
       token.value = newAccessToken
 
@@ -134,14 +141,19 @@ export const useUserStore = defineStore('user', () => {
       logout()
     }
   }
-
   async function tryReissueToken() {
     try {
+      const refreshToken = localStorage.getItem('refreshToken')
+
       const res = await axios.post('http://localhost:8080/api/member/reissue', null, {
-        withCredentials: true
+        headers: {
+          'refresh-token': refreshToken
+        }
       })
+
       const newAccessToken = res.data.data.accessToken
       token.value = newAccessToken
+      localStorage.setItem('accessToken', newAccessToken)
 
       const saved = JSON.parse(localStorage.getItem('user') || '{}')
       saved.token = newAccessToken

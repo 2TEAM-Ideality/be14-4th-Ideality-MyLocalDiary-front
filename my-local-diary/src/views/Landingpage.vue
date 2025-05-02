@@ -1,3 +1,4 @@
+// 랜딩
 <template>
     <v-container v-if = "!isRestoring" fluid class="fill-height d-flex align-center justify-center pa-4" style="background-color: black; color: white;">
       <v-row class="ma-0" align="center" justify="center">
@@ -127,12 +128,13 @@
       });
   
       const accessToken = response.data.data.accessToken;
-      // const refreshToken = response.data.data.refreshToken;
+      const refreshToken = response.data.data.refreshToken;
 
-      console.log('✅ JWT Token 확인 테스트:', accessToken);
-      // console.log('✅ Refresh Token 확인 테스트:', refreshToken);
+      console.log('🔍 응답 전체:', response.data)
+      console.log('✅ accessToken:', response.data.data?.accessToken) 
+      console.log('✅ refreshToken:', response.data.data?.refreshToken)
 
-      await userStore.login(accessToken); 
+      await userStore.login(accessToken, refreshToken); 
 
       router.push('/home');  // 메인 홈으로 이동
 
@@ -153,3 +155,4 @@
   <style scoped>
   </style>
   
+
