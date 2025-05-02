@@ -111,11 +111,14 @@ export const useUserStore = defineStore('user', () => {
     if (!savedUser) return
 
     try {
+      console.log("reissu 신청 가나연")
       const res = await axios.post('/api/member/reissue', null, {
         withCredentials: true
       })
+      console.log("res", res.data.data.accessToken)
       const newAccessToken = res.data.data.accessToken
       token.value = newAccessToken
+      console.log(token.value);
 
       const user = JSON.parse(savedUser)
       token.value = user.token
