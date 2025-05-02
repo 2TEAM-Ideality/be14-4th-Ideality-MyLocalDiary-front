@@ -5,14 +5,14 @@
         </v-avatar>
         <div class="ml-3">
             <div class="font-weight-medium">{{ author.name }}</div>
-            <div class="neighborhoods d-flex flex-wrap gap-2">
+            <!-- <div class="neighborhoods d-flex flex-wrap gap-2">
                 <LocationChip
                     v-for="(place, i) in displayedNeighborhoods"
                     :key="i"
                     :place="place"
                 />
                 <v-chip v-if="extraCount !== 0" size="small" class="muted" color="grey">+ {{ extraCount }}</v-chip>
-            </div>
+            </div> -->
         </div>
     </v-card>
 </template>
