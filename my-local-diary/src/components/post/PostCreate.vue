@@ -234,14 +234,10 @@ function searchPlace() {
       searchResults.value = []
     })
   } else {
-    axios.get('/naver/v1/search/local.json', {
-      params: { query: query.value, display: 5 },
-      headers: {
-        'X-Naver-Client-Id': import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID,
-        'X-Naver-Client-Secret': import.meta.env.VITE_NAVER_SEARCH_CLIENT_SECRET
-      }
+    axios.get('/api/naver/search', {
+      params: { query: query.value }      
     }).then(res => {
-      searchResults.value = res.data.items || []
+      searchResults.value = res.data.data || []
     }).catch(err => {
       console.error('장소 검색 오류:', err)
       searchResults.value = []
@@ -408,6 +404,7 @@ async function submitPost() {
     }
   })
 
+  const userStore = useUserStore()
   const token = userStore.token
 
   try {

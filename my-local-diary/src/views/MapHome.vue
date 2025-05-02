@@ -16,6 +16,7 @@
     <!-- 검색창 -->
     <SearchLocation2
       :query="query"
+      :map="map"
       @update:query="query = $event"
       @place-selected="selectPlace"
     />
@@ -117,12 +118,15 @@
   // 내 현재 위치로 지도 이동
   function moveToMyLocation() {
     if (!navigator.geolocation) return
+
     navigator.geolocation.getCurrentPosition(pos => {
       const latlng = new naver.maps.LatLng(pos.coords.latitude, pos.coords.longitude)
-      map.value.setCenter(latlng)
-      map.value.setZoom(15)
+
+      // ✅ 기존 마커 제거
+      if (currentMarker.value) currentMarker.value.setMap(null)
+
+      // ✅ 커스텀 마커 없이 InfoWindow만 보여줌
       renderResult(latlng, '📍 내 위치', '')
-      placeMarker(latlng, '내 위치')
     })
   }
 
@@ -138,11 +142,16 @@
   }
 
   // 검색된 장소 클릭 시 지도 이동 및 InfoWindow 표시
-  function selectPlace(item) {
-    const latlng = new naver.maps.LatLng(Number(item.mapy) / 1e7, Number(item.mapx) / 1e7)
-    renderResult(latlng, item.title, item.roadAddress || item.address)
-    placeMarker(latlng, item.title)
+  function selectPlace(place) {
+    const latlng = new naver.maps.LatLng(place.lat, place.lng)
+
+    // 기존 마커 제거
+    if (currentMarker.value) currentMarker.value.setMap(null)
+
+    renderResult(latlng, place.title, place.address)  // 🗨️ 말풍선도 띄우기
   }
+
+
 
   // InfoWindow로 장소 정보 표시
   function renderResult(latlng, title, address) {

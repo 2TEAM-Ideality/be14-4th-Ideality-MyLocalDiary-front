@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container">
         <v-row no-gutters class="search-bar-row">
             <v-text-field
                 v-model="searchQuery"
@@ -172,6 +172,7 @@
 </script>
 
 <style scoped>
+
     .pagination {
         display: flex;
         justify-content: center;

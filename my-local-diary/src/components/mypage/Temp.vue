@@ -37,6 +37,7 @@
 
     </v-card>
 
+    <!-- 게시글 디테일 모달 -->
     <div v-if="selectedPostId !== null" class="modal-overlay" @click="selectedPostId = null">
         <div class="modal-content d-flex flex-column" @click.stop     style="
             width: 1000px;
