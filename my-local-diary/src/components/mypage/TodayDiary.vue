@@ -4,7 +4,9 @@
       <p class="today-text">
         TODAY : <span class="today-date">{{ formattedToday }} {{ dayOfWeek }}</span>
       </p>
-      <v-icon size="18" color="grey" @click="createDiary">mdi-pencil</v-icon>
+      <template v-if="isMyPage">
+        <v-icon size="18" color="grey" @click="createDiary">mdi-pencil</v-icon>
+      </template>
     </div>
 
     <div v-if="todayDiary">
@@ -42,21 +44,38 @@
 
     <div v-else class="no-diary">
       아직 글을 작성하지 않았어요.<br />
-      오늘의 일기를 작성해보세요 ✍️
+
+      <template v-if="isMyPage">
+        오늘의 일기를 작성해보세요 ✍️
+      </template>
+     
     </div>
   </v-card>
 </template>
 
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/userStore'
+
 import axios from 'axios'
 import LocationChip from '@/components/common/LocationChip.vue'
 import defaultThumbnail from '@/assets/cursor/슈크림붕어빵1.png';
 
+
 // 라우터 이동용
 const router = useRouter()
+
+const userStore = useUserStore()
+const route = useRoute()
+
+// 내가 쓴 페이지인지 판별
+const isMyPage = computed(() => {
+  return Number(route.params.id) === userStore.id
+})
+
+
 
 // 오늘 다이어리 데이터 (초기에는 null)
 const todayDiary = ref(null)
