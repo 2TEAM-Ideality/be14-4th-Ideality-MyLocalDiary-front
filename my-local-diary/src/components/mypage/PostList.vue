@@ -15,7 +15,7 @@
         <PostListCard v-for="(post, index) in currentPagePosts"
             :key="index"
             :post="post"
-            @click="handleCardClick(post.id)"
+            @click="handleCardClick(post.postId)"
             />
         <v-divider class="my-3"/>
         <!-- 페이지네이션 -->
@@ -74,7 +74,13 @@
 <script setup>
     import PostListCard from './PostListCard.vue'
     import PostCard from '../post/PostCard.vue'
-    import { ref, computed } from 'vue'
+    import { ref, computed, onMounted } from 'vue'
+    import { useRoute } from 'vue-router'
+    import { useUserStore } from '@/stores/userStore'
+    import axios from 'axios'
+
+    const route = useRoute()
+    const userStore = useUserStore()
 
     const selectedPostId = ref(null)
     const searchQuery = ref('') // 검색어
@@ -83,107 +89,17 @@
         selectedPostId.value = postId
         console.log(selectedPostId.value)
     }
-    const allPosts = [
-    {
-        id: '1',
-        postTitle: '제목1',
-        createdAt: '2025.04.27',
-        thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
-        neighborhoods: [
-            { name: '신대방동 294', latitude: 37.4854, longitude: 126.9016 },
-            { name: '보라매로 73', latitude: 37.4923, longitude: 126.9248 },
-        ]
-    },
-    {
-        id: '2',
-        postTitle: '제목2',
-        createdAt: '2025.04.24',
-        thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
-        neighborhoods: [
-            { name: '신대방동 294', latitude: 37.4854, longitude: 126.9016 },
-            { name: '보라매로 73', latitude: 37.4923, longitude: 126.9248 },
-        ]
-    },
-    {
-        id: '3',
-        postTitle: '제목3',
-        createdAt: '2025.04.23',
-        thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
-        neighborhoods: [
-            { name: '신대방동 294', latitude: 37.4854, longitude: 126.9016 },
-            { name: '보라매로 73', latitude: 37.4923, longitude: 126.9248 },
-            { name: 'text', latitude: 20.0, longitude: 20.0}
-        ]
-    },
-    {
-    id: '4',
-    postTitle: '제목4',
-    createdAt: '2025.04.23',
-    thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
-    neighborhoods: [
-      { name: '신대방동 294', latitude: 37.4854, longitude: 126.9016 },
-      { name: '보라매로 73', latitude: 37.4923, longitude: 126.9248 },
-      { name: 'text', latitude: 20.0, longitude: 20.0}
-    ]
-  },
-  {
-    id: '5',
-    postTitle: '제목5',
-    createdAt: '2025.04.22',
-    thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
-    neighborhoods: [
-      { name: '신대방동 294', latitude: 37.4854, longitude: 126.9016 },
-      { name: '보라매로 73', latitude: 37.4923, longitude: 126.9248 },
-    ]
-  },
-  {
-    id: '6',
-    postTitle: '제목6',
-    createdAt: '2025.04.21',
-    thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
-    neighborhoods: [
-      { name: '신대방동 294', latitude: 37.4854, longitude: 126.9016 },
-      { name: '보라매로 73', latitude: 37.4923, longitude: 126.9248 },
-    ]
-  },
-  {
-    id: '7',
-    postTitle: '제목7',
-    createdAt: '2025.04.20',
-    thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
-    neighborhoods: [
-      { name: '신대방동 294', latitude: 37.4854, longitude: 126.9016 },
-      { name: '보라매로 73', latitude: 37.4923, longitude: 126.9248 },
-    ]
-  },
-  {
-    id: '8',
-    postTitle: '제목8',
-    createdAt: '2025.04.19',
-    thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
-    neighborhoods: [
-      { name: '신대방동 294', latitude: 37.4854, longitude: 126.9016 },
-      { name: '보라매로 73', latitude: 37.4923, longitude: 126.9248 },
-    ]
-  },
-  {
-    id: '9',
-    postTitle: '제목9',
-    createdAt: '2025.04.19',
-    thumbnail: 'https://img.freepik.com/premium-vector/cute-cat-vector-illustration_961307-8342.jpg',
-    neighborhoods: [
-      { name: '신대방동 294', latitude: 37.4854, longitude: 126.9016 },
-      { name: '보라매로 73', latitude: 37.4923, longitude: 126.9248 },
-    ]
-  },
-]
+    const allPosts = ref([]);   // 게시글 목록
+
     const postsPerPage = 4 // 한 페이지에 보여줄 게시물 수
     const currentPage = ref(1) // 현재 페이지
 
     const filteredPosts = computed(() => {
-        if(!searchQuery.value) return allPosts
-        return allPosts.filter(post => post.postTitle.toLowerCase().includes(searchQuery.value.toLowerCase()))
-    })
+        if (!searchQuery.value) return allPosts.value;
+        return allPosts.value.filter(post =>
+            post.placeName.toLowerCase().includes(searchQuery.value.toLowerCase())
+        );
+    });
 
     const totalPages = computed(() => Math.ceil(filteredPosts.value.length / postsPerPage)) // 전체 페이지 수
 
@@ -198,6 +114,7 @@
     const goToPage = (page) => {
         currentPage.value = page
     }
+
     // 현재 페이지를 기준으로 보일 페이지 범위 계산
     const visiblePages = computed(() => {
         const pages = []
@@ -215,6 +132,39 @@
         }
 
         return pages
+    })
+
+
+    const fetchPostList = async () => {
+        console.log("POST LIST 데이터 가져오기");
+        try {
+            const isMyPost = Number(route.params.id) === userStore.id;
+
+            const url = isMyPost
+                ? `/api/posts/my/map`
+                : `/api/posts/follow/map`;
+
+            console.log('📌 요청 보냄:', url, 'with memberId:', userStore.id);
+
+            const res = await axios.get(url, {
+                params: { memberId: userStore.id },
+                headers: {
+                    Authorization: `Bearer ${userStore.token}`
+                }
+            });
+
+            const data = res.data;
+            console.log('📌 POST LIST 받아온 게시글 목록:', data);
+
+            allPosts.value = data;
+
+        } catch (error) {
+            console.error('❌ 게시글 목록 가져오기 실패', error);
+        }
+    }
+
+    onMounted(() => {
+        fetchPostList();
     })
 </script>
 

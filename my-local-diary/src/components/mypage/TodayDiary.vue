@@ -78,7 +78,7 @@ const isMyPage = computed(() => {
 
 
 // 오늘 다이어리 데이터 (초기에는 null)
-const todayDiary = ref(null)
+const todayDiary = ref({})
 
 // 최대 보여줄 장소 개수
 const maxVisible = 3
@@ -99,18 +99,39 @@ const createDiary = () => {
 // 오늘 다이어리 데이터 가져오기
 const fetchTodayDiary = async () => {
   try {
-    const response = await axios.get('http://localhost:3001/today-diary', {
-      params: { date: formattedToday }
-    })
-    const data = response.data
+    const isMyPost = Number(route.params.id) === userStore.id;
+
+    const url = isMyPost
+      ? `/api/posts/my/map`
+      : `/api/posts/follow/map`;
+    
+    
+    const res = await axios.get(url, {
+      params: { memberId : userStore.id },
+      headers: {
+        Authorization: `Bearer ${userStore.token}`
+      }
+    });
+    const data = res.data;
+    console.log('📌 받아온 게시글 목록:', data);
 
     if (data && data.length > 0) {
-      todayDiary.value = data[0]
-      visiblePlaces.value = todayDiary.value.places.slice(0, maxVisible)
-      hiddenCount.value = todayDiary.value.places.length - maxVisible
+      const lastPost = data[data.length - 1];
+      console.log('📌 마지막 글:', lastPost);
+      todayDiary.value = {
+        ...lastPost,
+        title: lastPost.placeName, // 대체할 적절한 title 이 없으면
+        thumbnail: lastPost.thumbnailImage,
+        places: [ { name: lastPost.placeName } ] // 예시로 chip 뿌릴 수 있게 가공
+      };
+
+      visiblePlaces.value = todayDiary.value.places.slice(0, maxVisible);
+      hiddenCount.value = todayDiary.value.places.length - maxVisible;
     } else {
-      todayDiary.value = null
+      todayDiary.value = null;
     }
+
+    console.log('📌 TODAY DIARY 보여줄 것: ', todayDiary.value)
   } catch (error) {
     console.error('❌ 오늘 다이어리 가져오기 실패', error)
     todayDiary.value = null

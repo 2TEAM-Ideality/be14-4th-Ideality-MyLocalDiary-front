@@ -64,7 +64,7 @@ import { useNotificationStore } from '@/stores/notificationStore'
 
 // 모달 컴포넌트 import
 import FollowerModal from '@/components/follow/follower.vue'
-import FollowingModal from '@/components/follow/following.vue'
+import FollowingModal from '@/components/follow/Following.vue'
 
 const notificationStore = useNotificationStore()
 
