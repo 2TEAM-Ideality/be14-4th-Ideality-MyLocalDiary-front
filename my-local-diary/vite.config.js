@@ -21,22 +21,22 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
-  server: {
-    proxy: {
-      // 네이버 지도
-      '/naver': {  
-        target: 'https://openapi.naver.com',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/naver/, ''),
-      },
+  // server: {
+  //   proxy: {
+  //     // 네이버 지도
+  //     '/naver': {  
+  //       target: 'https://openapi.naver.com',
+  //       changeOrigin: true,
+  //       rewrite: (path) => path.replace(/^\/naver/, ''),
+  //     },
 
-      // // 백엔드
-      // '/api': {
-      //   target: 'http://localhost:8080',
-      //   changeOrigin: true
-      // }
+  //     // // 백엔드
+  //     // '/api': {
+  //     //   target: 'http://localhost:8080',
+  //     //   changeOrigin: true
+  //     // }
 
       
-    },
+  //   },
   }
 })

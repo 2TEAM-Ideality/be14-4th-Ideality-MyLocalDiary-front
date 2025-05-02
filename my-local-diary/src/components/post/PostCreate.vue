@@ -234,7 +234,7 @@ function searchPlace() {
       searchResults.value = []
     })
   } else {
-    axios.get('/naver/v1/search/local.json', {
+    axios.get('https://openapi.naver.com/v1/search/local.json', {
       params: { query: query.value, display: 5 },
       headers: {
         'X-Naver-Client-Id': import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID,
