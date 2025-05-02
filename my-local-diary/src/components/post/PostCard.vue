@@ -29,11 +29,27 @@
           <h3>{{ postTitle }}</h3>
           <hr />
         </div>
+        <!-- 여기 마커 추가 -->
+         <!-- 장소 마커 리스트 (가로 스크롤) -->
+<div
+  v-if="placeList.length"
+  class="d-flex"
+  style="gap: 4px; overflow-x: auto; padding-bottom: 4px;"
+>
+  <PostMarker
+    v-for="place in placeList"
+    :key="place.id"
+    :image="place.url"
+    :name="place.name"
+    :post_id="place.post_id"
+    @click="handleMarkerClick"
+  />
+</div>
 
         <div
           v-if="isMine"
           class="d-inline-flex align-center rounded-pill px-3 py-1 mb-2"
-          style="background-color: #fecccc; font-size: 14px; margin-top: 16px"
+          style="background-color: #fecccc; font-size: 14px; margin-top: 4px"
         >
           <span @click="postType = 'post'" :class="postType === 'post' ? 'text-black' : 'text-grey-darken-1'" class="cursor-pointer" style="margin-right: 6px;">Post</span>
           <span class="text-grey-darken-2">|</span>
@@ -94,6 +110,8 @@ import PostPhoto from '@/components/post/PostPhoto.vue';
 import PostLikeIcon from './PostLikeIcon.vue';
 import PostCommentInput from './PostCommentInput.vue';
 import MenuToggle from './MenuToggle.vue';
+import PostMarker from '../common/PostMarker.vue';
+
 
 const props = defineProps({
   postId: Number,
@@ -113,6 +131,8 @@ const postContent = ref('');
 const diaryContent = ref('');
 const createdAt = ref('');
 const photoList = ref([]);
+const placeList = ref([]);
+
 const postLikeCount = ref(0);
 const postLikedByCurrentUser = ref();
 const isMine = ref(false);
@@ -125,7 +145,6 @@ let currentPage = 0;
 const isLoading = ref(false);
 const scrollArea = ref(null);
 const scrollPosition = ref(0);
-
 const postType = ref('post');
 
 const fetchPostDetail = async () => {
@@ -150,6 +169,14 @@ const fetchPostDetail = async () => {
     postContent.value = data.post;
     diaryContent.value = data.diary;
     createdAt.value = data.createdAt;
+
+    placeList.value = Array.isArray(data.places)
+      ? data.places.map(p=>({
+        id:p.id,
+        name: p.name,
+        url: p.thumbnailImage,
+        orders: p.orders
+      })): [];
 
     photoList.value = Array.isArray(data.photos)
       ? data.photos.map(p => ({
@@ -274,4 +301,29 @@ watch(() => props.postId, async (id) => {
 </script>
 
 <style scoped>
+.marker-scroll-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 12px 0;
+  scroll-behavior: smooth;
+}
+
+.marker-scroll-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.marker-scroll-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+/* 각 마커가 줄어들지 않도록 */
+.custom-marker {
+  flex-shrink: 0;
+  width: 70px;
+  height: 70px;
+}
+
 </style>
