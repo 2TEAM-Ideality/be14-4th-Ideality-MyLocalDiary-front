@@ -33,8 +33,8 @@
          <!-- 장소 마커 리스트 (가로 스크롤) -->
 <div
   v-if="placeList.length"
-  class="d-flex mt-2 mb-4"
-  style="gap: 12px; overflow-x: auto; padding-bottom: 12px;"
+  class="d-flex"
+  style="gap: 4px; overflow-x: auto; padding-bottom: 4px;"
 >
   <PostMarker
     v-for="place in placeList"
@@ -49,7 +49,7 @@
         <div
           v-if="isMine"
           class="d-inline-flex align-center rounded-pill px-3 py-1 mb-2"
-          style="background-color: #fecccc; font-size: 14px; margin-top: 16px"
+          style="background-color: #fecccc; font-size: 14px; margin-top: 4px"
         >
           <span @click="postType = 'post'" :class="postType === 'post' ? 'text-black' : 'text-grey-darken-1'" class="cursor-pointer" style="margin-right: 6px;">Post</span>
           <span class="text-grey-darken-2">|</span>
