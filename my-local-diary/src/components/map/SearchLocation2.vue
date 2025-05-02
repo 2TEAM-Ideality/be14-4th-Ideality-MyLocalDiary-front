@@ -55,19 +55,14 @@
   async function handleSearch() {
     try {
       if (!localQuery.value.trim()) return
+        const res = await axios.get('/api/naver/search', {
+          params: { query: localQuery.value }
+        });
   
-      const res = await axios.get('/naver/v1/search/local.json', {
-        params: { query: localQuery.value, display: 5 },
-        headers: {
-          'X-Naver-Client-Id': import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID,
-          'X-Naver-Client-Secret': import.meta.env.VITE_NAVER_SEARCH_CLIENT_SECRET,
-        },
-      })
-  
-      searchResults.value = res.data.items || []
+      searchResults.value = res.data.data || []
       selectedIndex.value = 0
       emit('update:query', localQuery.value)
-      console.log('🔍 검색 결과:', res.data.items) // 추가
+      console.log('🔍 검색 결과:', searchResults.value)
       
     } catch (err) {
       console.error(err)
