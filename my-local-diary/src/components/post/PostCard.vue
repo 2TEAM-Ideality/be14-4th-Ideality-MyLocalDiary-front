@@ -92,7 +92,8 @@
       <button v-show="scrollPosition > 300" @click="scrollToTop" style="position: absolute; bottom: 60px; right: 30px;">↑</button>
 
       <v-divider class="my-3" />
-      <PostCommentInput @refreshComments="fetchComments" />
+      <!-- <PostCommentInput @refreshComments="fetchComments" :post-id="postId" /> -->
+      <PostCommentInput @refreshComments="handleRefreshComments" :post-id="postId" />
 
     </div>
   </div>
@@ -194,6 +195,19 @@ const fetchPostDetail = async () => {
   }
 };
 
+const handleRefreshComments = async () => {
+  await fetchComments()
+  scrollToBottom()
+}
+
+const scrollToBottom = () => {
+  const el = scrollArea.value
+  if (el) {
+    el.scrollTop = el.scrollHeight
+  }
+}
+
+
 const checkPostLikeStatus = async () => {
   try {
     const res = await axios.get('/api/posts/like/check', {
@@ -216,10 +230,9 @@ const fetchComments = async () => {
     const res = await axios.get('/api/posts/comments', {
       params: { postId: props.postId }
     });
-
+    
     const commentsRaw = res.data;
 
-    // 각각의 댓글에 대해 likedByCurrentUser 요청 병렬 처리
     const commentsWithLikeStatus = await Promise.all(
       commentsRaw.map(async c => {
         const likeRes = await axios.get('/api/posts/comment/like/check', {
@@ -239,6 +252,8 @@ const fetchComments = async () => {
 
     comments.value = commentsWithLikeStatus;
     commentCount.value = commentsWithLikeStatus.length;
+
+    // ⚠️ 꼭 초기화 후 다시 로드
     currentPage = 0;
     displayedComments.value = [];
     loadMore();
@@ -246,6 +261,7 @@ const fetchComments = async () => {
     console.error('❌ 댓글 불러오기 실패:', err);
   }
 };
+
 
 
 const loadMore = () => {
