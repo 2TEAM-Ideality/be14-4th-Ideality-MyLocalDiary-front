@@ -110,13 +110,13 @@ onMounted(async () => {
 
 // 로그인 처리 
 function redirectToKakao() {
-  window.location.href = 'http://localhost:8080/login/kakao';
+  window.location.href = '/login/kakao';
 }
 
 async function login() {
   isLoading.value = true;
   try {
-    const response = await axios.post('http://localhost:8080/api/auth/login', {
+    const response = await axios.post('/api/auth/login', {
       loginId: inputId.value,
       password: inputPw.value 
     }, {

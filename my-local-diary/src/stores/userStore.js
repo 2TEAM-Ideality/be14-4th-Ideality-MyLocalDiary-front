@@ -71,7 +71,7 @@ export const useUserStore = defineStore('user', () => {
   async function logout() {
     try {
       if (token.value) {
-        await axios.post('http://localhost:8080/api/member/logout', null, {
+        await axios.post('/api/member/logout', null, {
           headers: { Authorization: `Bearer ${token.value}` },
           withCredentials: true
         })
@@ -113,7 +113,7 @@ export const useUserStore = defineStore('user', () => {
     if (!savedUser || !refreshToken) return
 
     try {
-      const res = await axios.post('http://localhost:8080/api/member/reissue', null, {
+      const res = await axios.post('/api/member/reissue', null, {
         headers: {
           'refresh-token': refreshToken
         }
@@ -145,7 +145,7 @@ export const useUserStore = defineStore('user', () => {
     try {
       const refreshToken = localStorage.getItem('refreshToken')
 
-      const res = await axios.post('http://localhost:8080/api/member/reissue', null, {
+      const res = await axios.post('/api/member/reissue', null, {
         headers: {
           'refresh-token': refreshToken
         }
