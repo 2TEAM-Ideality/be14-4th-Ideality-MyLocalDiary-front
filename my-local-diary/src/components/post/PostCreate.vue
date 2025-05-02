@@ -226,14 +226,19 @@ function searchPlace() {
         alert('주소를 찾을 수 없습니다.')
         return
       }
-      const result = response.v2.addresses[0]
-      const latlng = new naver.maps.LatLng(result.y, result.x)
-      if (previewMarker) previewMarker.setMap(null)
-      previewMarker = new naver.maps.Marker({ map, position: latlng, title: result.roadAddress || result.jibunAddress })
-      map.setCenter(latlng)
-      searchResults.value = []
+
+      // ✅ 여러 개 결과 받기
+      const results = response.v2.addresses.map((addr) => ({
+        title: addr.roadAddress || addr.jibunAddress,
+        address: addr.jibunAddress,
+        roadAddress: addr.roadAddress,
+        mapx: Number(addr.x),
+        mapy: Number(addr.y)
+      }))
+
+      searchResults.value = results
     })
-  } else {
+  }else {
     axios.get('/api/naver/search', {
       params: { query: query.value }      
     }).then(res => {
