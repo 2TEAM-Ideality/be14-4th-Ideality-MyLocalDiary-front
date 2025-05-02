@@ -34,13 +34,16 @@
   </template>
   
   <script setup>
-  import { ref, watch, onMounted } from 'vue'
+  import { ref, watch, onMounted, h, render  } from 'vue'
   import { useUIStore } from '@/stores/uiStore'
   import axios from 'axios'
-  
-  const props = defineProps({ query: String })
+
+  const props = defineProps({
+    query: String,
+    map: Object
+  })
   const emit = defineEmits(['update:query', 'place-selected'])
-  
+
   const ui = useUIStore()
   const localQuery = ref(props.query || '')
   const searchResults = ref([])
@@ -54,6 +57,7 @@
   
   async function handleSearch() {
     try {
+<<<<<<< HEAD
       if (!localQuery.value.trim()) return
   
       const res = await axios.get('https://openapi.naver.com/v1/search/local.json', {
@@ -70,17 +74,83 @@
 
       console.log('🔍 검색 결과:', res.data.items) // 추가
       
+=======
+      if (!localQuery.value.trim()) return;
+
+      // 1. 장소 검색 (NAVER Local API)
+      const res = await axios.get('/api/naver/search', {
+        params: { query: localQuery.value }
+      });
+
+      const items = res.data.data || [];
+
+      if (items.length > 0) {
+        searchResults.value = items;
+        selectedIndex.value = 0;
+        emit('update:query', localQuery.value);
+        console.log('📍 장소 검색 결과:', items);
+        return;
+      }
+
+      // 2. 장소 검색 실패 시 → 도로명 주소(geocode) 검색
+      if (window.naver?.maps?.Service) {
+        naver.maps.Service.geocode({ query: localQuery.value }, (status, response) => {
+          if (status !== naver.maps.Service.Status.OK || response.v2.meta.totalCount === 0) {
+            alert('검색 결과가 없습니다.');
+            return;
+          }
+
+          const result = response.v2.addresses[0];
+          const data = {
+            title: result.roadAddress || result.jibunAddress,
+            address: result.jibunAddress,
+            roadAddress: result.roadAddress,
+            mapx: Number(result.x), // ✅ 반드시 숫자로 변환
+            mapy: Number(result.y)
+          };
+
+          searchResults.value = [data];
+          selectedIndex.value = 0;
+          emit('update:query', localQuery.value);
+          console.log('📍 도로명 주소 결과:', data);
+
+          selectItem(data);
+
+        });
+      }
+
+>>>>>>> develop
     } catch (err) {
-      console.error(err)
-      alert('검색 오류 발생')
+      console.error(err);
+      alert('검색 오류 발생');
     }
   }
+
   
   function selectItem(item) {
-    emit('place-selected', item)
-    searchResults.value = []
-    selectedIndex.value = -1
+    let lat = Number(item.mapy);
+    let lng = Number(item.mapx);
+
+    // 🔧 Local API 결과는 1e7 스케일 → 나눠줘야 함
+    if (lat > 1000000 && lng > 1000000) {
+      lat = lat / 1e7;
+      lng = lng / 1e7;
+    }
+
+    emit('place-selected', {
+      lat,
+      lng,
+      title: item.title.replace(/<[^>]*>/g, ''),
+      address: item.roadAddress || item.address,
+      image: '',
+      post_id: -1
+    });
+
+    searchResults.value = [];
+    selectedIndex.value = -1;
   }
+
+
   
   function onKeyDown(e) {
     const total = searchResults.value.length

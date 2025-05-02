@@ -226,22 +226,23 @@ function searchPlace() {
         alert('주소를 찾을 수 없습니다.')
         return
       }
-      const result = response.v2.addresses[0]
-      const latlng = new naver.maps.LatLng(result.y, result.x)
-      if (previewMarker) previewMarker.setMap(null)
-      previewMarker = new naver.maps.Marker({ map, position: latlng, title: result.roadAddress || result.jibunAddress })
-      map.setCenter(latlng)
-      searchResults.value = []
+
+      // ✅ 여러 개 결과 받기
+      const results = response.v2.addresses.map((addr) => ({
+        title: addr.roadAddress || addr.jibunAddress,
+        address: addr.jibunAddress,
+        roadAddress: addr.roadAddress,
+        mapx: Number(addr.x),
+        mapy: Number(addr.y)
+      }))
+
+      searchResults.value = results
     })
-  } else {
-    axios.get('https://openapi.naver.com/v1/search/local.json', {
-      params: { query: query.value, display: 5 },
-      headers: {
-        'X-Naver-Client-Id': import.meta.env.VITE_NAVER_SEARCH_CLIENT_ID,
-        'X-Naver-Client-Secret': import.meta.env.VITE_NAVER_SEARCH_CLIENT_SECRET
-      }
+  }else {
+    axios.get('/api/naver/search', {
+      params: { query: query.value }      
     }).then(res => {
-      searchResults.value = res.data.items || []
+      searchResults.value = res.data.data || []
     }).catch(err => {
       console.error('장소 검색 오류:', err)
       searchResults.value = []
@@ -378,6 +379,7 @@ async function submitPost() {
   const formData = new FormData()
 
   const postRequest = {
+    memberId: userStore.id,
     title: title.value,
     post: postContent.value,
     diary: diaryContent.value,
@@ -396,6 +398,8 @@ async function submitPost() {
     })
   )
 
+  formData.append('memberId', userStore.id)
+  
   uploadedImages.value.forEach((dataUrl, i) => {
     const file = dataURLtoFile(dataUrl, `photo${i}.jpg`)
     formData.append('images', file)
@@ -408,6 +412,7 @@ async function submitPost() {
     }
   })
 
+  
   const token = userStore.token
 
   try {

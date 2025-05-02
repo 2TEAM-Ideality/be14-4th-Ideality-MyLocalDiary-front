@@ -37,6 +37,7 @@
 
     </v-card>
 
+    <!-- 게시글 디테일 모달 -->
     <div v-if="selectedPostId !== null" class="modal-overlay" @click="selectedPostId = null">
         <div class="modal-content d-flex flex-column" @click.stop     style="
             width: 1000px;
@@ -49,7 +50,7 @@
             <div class="d-flex justify-end">
                 <button class="pr-3 pl-3" @click="selectedPostId = null">X</button>
             </div>
-            <PostCard :postId="selectedPostId"/>
+            <PostCard :postId="selectedPostId" :member-id="memberId"/>
         </div>
     </div>
 </template>
@@ -65,6 +66,14 @@ const showCalendar = ref(true)
 const selectedDate = ref(null)
 const postsByDate = ref({});
 
+const props = defineProps({
+    memberId: {
+        type: Number,
+        required: true
+    }
+});
+
+
 const formatDate = (date) => {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -74,7 +83,7 @@ const formatDate = (date) => {
 
 onMounted(async () => {
     try{
-        const response=await axios.get('/api/posts/calendar',{params:{memberId:1}});
+        const response=await axios.get('/api/posts/calendar',{params:{memberId:props.memberId}});
         const data=response.data.data;
         data.forEach(post=>{
             const date=post.createdAt?.slice(0,10);

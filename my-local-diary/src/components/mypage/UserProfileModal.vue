@@ -21,14 +21,16 @@
     <!-- 오늘의 기록 -->
     <v-card-text class="section">
       <div class="section-header d-flex justify-space-between">
-        <div class="section-title">오늘의 기록</div>
-        <router-link to="/mypage" class="see-all">전체 기록 보기 →</router-link>
+        <div class="section-title">{{ userInfo?.nickname }} 님의 기록</div>
+        <router-link :to="`/mypage/${userInfo?.id}`" class="see-all">전체 기록 보기 →</router-link>
       </div>
 
       <div>
         <v-row dense v-for="(post, i) in todaysPosts" :key="i" class="post-item">
           <v-col cols="auto">
-            <v-img :src="post.icon" class="marker-icon" width="32" height="32" contain></v-img>
+            <v-avatar size="32" class="marker-icon">
+              <img :src="post.icon" alt="marker" />
+            </v-avatar>
           </v-col>
           <v-col>
             <div class="post-title">{{ post.title }}</div>
@@ -45,8 +47,8 @@
     <v-card-text class="section">
       <div class="section-header d-flex justify-space-between">
         <div class="section-title">발자국을 남긴 곳</div>
-        <router-link to="/mypage" class="see-all">스탬프 컬렉션 →</router-link>
-      </div>
+          <router-link :to="`/stamp/${userInfo?.id}`" class="see-all">스탬프 컬렉션 →</router-link>
+        </div>
       <div class="badge-row d-flex gap-3">
         <v-avatar
           v-for="(badge, i) in displayedBadges"
@@ -106,7 +108,7 @@ const props = defineProps({
 const router = useRouter()
 
 const goToStamp = () => {
-  router.push('/stamp')
+  router.push(`/stamp/${props.userInfo.id}`)
 }
 const goToMypage = () => {
   if (props.userInfo?.id) {
@@ -122,7 +124,7 @@ const displayedBadges = computed(() => badges.slice(0, maxBadgesToShow))
 const hiddenBadgeCount = computed(() => badges.length - maxBadgesToShow)
 const neighborhoods = ref([]);
 
-const MAX_NEIGHBORHOODS = 6
+const MAX_NEIGHBORHOODS = 2
 
 const visibleNeighborhoods = computed(() =>
   neighborhoods.value.slice(0, MAX_NEIGHBORHOODS)
@@ -263,19 +265,24 @@ watch(
 .badge-row img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover; /* ← 이걸로 변경 */
   display: block;
   cursor: pointer;
+  border-radius: 50%; /* 둥근 테두리 보장 */
 }
-
 .neighborhoods-oneline {
   display: flex;
   flex-wrap: nowrap;
   overflow: hidden;
-  gap: 8px;
+  gap: 15px;
   max-width: 100%;
 }
-
+.marker-icon img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
 .muted {
   color: #777;
 }

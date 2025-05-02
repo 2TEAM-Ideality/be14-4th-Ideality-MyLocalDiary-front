@@ -17,7 +17,7 @@
           />
 
           <div class="mini-map">
-            <router-link to="/user-map-home" class="mini-map-link">지도에서 보기 →</router-link>
+            <router-link :to="`/map/${routeUserId}`" class="mini-map-link">지도에서 보기 →</router-link>
             <MiniMap
               :memberId="routeUserId"
               width="100%"
@@ -39,15 +39,12 @@
        
         <div class="right-side">
           <div class="right-upper">
-            <!-- <div class="stamp-container">
-              <img src="@/assets/badge/꽐라냥뱃지.png" alt="Badge" class="badge-image" />
-            </div> -->
             <div class="today-post">
               <TodayDiary />
             </div>
           </div>
           <div class="right-downer">
-            <Temp/>
+            <Temp :member-id="userStore.id"/>
           </div>
         </div>
       </div>
@@ -127,6 +124,7 @@
   // 라우터 변경 시에도 리패치
   watch(() => route.params.id, async () => {
     isLoading.value = true;
+    await userStore.restoreUser();
     await fetchUserProfile();
     isLoading.value = false;
   });
@@ -165,7 +163,7 @@
 }
 
 .right-upper {
-  flex: 3.5; /* 4 + 6 = 10 기준으로 40% */
+  flex: 2.5; /* 4 + 6 = 10 기준으로 40% */
   display: flex;
   flex-direction: column;
   box-sizing: border-box;

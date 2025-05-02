@@ -1,3 +1,4 @@
+// 랜딩
 <template>
   <v-container v-if = "!isRestoring" fluid class="fill-height d-flex align-center justify-center pa-4" style="background-color: black; color: white;">
     <v-row class="ma-0" align="center" justify="center">
@@ -125,7 +126,6 @@ async function login() {
       },
       withCredentials: true // 쿠키 포함
     });
-
     const accessToken = response.data.data.accessToken;
     const refreshToken = response.data.data.refreshToken;
 
@@ -153,4 +153,3 @@ async function login() {
 
 <style scoped>
 </style>
-
