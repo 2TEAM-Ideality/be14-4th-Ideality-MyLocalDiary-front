@@ -374,6 +374,7 @@ async function submitPost() {
   const formData = new FormData()
 
   const postRequest = {
+    memberId: userStore.id,
     title: title.value,
     post: postContent.value,
     diary: diaryContent.value,
@@ -392,6 +393,8 @@ async function submitPost() {
     })
   )
 
+  formData.append('memberId', userStore.id)
+  
   uploadedImages.value.forEach((dataUrl, i) => {
     const file = dataURLtoFile(dataUrl, `photo${i}.jpg`)
     formData.append('images', file)
@@ -404,7 +407,7 @@ async function submitPost() {
     }
   })
 
-  const userStore = useUserStore()
+  
   const token = userStore.token
 
   try {
