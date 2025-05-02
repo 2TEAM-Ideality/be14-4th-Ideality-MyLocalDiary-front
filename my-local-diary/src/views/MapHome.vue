@@ -193,6 +193,7 @@
 
   // 서버에서 포스트/장소 데이터 가져오기
   async function fetchFollowPosts() {
+    console.log("장소 데이터 가져오기")
     try {
       const { data } = await axios.get('http://localhost:8080/api/posts/follow/map', {
         params: { memberId: userStore.id }  // 👈 실제 로그인 유저 ID 사용
@@ -249,13 +250,16 @@
   onMounted(async () => {
     if (window.naver?.maps) {
       initMap()
+      await userStore.restoreUser() // ✅ ID 보장
       await fetchUserList()
       await fetchFollowPosts()
+
       places.value.forEach((place, index) => {
         createCustomMarker(place, index)
       })
     }
   })
+
 
   watch(
     () => userStore.id,

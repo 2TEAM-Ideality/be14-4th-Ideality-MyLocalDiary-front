@@ -169,13 +169,18 @@ const fetchPostDetail = async () => {
 const checkPostLikeStatus = async () => {
   try {
     const res = await axios.get('/api/posts/like/check', {
-      params: { postId: props.postId, memberId: props.memberId }
+      params: { postId: props.postId, memberId: userStore.id },  // ✅ memberId 정확히 전달
+      headers: {
+        Authorization: `Bearer ${userStore.token}`
+      }
     });
-    postLikedByCurrentUser.value = res.data;
+    postLikedByCurrentUser.value = res.data;  // 서버에서 true/false 반환
   } catch (err) {
     console.error('❌ 좋아요 여부 확인 실패:', err);
+    postLikedByCurrentUser.value = false; // 에러 시 기본값
   }
 };
+
 
 
 const fetchComments = async () => {
